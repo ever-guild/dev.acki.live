@@ -1,0 +1,229 @@
+.page-container {
+  @apply px-6 py-8;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-title {
+  @apply text-3xl font-bold mb-8;
+  color: var(--text-primary);
+}
+
+.section-title {
+  @apply text-xl font-semibold mb-4;
+  color: var(--text-primary);
+}
+
+// Network Health
+.health-container {
+  @apply flex flex-col md:flex-row gap-8 p-6;
+}
+
+.health-meter {
+  @apply flex items-center justify-center;
+}
+
+.health-circle {
+  @apply rounded-full flex flex-col items-center justify-center;
+  width: 200px;
+  height: 200px;
+  border: 8px solid currentColor;
+}
+
+.health-percentage {
+  @apply text-4xl font-bold;
+  color: var(--text-primary);
+}
+
+.health-label {
+  @apply text-lg mt-2;
+  color: var(--text-secondary);
+}
+
+.health-details {
+  @apply flex-1 flex flex-col gap-6;
+}
+
+.health-stat {
+  @apply flex items-center gap-4 p-4 rounded-lg;
+  background-color: var(--bg-tertiary);
+}
+
+.stat-label {
+  @apply text-sm;
+  color: var(--text-secondary);
+}
+
+.stat-value {
+  @apply text-lg font-semibold;
+  color: var(--text-primary);
+}
+
+// Recent Activity
+.activity-feed {
+  @apply space-y-3 max-h-96 overflow-y-auto p-4;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background-color: var(--bg-tertiary);
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 3px;
+    
+    &:hover {
+      background-color: var(--text-secondary);
+    }
+  }
+}
+
+.activity-item {
+  @apply flex items-center gap-3 p-3 rounded-lg transition-all;
+  background-color: var(--bg-tertiary);
+  
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.activity-icon {
+  @apply flex-shrink-0 rounded-lg p-2;
+  
+  &.icon-block {
+    @apply bg-primary-500 bg-opacity-20 text-primary-500;
+  }
+  
+  &.icon-transaction {
+    @apply bg-green-500 bg-opacity-20 text-green-500;
+  }
+}
+
+.activity-content {
+  @apply flex-1 min-w-0;
+}
+
+.activity-title {
+  @apply font-medium flex items-center gap-2;
+  color: var(--text-primary);
+}
+
+.activity-subtitle {
+  @apply text-sm;
+  color: var(--text-secondary);
+}
+
+.activity-time {
+  @apply text-sm flex-shrink-0;
+  color: var(--text-muted);
+}
+
+// Top Accounts
+.top-accounts {
+  @apply space-y-3 p-4;
+}
+
+.account-item {
+  @apply flex items-center gap-4 p-4 rounded-lg;
+  background-color: var(--bg-tertiary);
+}
+
+.account-rank {
+  @apply flex-shrink-0;
+}
+
+.rank-badge {
+  @apply inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm;
+  
+  &.rank-gold {
+    @apply bg-yellow-500 text-white;
+  }
+  
+  &.rank-silver {
+    @apply bg-gray-400 text-white;
+  }
+  
+  &.rank-bronze {
+    @apply bg-orange-600 text-white;
+  }
+  
+  &:not(.rank-gold):not(.rank-silver):not(.rank-bronze) {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+  }
+}
+
+.account-address {
+  @apply flex-1 font-mono text-sm;
+  color: var(--text-primary);
+}
+
+.account-activity {
+  @apply flex-shrink-0;
+}
+
+// Block Production Chart
+.production-chart {
+  @apply flex items-end justify-between gap-2 p-6;
+  height: 200px;
+}
+
+.chart-bar {
+  @apply flex-1 flex flex-col items-center;
+}
+
+.bar-container {
+  @apply relative w-full flex items-end;
+  height: 150px;
+}
+
+.bar {
+  @apply w-full rounded-t-lg transition-all duration-300;
+  background: linear-gradient(to top, #3b82f6, #60a5fa);
+  min-height: 4px;
+}
+
+.bar-label {
+  @apply text-xs mt-2;
+  color: var(--text-secondary);
+}
+
+// Message Types
+.message-types {
+  @apply space-y-4 p-4;
+}
+
+.message-type-item {
+  @apply flex items-center gap-4;
+}
+
+.type-label {
+  @apply w-32 text-sm font-medium;
+  color: var(--text-primary);
+}
+
+.type-bar-container {
+  @apply flex-1 h-6 rounded-full overflow-hidden;
+  background-color: var(--bg-tertiary);
+}
+
+.type-bar {
+  @apply h-full rounded-full transition-all duration-300;
+  background: linear-gradient(to right, #8b5cf6, #a78bfa);
+}
+
+.type-count {
+  @apply w-12 text-right text-sm font-semibold;
+  color: var(--text-secondary);
+}
+
+// Empty State
+.empty-state {
+  @apply text-center py-8;
+  color: var(--text-muted);
+}

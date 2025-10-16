@@ -1,0 +1,142 @@
+<div class="page-container">
+  <h1 class="page-title">{{ i18n.translate('showcase.title') }}</h1>
+
+  <!-- Network Health Section -->
+  <div class="mb-8">
+    <h2 class="section-title">Network Health</h2>
+    <app-card>
+      <div class="health-container">
+        <div class="health-meter">
+          <div class="health-circle" [ngClass]="getHealthColor()">
+            <span class="health-percentage">{{ networkHealth.percentage }}%</span>
+            <span class="health-label">{{ networkHealth.status }}</span>
+          </div>
+        </div>
+        <div class="health-details">
+          <div class="health-stat">
+            <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div>
+              <div class="stat-label">Block Production</div>
+              <div class="stat-value">Normal</div>
+            </div>
+          </div>
+          <div class="health-stat">
+            <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            <div>
+              <div class="stat-label">Transaction Throughput</div>
+              <div class="stat-value">High</div>
+            </div>
+          </div>
+          <div class="health-stat">
+            <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+            </svg>
+            <div>
+              <div class="stat-label">Network Latency</div>
+              <div class="stat-value">Low</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Recent Activity Feed -->
+    <div>
+      <h2 class="section-title">Recent Activity</h2>
+      <app-card>
+        <div class="activity-feed">
+          <div *ngFor="let activity of recentActivity" class="activity-item">
+            <div class="activity-icon" [ngClass]="{
+              'icon-block': activity.type === 'block',
+              'icon-transaction': activity.type === 'transaction'
+            }">
+              <svg *ngIf="activity.type === 'block'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+              <svg *ngIf="activity.type === 'transaction'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+              </svg>
+            </div>
+            <div class="activity-content">
+              <div class="activity-title">
+                {{ activity.title }}
+                <app-badge *ngIf="activity.status" [variant]="activity.status === 'success' ? 'success' : activity.status === 'pending' ? 'warning' : 'failed'">
+                  {{ activity.status }}
+                </app-badge>
+              </div>
+              <div class="activity-subtitle">{{ activity.subtitle }}</div>
+            </div>
+            <div class="activity-time">{{ formatTime(activity.time) }}</div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+    <!-- Top Active Accounts -->
+    <div>
+      <h2 class="section-title">Top Active Accounts</h2>
+      <app-card>
+        <div class="top-accounts">
+          <div *ngFor="let account of topAccounts; let i = index" class="account-item">
+            <div class="account-rank">
+              <span class="rank-badge" [ngClass]="{
+                'rank-gold': i === 0,
+                'rank-silver': i === 1,
+                'rank-bronze': i === 2
+              }">
+                #{{ i + 1 }}
+              </span>
+            </div>
+            <div class="account-address">{{ account.address }}</div>
+            <div class="account-activity">
+              <app-badge variant="info">{{ account.activity }} interactions</app-badge>
+            </div>
+          </div>
+          <div *ngIf="topAccounts.length === 0" class="empty-state">
+            Loading account data...
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+
+  <!-- Block Production Rate -->
+  <div class="mb-8">
+    <h2 class="section-title">Block Production Rate (Last 12 Hours)</h2>
+    <app-card>
+      <div class="production-chart">
+        <div *ngFor="let data of blockProductionRate" class="chart-bar">
+          <div class="bar-container">
+            <div class="bar" [style.height.%]="(data.count / 3) * 100"></div>
+          </div>
+          <div class="bar-label">{{ data.hour }}</div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+  <!-- Message Type Distribution -->
+  <div class="mb-8">
+    <h2 class="section-title">Message Type Distribution</h2>
+    <app-card>
+      <div class="message-types">
+        <div *ngFor="let type of messageTypeDistribution | keyvalue" class="message-type-item">
+          <div class="type-label">{{ type.key }}</div>
+          <div class="type-bar-container">
+            <div class="type-bar" [style.width.%]="($any(type.value) / 20) * 100"></div>
+          </div>
+          <div class="type-count">{{ type.value }}</div>
+        </div>
+        <div *ngIf="(messageTypeDistribution | keyvalue).length === 0" class="empty-state">
+          Loading message data...
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

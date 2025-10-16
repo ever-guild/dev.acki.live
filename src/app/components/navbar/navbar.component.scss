@@ -1,0 +1,21 @@
+.nav-link {
+  font-weight: 500;
+  
+  &.active {
+    background-color: var(--bg-tertiary);
+    color: var(--accent);
+  }
+}
+
+.lang-btn {
+  color: var(--text-muted);
+  
+  &.active-lang {
+    background-color: var(--accent);
+    color: white;
+  }
+  
+  &:hover:not(.active-lang) {
+    color: var(--text-secondary);
+  }
+}

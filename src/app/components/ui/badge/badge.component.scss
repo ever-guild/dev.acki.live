@@ -1,0 +1,31 @@
+.badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  
+  &[data-variant="success"] {
+    @apply bg-green-500 bg-opacity-20 text-green-400;
+  }
+  
+  &[data-variant="pending"] {
+    @apply bg-yellow-500 bg-opacity-20 text-yellow-400;
+  }
+  
+  &[data-variant="failed"] {
+    @apply bg-red-500 bg-opacity-20 text-red-400;
+  }
+  
+  &[data-variant="info"] {
+    @apply bg-primary-500 bg-opacity-20 text-primary-400;
+  }
+  
+  &[data-variant="warning"] {
+    @apply bg-orange-500 bg-opacity-20 text-orange-400;
+  }
+  
+  &[data-variant="primary"] {
+    @apply bg-blue-500 bg-opacity-20 text-blue-400;
+  }
+  
+  &[data-variant="secondary"] {
+    @apply bg-purple-500 bg-opacity-20 text-purple-400;
+  }
+}

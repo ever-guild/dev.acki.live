@@ -1,0 +1,81 @@
+<nav class="bg-secondary border-b border-custom shadow-lg">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <a routerLink="/" class="flex items-center space-x-2">
+          <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-lg">A</span>
+          </div>
+          <span class="text-xl font-bold text-primary">ACKI.live</span>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="hidden md:flex items-center space-x-1">
+        <a routerLink="/blocks" 
+           routerLinkActive="active"
+           class="nav-link px-4 py-2 rounded-lg text-secondary hover:bg-tertiary transition-colors">
+          {{ i18n.translate('nav.blocks') }}
+        </a>
+        <a routerLink="/transactions" 
+           routerLinkActive="active"
+           class="nav-link px-4 py-2 rounded-lg text-secondary hover:bg-tertiary transition-colors">
+          {{ i18n.translate('nav.transactions') }}
+        </a>
+        <a routerLink="/messages" 
+           routerLinkActive="active"
+           class="nav-link px-4 py-2 rounded-lg text-secondary hover:bg-tertiary transition-colors">
+          {{ i18n.translate('nav.messages') }}
+        </a>
+        <a routerLink="/contracts" 
+           routerLinkActive="active"
+           class="nav-link px-4 py-2 rounded-lg text-secondary hover:bg-tertiary transition-colors">
+          {{ i18n.translate('nav.contracts') }}
+        </a>
+        <a routerLink="/stats" 
+           routerLinkActive="active"
+           class="nav-link px-4 py-2 rounded-lg text-secondary hover:bg-tertiary transition-colors">
+          {{ i18n.translate('nav.stats') }}
+        </a>
+        <a routerLink="/showcase" 
+           routerLinkActive="active"
+           class="nav-link px-4 py-2 rounded-lg text-secondary hover:bg-tertiary transition-colors">
+          {{ i18n.translate('nav.showcase') }}
+        </a>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex items-center space-x-4">
+        <!-- Language Switcher -->
+        <div class="flex items-center space-x-2 bg-tertiary rounded-lg p-1">
+          <button 
+            (click)="switchLanguage('en')"
+            [class.active-lang]="currentLang === 'en'"
+            class="lang-btn px-3 py-1 rounded-md text-sm font-medium transition-colors">
+            EN
+          </button>
+          <button 
+            (click)="switchLanguage('ru')"
+            [class.active-lang]="currentLang === 'ru'"
+            class="lang-btn px-3 py-1 rounded-md text-sm font-medium transition-colors">
+            RU
+          </button>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button 
+          (click)="toggleTheme()"
+          class="p-2 rounded-lg bg-tertiary hover:bg-opacity-80 transition-colors"
+          [attr.aria-label]="'Toggle theme'">
+          <svg *ngIf="isDarkMode" class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+          </svg>
+          <svg *ngIf="!isDarkMode" class="w-5 h-5 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

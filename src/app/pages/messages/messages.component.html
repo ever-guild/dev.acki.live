@@ -1,0 +1,38 @@
+<div class="page-container">
+  <h1 class="page-title">{{ i18n.translate('messages.title') }}</h1>
+
+  <app-card>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead class="table-header">
+          <tr>
+            <th class="table-th">{{ i18n.translate('messages.type') }}</th>
+            <th class="table-th">{{ i18n.translate('messages.sender') }}</th>
+            <th class="table-th">{{ i18n.translate('messages.recipient') }}</th>
+            <th class="table-th">{{ i18n.translate('messages.data') }}</th>
+            <th class="table-th">{{ i18n.translate('messages.timestamp') }}</th>
+          </tr>
+        </thead>
+        <tbody class="table-body">
+          <tr *ngFor="let msg of messages" class="table-row">
+            <td class="table-td">
+              <app-badge [variant]="getTypeColor(msg.type)">{{ msg.type }}</app-badge>
+            </td>
+            <td class="table-td">
+              <span class="address-text">{{ formatAddress(msg.sender) }}</span>
+            </td>
+            <td class="table-td">
+              <span class="address-text">{{ formatAddress(msg.recipient) }}</span>
+            </td>
+            <td class="table-td">
+              <span class="data-text">{{ formatData(msg.data) }}</span>
+            </td>
+            <td class="table-td">
+              <span class="time-text">{{ formatTime(msg.timestamp) }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-card>
+</div>

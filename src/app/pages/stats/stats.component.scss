@@ -1,0 +1,11 @@
+.page-container {
+  @apply px-6 py-8;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-title {
+  @apply text-3xl font-bold mb-8;
+  color: var(--text-primary);
+}
+

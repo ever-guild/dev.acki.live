@@ -1,0 +1,9 @@
+.card {
+  @apply rounded-xl border shadow-lg overflow-hidden;
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color);
+  
+  &.hoverable {
+    @apply hover:shadow-xl transition-shadow;
+  }
+}
