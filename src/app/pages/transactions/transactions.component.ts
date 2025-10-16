@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BlockchainService, Transaction } from '../../services/blockchain.service';
 import { I18nService } from '../../services/i18n.service';
@@ -13,7 +13,7 @@ import { BadgeComponent, BadgeVariant } from '../../components/ui/badge/badge.co
   styleUrls: ['./transactions.component.scss']
 })
 export class TransactionsComponent implements OnInit {
-  transactions: Transaction[] = [];
+  transactions = signal<Transaction[]>([]);
 
   constructor(
     private blockchainService: BlockchainService,
@@ -22,7 +22,7 @@ export class TransactionsComponent implements OnInit {
 
   ngOnInit() {
     this.blockchainService.getTransactions().subscribe(txs => {
-      this.transactions = txs;
+      this.transactions.set(txs);
     });
   }
 

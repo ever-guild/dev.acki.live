@@ -14,7 +14,7 @@
           </tr>
         </thead>
         <tbody class="table-body">
-          <tr *ngFor="let msg of messages" class="table-row">
+          <tr *ngFor="let msg of messages()" class="table-row">
             <td class="table-td">
               <app-badge [variant]="getTypeColor(msg.type)">{{ msg.type }}</app-badge>
             </td>

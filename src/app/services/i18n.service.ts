@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 
 export type Language = 'en' | 'ru';
 
@@ -12,7 +12,7 @@ interface Translations {
   providedIn: 'root'
 })
 export class I18nService {
-  private currentLang: Language = 'en';
+  currentLang = signal<Language>('en');
   
   private translations: Translations = {
     en: {
@@ -112,20 +112,20 @@ export class I18nService {
   constructor() {
     const savedLang = localStorage.getItem('language') as Language;
     if (savedLang && (savedLang === 'en' || savedLang === 'ru')) {
-      this.currentLang = savedLang;
+      this.currentLang.set(savedLang);
     }
   }
 
   setLanguage(lang: Language) {
-    this.currentLang = lang;
+    this.currentLang.set(lang);
     localStorage.setItem('language', lang);
   }
 
   getLanguage(): Language {
-    return this.currentLang;
+    return this.currentLang();
   }
 
   translate(key: string): string {
-    return this.translations[this.currentLang][key] || key;
+    return this.translations[this.currentLang()][key] || key;
   }
 }

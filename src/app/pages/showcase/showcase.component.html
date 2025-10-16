@@ -7,9 +7,9 @@
     <app-card>
       <div class="health-container">
         <div class="health-meter">
-          <div class="health-circle" [ngClass]="getHealthColor()">
-            <span class="health-percentage">{{ networkHealth.percentage }}%</span>
-            <span class="health-label">{{ networkHealth.status }}</span>
+          <div class="health-circle" [ngClass]="healthColor()">
+            <span class="health-percentage">{{ networkHealth().percentage }}%</span>
+            <span class="health-label">{{ networkHealth().status }}</span>
           </div>
         </div>
         <div class="health-details">
@@ -51,7 +51,7 @@
       <h2 class="section-title">Recent Activity</h2>
       <app-card>
         <div class="activity-feed">
-          <div *ngFor="let activity of recentActivity" class="activity-item">
+          <div *ngFor="let activity of recentActivity()" class="activity-item">
             <div class="activity-icon" [ngClass]="{
               'icon-block': activity.type === 'block',
               'icon-transaction': activity.type === 'transaction'
@@ -83,7 +83,7 @@
       <h2 class="section-title">Top Active Accounts</h2>
       <app-card>
         <div class="top-accounts">
-          <div *ngFor="let account of topAccounts; let i = index" class="account-item">
+          <div *ngFor="let account of topAccounts(); let i = index" class="account-item">
             <div class="account-rank">
               <span class="rank-badge" [ngClass]="{
                 'rank-gold': i === 0,
@@ -98,7 +98,7 @@
               <app-badge variant="info">{{ account.activity }} interactions</app-badge>
             </div>
           </div>
-          <div *ngIf="topAccounts.length === 0" class="empty-state">
+          <div *ngIf="topAccounts().length === 0" class="empty-state">
             Loading account data...
           </div>
         </div>
@@ -111,7 +111,7 @@
     <h2 class="section-title">Block Production Rate (Last 12 Hours)</h2>
     <app-card>
       <div class="production-chart">
-        <div *ngFor="let data of blockProductionRate" class="chart-bar">
+        <div *ngFor="let data of blockProductionRate()" class="chart-bar">
           <div class="bar-container">
             <div class="bar" [style.height.%]="(data.count / 3) * 100"></div>
           </div>
@@ -126,14 +126,14 @@
     <h2 class="section-title">Message Type Distribution</h2>
     <app-card>
       <div class="message-types">
-        <div *ngFor="let type of messageTypeDistribution | keyvalue" class="message-type-item">
+        <div *ngFor="let type of messageTypeDistribution() | keyvalue" class="message-type-item">
           <div class="type-label">{{ type.key }}</div>
           <div class="type-bar-container">
             <div class="type-bar" [style.width.%]="($any(type.value) / 20) * 100"></div>
           </div>
           <div class="type-count">{{ type.value }}</div>
         </div>
-        <div *ngIf="(messageTypeDistribution | keyvalue).length === 0" class="empty-state">
+        <div *ngIf="(messageTypeDistribution() | keyvalue).length === 0" class="empty-state">
           Loading message data...
         </div>
       </div>

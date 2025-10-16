@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BlockchainService, NetworkStats } from '../../services/blockchain.service';
 import { I18nService } from '../../services/i18n.service';
@@ -12,7 +12,7 @@ import { StatCardComponent } from '../ui/stat-card/stat-card.component';
   styleUrls: ['./network-stats.component.scss']
 })
 export class NetworkStatsComponent implements OnInit {
-  stats: NetworkStats | null = null;
+  stats = signal<NetworkStats | null>(null);
 
   constructor(
     private blockchainService: BlockchainService,
@@ -21,7 +21,7 @@ export class NetworkStatsComponent implements OnInit {
 
   ngOnInit() {
     this.blockchainService.getStats().subscribe(stats => {
-      this.stats = stats;
+      this.stats.set(stats);
     });
   }
 

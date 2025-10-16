@@ -14,7 +14,7 @@
           </tr>
         </thead>
         <tbody class="table-body">
-          <tr *ngFor="let contract of contracts" class="table-row">
+          <tr *ngFor="let contract of contracts()" class="table-row">
             <td class="table-td">
               <span class="address-highlight">{{ formatAddress(contract.address) }}</span>
             </td>

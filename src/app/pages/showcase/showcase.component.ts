@@ -1,25 +1,58 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BlockchainService } from '../../services/blockchain.service';
 import { I18nService } from '../../services/i18n.service';
 import { CardComponent } from '../../components/ui/card/card.component';
-import { StatCardComponent } from '../../components/ui/stat-card/stat-card.component';
 import { BadgeComponent } from '../../components/ui/badge/badge.component';
 import { forkJoin } from 'rxjs';
+
+interface Activity {
+  type: 'block' | 'transaction';
+  title: string;
+  subtitle: string;
+  time: Date;
+  icon: string;
+  status?: string;
+}
+
+interface NetworkHealth {
+  status: string;
+  percentage: number;
+}
+
+interface TopAccount {
+  address: string;
+  activity: number;
+}
+
+interface BlockProductionData {
+  hour: string;
+  count: number;
+}
 
 @Component({
   selector: 'app-showcase',
   standalone: true,
-  imports: [CommonModule, CardComponent, StatCardComponent, BadgeComponent],
+  imports: [CommonModule, CardComponent, BadgeComponent],
   templateUrl: './showcase.component.html',
   styleUrls: ['./showcase.component.scss']
 })
 export class ShowcaseComponent implements OnInit {
-  recentActivity: any[] = [];
-  networkHealth = { status: 'Excellent', percentage: 98 };
-  topAccounts: any[] = [];
-  blockProductionRate: any[] = [];
-  messageTypeDistribution: any = {};
+  // Only data that changes and is displayed in template should be signals
+  recentActivity = signal<Activity[]>([]);
+  networkHealth = signal<NetworkHealth>({ status: 'Excellent', percentage: 98 });
+  topAccounts = signal<TopAccount[]>([]);
+  blockProductionRate = signal<BlockProductionData[]>([]);
+  messageTypeDistribution = signal<Record<string, number>>({});
+  
+  // Computed signal for health color (derives from networkHealth signal)
+  healthColor = computed(() => {
+    const health = this.networkHealth();
+    if (health.percentage >= 90) return 'text-green-500';
+    if (health.percentage >= 75) return 'text-blue-500';
+    if (health.percentage >= 60) return 'text-yellow-500';
+    return 'text-red-500';
+  });
   
   constructor(
     private blockchainService: BlockchainService,
@@ -30,7 +63,7 @@ export class ShowcaseComponent implements OnInit {
     this.loadShowcaseData();
   }
 
-  loadShowcaseData() {
+  private loadShowcaseData() {
     forkJoin({
       blocks: this.blockchainService.getBlocks(),
       transactions: this.blockchainService.getTransactions(),
@@ -44,17 +77,17 @@ export class ShowcaseComponent implements OnInit {
     });
   }
 
-  processRecentActivity(blocks: any[], transactions: any[]) {
-    this.recentActivity = [
+  private processRecentActivity(blocks: any[], transactions: any[]) {
+    const activity: Activity[] = [
       ...blocks.slice(0, 5).map(b => ({
-        type: 'block',
+        type: 'block' as const,
         title: `Block #${b.height}`,
         subtitle: `${b.txCount} transactions`,
         time: b.timestamp,
         icon: 'block'
       })),
       ...transactions.slice(0, 10).map(t => ({
-        type: 'transaction',
+        type: 'transaction' as const,
         title: t.status === 'success' ? 'Transaction Success' : 'Transaction ' + t.status,
         subtitle: `${t.amount.toFixed(4)} tokens`,
         time: t.timestamp,
@@ -62,57 +95,67 @@ export class ShowcaseComponent implements OnInit {
         status: t.status
       }))
     ].sort((a, b) => b.time.getTime() - a.time.getTime()).slice(0, 15);
+    
+    this.recentActivity.set(activity);
   }
 
-  calculateNetworkHealth(blocks: any[], transactions: any[]) {
+  private calculateNetworkHealth(blocks: any[], transactions: any[]) {
     const recentBlocks = blocks.slice(0, 10);
     const avgTxPerBlock = recentBlocks.reduce((sum, b) => sum + b.txCount, 0) / recentBlocks.length;
     const successRate = transactions.filter(t => t.status === 'success').length / transactions.length * 100;
     
-    this.networkHealth.percentage = Math.round((avgTxPerBlock / 100 * 40) + (successRate * 0.6));
+    const percentage = Math.round((avgTxPerBlock / 100 * 40) + (successRate * 0.6));
+    let status = 'Poor';
     
-    if (this.networkHealth.percentage >= 90) this.networkHealth.status = 'Excellent';
-    else if (this.networkHealth.percentage >= 75) this.networkHealth.status = 'Good';
-    else if (this.networkHealth.percentage >= 60) this.networkHealth.status = 'Fair';
-    else this.networkHealth.status = 'Poor';
+    if (percentage >= 90) status = 'Excellent';
+    else if (percentage >= 75) status = 'Good';
+    else if (percentage >= 60) status = 'Fair';
+    
+    this.networkHealth.set({ status, percentage });
   }
 
-  analyzeTopAccounts(transactions: any[]) {
-    const accountActivity: any = {};
+  private analyzeTopAccounts(transactions: any[]) {
+    const accountActivity: Record<string, number> = {};
     
     transactions.forEach(tx => {
       accountActivity[tx.from] = (accountActivity[tx.from] || 0) + tx.amount;
       accountActivity[tx.to] = (accountActivity[tx.to] || 0) + 1;
     });
 
-    this.topAccounts = Object.entries(accountActivity)
-      .sort(([, a]: any, [, b]: any) => b - a)
+    const accounts: TopAccount[] = Object.entries(accountActivity)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 5)
       .map(([address, activity]) => ({
-        address: this.formatAddress(address as string),
-        activity: activity as number
+        address: this.formatAddress(address),
+        activity
       }));
+    
+    this.topAccounts.set(accounts);
   }
 
-  calculateBlockProductionRate(blocks: any[]) {
+  private calculateBlockProductionRate(blocks: any[]) {
     const hourly = new Array(24).fill(0);
     blocks.forEach(block => {
       const hour = block.timestamp.getHours();
       hourly[hour]++;
     });
     
-    this.blockProductionRate = hourly.map((count, hour) => ({
+    const rate: BlockProductionData[] = hourly.map((count, hour) => ({
       hour: `${hour}:00`,
       count
     })).slice(-12);
+    
+    this.blockProductionRate.set(rate);
   }
 
-  analyzeMessageTypes(messages: any[]) {
-    this.messageTypeDistribution = {};
+  private analyzeMessageTypes(messages: any[]) {
+    const distribution: Record<string, number> = {};
     messages.forEach(msg => {
       const type = msg.type || 'Unknown';
-      this.messageTypeDistribution[type] = (this.messageTypeDistribution[type] || 0) + 1;
+      distribution[type] = (distribution[type] || 0) + 1;
     });
+    
+    this.messageTypeDistribution.set(distribution);
   }
 
   formatAddress(address: string): string {
@@ -139,12 +182,5 @@ export class ShowcaseComponent implements OnInit {
     return `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
     </svg>`;
-  }
-
-  getHealthColor(): string {
-    if (this.networkHealth.percentage >= 90) return 'text-green-500';
-    if (this.networkHealth.percentage >= 75) return 'text-blue-500';
-    if (this.networkHealth.percentage >= 60) return 'text-yellow-500';
-    return 'text-red-500';
   }
 }

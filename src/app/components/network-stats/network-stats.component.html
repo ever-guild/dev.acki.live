@@ -1,49 +1,49 @@
-<div *ngIf="stats" class="stats-grid">
+<div *ngIf="stats()" class="stats-grid">
   <app-stat-card
     [label]="i18n.translate('stats.totalBlocks')"
-    [value]="stats.totalBlocks.toLocaleString()"
+    [value]="stats()!.totalBlocks.toLocaleString()"
     [icon]="getIcons().totalBlocks">
   </app-stat-card>
 
   <app-stat-card
     [label]="i18n.translate('stats.totalTransactions')"
-    [value]="stats.totalTransactions.toLocaleString()"
+    [value]="stats()!.totalTransactions.toLocaleString()"
     [icon]="getIcons().totalTransactions">
   </app-stat-card>
 
   <app-stat-card
     [label]="i18n.translate('stats.hashrate')"
-    [value]="stats.hashrate"
+    [value]="stats()!.hashrate"
     [icon]="getIcons().hashrate">
   </app-stat-card>
 
   <app-stat-card
     [label]="i18n.translate('stats.activeAddresses')"
-    [value]="stats.activeAddresses.toLocaleString()"
+    [value]="stats()!.activeAddresses.toLocaleString()"
     [icon]="getIcons().activeAddresses">
   </app-stat-card>
 
   <app-stat-card
     [label]="i18n.translate('stats.avgBlockTime')"
-    [value]="stats.avgBlockTime"
+    [value]="stats()!.avgBlockTime"
     [icon]="getIcons().avgBlockTime">
   </app-stat-card>
 
   <app-stat-card
     [label]="i18n.translate('stats.difficulty')"
-    [value]="stats.difficulty"
+    [value]="stats()!.difficulty"
     [icon]="getIcons().difficulty">
   </app-stat-card>
 
   <app-stat-card
     [label]="i18n.translate('stats.marketCap')"
-    [value]="stats.marketCap"
+    [value]="stats()!.marketCap"
     [icon]="getIcons().marketCap">
   </app-stat-card>
 
   <app-stat-card
     [label]="i18n.translate('stats.price')"
-    [value]="stats.price"
+    [value]="stats()!.price"
     [icon]="getIcons().price">
   </app-stat-card>
 </div>
