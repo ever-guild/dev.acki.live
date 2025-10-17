@@ -6,17 +6,12 @@ on:
       - main
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  group: "release acki.live"
+  cancel-in-progress: true
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -33,6 +28,16 @@ jobs:
 
       - name: build acki.live
         run: npm run build:production
+
+      - name: setup ssh agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.ACKI_LIVE_DEPLOY_KEY }}
+
+      - name: configure git user
+        run: |
+          git config --global user.name "github-actions-bot"
+          git config --global user.email "support+actions@github.com"
 
       - name: release acki.live
         run: npm run release:gh-pages
