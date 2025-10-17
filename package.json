@@ -2,7 +2,7 @@
   "name": "acki-live",
   "version": "1.0.0",
   "scripts": {
-    "release:gh-pages": "gh-pages --no-history --nojekyll --cname acki.live --repo git@github.com:ever-guild/acki.live.git --dotfiles --branch release --dist dist/acki-live",
+    "release:gh-pages": "gh-pages --no-history --nojekyll --cname acki.live --repo git@github.com:ever-guild/acki.live.git --dotfiles --branch release --dist dist/acki-live --message 'release'",
     "release": "npm run build:production && npm run release:gh-pages",
     "ng": "ng",
     "start": "ng serve",
