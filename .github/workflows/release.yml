@@ -13,6 +13,12 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+
     steps:
       - name: checkout
         uses: actions/checkout@v5
@@ -28,6 +34,17 @@ jobs:
 
       - name: build acki.live
         run: npm run build:production
+
+      - name: attest build provenance
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: 'dist/acki-live/**'
+
+      - name: attest sbom
+        uses: actions/attest-sbom@v1
+        with:
+          subject-path: 'dist/acki-live/**'
+          sbom-path: 'sbom.spdx.json'
 
       - name: setup ssh agent
         uses: webfactory/ssh-agent@v0.9.0
