@@ -21,4 +21,8 @@ jobs:
       - name: attest build provenance
         uses: actions/attest-build-provenance@v3
         with:
-          subject-path: '**'
+          subject-path: |
+            *.html
+            *.js
+            *.css
+            *.txt
