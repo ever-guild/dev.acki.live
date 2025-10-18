@@ -1,0 +1,20 @@
+{
+	"tailwindCSS.includeLanguages": {
+		"svelte": "html"
+	},
+	"tailwindCSS.experimental.classRegex": [
+		["class:\\s*[\"'`]([^\"'`]*)[\"'`]", "[\"'`]([^\"'`]*).*?[\"'`]"]
+	],
+	"tailwindCSS.classAttributes": [
+		"class",
+		"className",
+		"ngClass"
+	],
+	"files.associations": {
+		"*.svelte": "svelte"
+	},
+	"svelte.enable-ts-plugin": true,
+	"css.validate": false,
+	"scss.validate": false,
+	"stylelint.validate": ["css", "scss", "svelte"]
+}

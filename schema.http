@@ -1,0 +1,344 @@
+# Acki Nacki GraphQL API Examples
+# Base URL: https://mainnet.ackinacki.org/graphql
+
+@endpoint = https://mainnet.ackinacki.org/graphql
+
+### Get Server Info
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetInfo { info { version time lastBlockTime latency blocksLatency messagesLatency transactionsLatency batchSize endpoints } }"
+}
+
+### Get Latest Blocks (with full details)
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetLatestBlocks($limit: Int!) { blocks(orderBy: [{ path: \"gen_utime\", direction: DESC }], limit: $limit) { id seq_no gen_utime gen_utime_string workchain_id shard tr_count status_name key_block hash file_hash created_by min_ref_mc_seqno master_seq_no value_flow { created exported fees_collected fees_imported from_prev_blk imported minted to_next_blk } } }",
+  "variables": {
+    "limit": 20
+  }
+}
+
+### Get Block by Hash
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetBlock($hash: String!) { blockchain { block(hash: $hash) { id seq_no gen_utime workchain_id shard tr_count status_name key_block hash master_seq_no } } }",
+  "variables": {
+    "hash": "YOUR_BLOCK_HASH_HERE"
+  }
+}
+
+### Get Latest Transactions
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetLatestTransactions($limit: Int!) { transactions(orderBy: [{ path: \"now\", direction: DESC }], limit: $limit) { id account_addr now aborted balance_delta(format: DEC) total_fees(format: DEC) status_name orig_status_name end_status_name tr_type_name workchain_id compute { success exit_code gas_used(format: DEC) gas_fees(format: DEC) } in_message { id src dst value(format: DEC) msg_type_name created_at } } }",
+  "variables": {
+    "limit": 25
+  }
+}
+
+### Get Transaction by Hash
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetTransaction($hash: String!) { blockchain { transaction(hash: $hash) { id account_addr now aborted balance_delta(format: DEC) total_fees(format: DEC) status_name in_message { id src dst value(format: DEC) } out_messages { id src dst value(format: DEC) } } } }",
+  "variables": {
+    "hash": "YOUR_TRANSACTION_HASH_HERE"
+  }
+}
+
+### Get Latest Messages
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetLatestMessages($limit: Int!) { messages(orderBy: [{ path: \"created_at\", direction: DESC }], limit: $limit) { id src dst value(format: DEC) created_at msg_type_name status_name bounce bounced body body_hash block_id transaction_id fwd_fee(format: DEC) ihr_fee(format: DEC) } }",
+  "variables": {
+    "limit": 20
+  }
+}
+
+### Get Message by Hash
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetMessage($hash: String!) { blockchain { message(hash: $hash) { id src dst value(format: DEC) created_at msg_type_name body bounce bounced } } }",
+  "variables": {
+    "hash": "YOUR_MESSAGE_HASH_HERE"
+  }
+}
+
+### Get Active Accounts (with code)
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetAccounts($limit: Int!) { accounts(orderBy: [{ path: \"last_paid\", direction: DESC }], limit: $limit) { id address acc_type_name balance(format: DEC) code_hash data_hash last_paid last_trans_lt(format: DEC) workchain_id init_code_hash prev_code_hash bits(format: DEC) cells(format: DEC) } }",
+  "variables": {
+    "limit": 15
+  }
+}
+
+### Get Account Info by Address
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetAccount($address: String!) { account(address: $address) { info { id address acc_type_name balance(format: DEC) code_hash data_hash last_paid workchain_id } } }",
+  "variables": {
+    "address": "YOUR_ACCOUNT_ADDRESS_HERE"
+  }
+}
+
+### Get Account Transactions (Cursor-based pagination)
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetAccountTransactions($address: String!, $first: Int!) { blockchain { account(address: $address) { transactions(first: $first) { edges { cursor node { id now aborted balance_delta(format: DEC) total_fees(format: DEC) status_name } } pageInfo { hasNextPage hasPreviousPage startCursor endCursor } } } } }",
+  "variables": {
+    "address": "YOUR_ACCOUNT_ADDRESS_HERE",
+    "first": 50
+  }
+}
+
+### Get Account Messages (with filters)
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetAccountMessages($address: String!, $first: Int!, $msgType: [BlockchainMessageTypeFilterEnum!]) { blockchain { account(address: $address) { messages(first: $first, msg_type: $msgType) { edges { cursor node { id src dst value(format: DEC) created_at msg_type_name } } pageInfo { hasNextPage endCursor } } } } }",
+  "variables": {
+    "address": "YOUR_ACCOUNT_ADDRESS_HERE",
+    "first": 50,
+    "msgType": ["IntIn", "IntOut"]
+  }
+}
+
+### Get Blocks with Transaction Filter
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetBlocksWithMinTx($first: Int!, $minTrCount: Int!) { blockchain { blocks(first: $first, min_tr_count: $minTrCount) { edges { cursor node { id seq_no gen_utime tr_count workchain_id shard } } pageInfo { hasNextPage } } } }",
+  "variables": {
+    "first": 20,
+    "minTrCount": 10
+  }
+}
+
+### Get Transactions by Balance Delta Range
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetHighValueTransactions($first: Int!, $minDelta: String!) { blockchain { transactions(first: $first, min_balance_delta: $minDelta) { edges { cursor node { id account_addr balance_delta(format: DEC) total_fees(format: DEC) now } } } } }",
+  "variables": {
+    "first": 20,
+    "minDelta": "1000000000"
+  }
+}
+
+### Get Accounts by Code Hash (Smart Contracts)
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetAccountsByCodeHash($codeHash: String!, $first: Int!) { blockchain { accounts(codeHash: $codeHash, first: $first) { edges { node { info { id address balance(format: DEC) last_paid } } } } } }",
+  "variables": {
+    "codeHash": "YOUR_CODE_HASH_HERE",
+    "first": 50
+  }
+}
+
+### Get Block Value Flow (Economics)
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetBlockValueFlow($limit: Int!) { blocks(orderBy: [{ path: \"gen_utime\", direction: DESC }], limit: $limit) { seq_no gen_utime_string value_flow { created(format: DEC) exported(format: DEC) fees_collected(format: DEC) fees_imported(format: DEC) imported(format: DEC) minted(format: DEC) } } }",
+  "variables": {
+    "limit": 10
+  }
+}
+
+### Get Transaction with Full Details (Compute Phase)
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetTransactionDetails($limit: Int!) { transactions(orderBy: [{ path: \"now\", direction: DESC }], limit: $limit) { id account_addr now aborted compute { compute_type_name success exit_code exit_arg gas_used(format: DEC) gas_fees(format: DEC) gas_limit(format: DEC) mode vm_steps account_activated } action { success result_code tot_actions spec_actions skipped_actions msgs_created status_change_name } storage { storage_fees_collected(format: DEC) status_change_name } } }",
+  "variables": {
+    "limit": 10
+  }
+}
+
+### Get Message Type Distribution
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetMessages($limit: Int!) { messages(orderBy: [{ path: \"created_at\", direction: DESC }], limit: $limit) { id msg_type_name status_name src dst value(format: DEC) } }"
+  "variables": {
+    "limit": 100
+  }
+}
+
+### Get Key Blocks Only
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetKeyBlocks($limit: Int!) { blocks(orderBy: [{ path: \"gen_utime\", direction: DESC }], limit: $limit, filter: { key_block: { eq: true } }) { id seq_no gen_utime_string key_block workchain_id tr_count } }",
+  "variables": {
+    "limit": 10
+  }
+}
+
+### Get Failed Transactions
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetFailedTransactions($limit: Int!) { transactions(orderBy: [{ path: \"now\", direction: DESC }], limit: $limit, filter: { aborted: { eq: true } }) { id account_addr now aborted compute { exit_code exit_arg } in_message { src dst value(format: DEC) } } }",
+  "variables": {
+    "limit": 20
+  }
+}
+
+### Get External Messages
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetExternalMessages($limit: Int!) { messages(orderBy: [{ path: \"created_at\", direction: DESC }], limit: $limit, filter: { msg_type: { in: [1, 2] } }) { id src dst msg_type_name created_at body } }",
+  "variables": {
+    "limit": 20
+  }
+}
+
+### Get Block with In/Out Messages
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetBlockMessages($limit: Int!) { blocks(orderBy: [{ path: \"gen_utime\", direction: DESC }], limit: $limit) { seq_no gen_utime in_msg_descr { msg_id msg_type_name fwd_fee(format: DEC) transaction_id } out_msg_descr { msg_id msg_type_name transaction_id } } }",
+  "variables": {
+    "limit": 5
+  }
+}
+
+### Get Transaction with All Messages
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetTransactionWithMessages($limit: Int!) { transactions(orderBy: [{ path: \"now\", direction: DESC }], limit: $limit) { id account_addr in_message { id src dst value(format: DEC) msg_type_name } out_messages { id src dst value(format: DEC) msg_type_name } } }",
+  "variables": {
+    "limit": 10
+  }
+}
+
+### Complex Filter: High-value successful transactions in specific workchain
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetFilteredTransactions($limit: Int!) { transactions(orderBy: [{ path: \"now\", direction: DESC }], limit: $limit, filter: { account_addr: { ne: \"\" }, workchain_id: { eq: 0 } }) { id account_addr now balance_delta(format: DEC) workchain_id status_name } }",
+  "variables": {
+    "limit": 50
+  }
+}
+
+### Get Network Statistics Over Time
+POST {{endpoint}}
+Content-Type: application/json
+
+{
+  "query": "query GetNetworkStats($limit: Int!) { blocks(orderBy: [{ path: \"gen_utime\", direction: DESC }], limit: $limit) { seq_no gen_utime gen_utime_string tr_count workchain_id shard value_flow { created(format: DEC) fees_collected(format: DEC) } } info { lastBlockTime blocksLatency messagesLatency transactionsLatency } }"
+  "variables": {
+    "limit": 100
+  }
+}
+
+### ============================================
+### GLOBAL SEARCH QUERIES
+### ============================================
+
+### Search by ID (Universal Search)
+# This query searches across blocks, transactions, and messages simultaneously
+POST https://mainnet.ackinacki.org/graphql
+Content-Type: application/json
+
+{
+  "query": "query SearchById($id: String!) { transactions(filter: { id: { eq: $id } }, limit: 1) { id } blocks(filter: { id: { eq: $id } }, limit: 1) { id } messages(filter: { id: { eq: $id } }, limit: 1) { id dst_transaction { id } src_transaction { id } } }",
+  "variables": {
+    "id": "YOUR_ID_HERE"
+  }
+}
+
+### Get Block Details (for search result)
+POST https://mainnet.ackinacki.org/graphql
+Content-Type: application/json
+
+{
+  "query": "query GetBlockDetails($blockId: String!) { blocks(filter: { id: { eq: $blockId } }) { id seq_no gen_utime gen_utime_string workchain_id shard hash file_hash key_block status_name tr_count start_lt end_lt global_id version after_merge after_split before_split want_merge want_split created_by value_flow { created exported imported fees_collected from_prev_blk to_next_blk } in_msg_descr { msg_id msg_type_name transaction_id } out_msg_descr { msg_id msg_type_name transaction_id } } }",
+  "variables": {
+    "blockId": "YOUR_BLOCK_ID_HERE"
+  }
+}
+
+### Get Block Transactions
+POST https://mainnet.ackinacki.org/graphql
+Content-Type: application/json
+
+{
+  "query": "query GetBlockTransactions($blockId: String!, $limit: Int!) { transactions( filter: { block_id: { eq: $blockId } } orderBy: [{ path: \"lt\", direction: ASC }] limit: $limit ) { id account_addr lt now_string total_fees(format: DEC) balance_delta(format: DEC) orig_status_name end_status_name aborted compute { success exit_code } } }",
+  "variables": {
+    "blockId": "YOUR_BLOCK_ID_HERE",
+    "limit": 50
+  }
+}
+
+### Get Transaction Details (for search result)
+POST https://mainnet.ackinacki.org/graphql
+Content-Type: application/json
+
+{
+  "query": "query GetTransactionDetails($id: String!) { transactions(filter: { id: { eq: $id } }) { id account_addr workchain_id now now_string lt block_id orig_status_name end_status_name total_fees(format: DEC) balance_delta(format: DEC) outmsg_cnt aborted destroyed tr_type_name in_message { id src dst msg_type_name value(format: DEC) bounce bounced body created_at boc src_transaction {id}} out_messages { id src dst msg_type_name value(format: DEC) bounce bounced body created_at boc dst_transaction {id} } compute { compute_type_name success exit_code gas_used gas_fees(format: DEC) gas_limit vm_steps } action { success valid no_funds result_code tot_actions msgs_created total_fwd_fees(format: DEC) total_action_fees(format: DEC) } storage { storage_fees_collected(format: DEC) status_change_name } } }",
+  "variables": {
+    "id": "YOUR_TRANSACTION_ID_HERE"
+  }
+}
+
+### Get Account Details
+POST https://mainnet.ackinacki.org/graphql
+Content-Type: application/json
+
+{
+  "query": "query GetAccount($address: String!) { account( address: $address ) { info { boc } } }",
+  "variables": {
+    "address": "YOUR_ACCOUNT_ADDRESS_HERE"
+  }
+}
+
+### Get Account Transactions
+POST https://mainnet.ackinacki.org/graphql
+Content-Type: application/json
+
+{
+  "query": "query GetAccountTransactions($limit: Int!, $address: String!) { transactions( orderBy: [{ path: \"now\", direction: DESC }], limit: $limit, filter: {account_addr: {eq: $address}} ) { id now now_string lt orig_status_name end_status_name total_fees(format: DEC) balance_delta(format: DEC) in_msg outmsg_cnt aborted compute { success exit_code } destroyed } }",
+  "variables": {
+    "address": "YOUR_ACCOUNT_ADDRESS_HERE",
+    "limit": 10
+  }
+}
