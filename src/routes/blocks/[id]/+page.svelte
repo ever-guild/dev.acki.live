@@ -292,15 +292,15 @@
 							</div>
 						</div>
 
-						<div class="detail-item">
-							<div class="detail-label">Minted</div>
-							<div class="detail-value">{formatValue(block.value_flow.minted)}</div>
-						</div>
+					<div class="detail-item">
+						<div class="detail-label">Minted</div>
+						<div class="detail-value">{formatValue(block.value_flow.minted)}</div>
+					</div>
 
-						<div class="detail-item">
-							<div class="detail-label">From Previous Block</div>
-							<div class="detail-value">{formatValue(block.value_flow.from_prev_block)}</div>
-						</div>
+					<div class="detail-item">
+						<div class="detail-label">From Previous Block</div>
+						<div class="detail-value">{formatValue(block.value_flow.from_prev_blk)}</div>
+					</div>
 					</div>
 				</div>
 			</Card>
