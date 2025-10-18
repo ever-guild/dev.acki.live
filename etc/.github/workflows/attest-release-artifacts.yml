@@ -1,0 +1,27 @@
+name: attest release artifacts
+
+on:
+  push:
+    branches: [ release ]
+
+jobs:
+  attest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+
+    steps:
+      - name: checkout release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release
+
+      - name: attest build provenance
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: |
+            _app/**
+            *.html
+            **/*.svg

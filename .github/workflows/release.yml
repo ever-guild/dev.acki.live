@@ -33,12 +33,12 @@ jobs:
         run: npm ci
 
       - name: build acki.live
-        run: npm run build:production
+        run: npm run build
 
       - name: attest build provenance
         uses: actions/attest-build-provenance@v3
         with:
-          subject-path: 'dist/acki-live/**'
+          subject-path: 'build/**'
 
       - name: setup ssh agent
         uses: webfactory/ssh-agent@v0.9.0
@@ -51,4 +51,4 @@ jobs:
           git config --global user.email "support+actions@github.com"
 
       - name: release acki.live
-        run: npm run release:gh-pages
+        run: npm run release
