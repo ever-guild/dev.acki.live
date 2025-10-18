@@ -1,4 +1,4 @@
-name: release acki.live
+name: release dev.acki.live
 
 on:
   push:
@@ -38,13 +38,15 @@ jobs:
       - name: release dev.acki.live
         # language=bash
         run: |
-          git config --global user.name "github-actions-bot"
-          git config --global user.email "support+actions@github.com"
+          ssh-keyscan -t ed25519 gitlab.com >> ~/.ssh/known_hosts
+          ssh -T git@gitlab.com
           git clone --depth=1 git@gitlab.com:ever-guild/dev.acki.live.git
           rm -fr dev.acki.live/public/*
           rm -fr build/.github
           cp -r build/* dev.acki.live/public/
-          git -C dev.acki.live st
+          
+          git config --global user.name "github-actions-bot"
+          git config --global user.email "support+actions@github.com"
           git -C dev.acki.live add public
           git -C dev.acki.live commit -m "release"
           git -C dev.acki.live push origin main
