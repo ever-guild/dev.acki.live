@@ -10,7 +10,7 @@
     // GitHub Pages SPA redirect hack
     // Redirect to avoid 404 on page refresh
     (function() {
-      var path = window.location.pathname.slice(1);
+      const path = window.location.pathname.slice(1);
       if (path) {
         sessionStorage.redirect = location.href;
       }
