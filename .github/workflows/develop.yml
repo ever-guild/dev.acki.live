@@ -3,21 +3,16 @@ name: release acki.live
 on:
   push:
     branches:
-      - main
+      - develop
   workflow_dispatch:
 
 concurrency:
-  group: "release acki.live"
+  group: "release dev.acki.live"
   cancel-in-progress: true
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    
-    permissions:
-      contents: read
-      id-token: write
-      attestations: write
 
     steps:
       - name: checkout
@@ -32,22 +27,24 @@ jobs:
       - name: install dependencies
         run: npm install
 
-      - name: build acki.live
+      - name: build dev.acki.live
         run: npm run build
-
-      - name: attest build provenance
-        uses: actions/attest-build-provenance@v3
-        with:
-          subject-path: 'build/**'
 
       - name: setup ssh agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.ACKI_LIVE_DEPLOY_KEY }}
+          ssh-private-key: ${{ secrets.DEV_ACKI_LIVE_DEPLOY_KEY }}
 
-      - name: release acki.live
+      - name: release dev.acki.live
         # language=bash
         run: |
           git config --global user.name "github-actions-bot"
           git config --global user.email "support+actions@github.com"
-          npm run release
+          git clone --depth=1 git@gitlab.com:ever-guild/dev.acki.live.git
+          rm -fr dev.acki.live/public/*
+          rm -fr build/.github
+          cp -r build/* dev.acki.live/public/
+          git -C dev.acki.live st
+          git -C dev.acki.live add public
+          git -C dev.acki.live commit -m "release"
+          git -C dev.acki.live push origin main
