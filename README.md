@@ -1,20 +1,23 @@
 # ACKI.live - Blockchain Explorer
 
-A modern Angular-based blockchain explorer with comprehensive data visualization, multi-language support, and reusable UI components built with Tailwind CSS.
+A modern SvelteKit-based blockchain explorer with comprehensive data visualization, multi-language support, and reusable UI components built with Tailwind CSS.
 
 ## Features
 
 - 🌐 **Multi-Language Support** - English and Russian with persistent language preference
 - 🎨 **Theme Switcher** - Dark (default) and light themes with smooth transitions
-- 📊 **Collapsible Network Statistics** - Key metrics displayed at the top of every page with collapsible view (preference saved in localStorage)
-- 🧩 **Reusable UI Components** - Built with Tailwind `@apply` directive for clean, maintainable code
+- 📊 **Network Statistics** - Key blockchain metrics and data visualization
+- 🧩 **Reusable UI Components** - Built with Svelte components and Tailwind CSS
 - 📊 **Comprehensive Data Views**:
   - **Blocks** - Recent blocks with height, hash, timestamp, and transaction count
   - **Transactions** - Transaction list with hash, from/to addresses, amount, and status
   - **Messages** - Blockchain messages with sender, recipient, and message type
   - **Contracts** - Smart contracts with address, creation date, and interaction count
+  - **Accounts** - Account details and transaction history
+  - **Stats** - Network statistics and analytics
+  - **Showcase** - Demo features and capabilities
 - 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile devices
-- ⚡ **Modern Tech Stack** - Built with Angular 17 and Tailwind CSS
+- ⚡ **Modern Tech Stack** - Built with SvelteKit, TypeScript, and Tailwind CSS
 
 ## Getting Started
 
@@ -32,15 +35,21 @@ npm install
 
 2. Start the development server:
 ```bash
-npm start
+npm run dev
 ```
 
 3. Open your browser and navigate to:
 ```
-http://localhost:4200
+http://localhost:5173
 ```
 
 ## Development
+
+### Sync SvelteKit types
+
+```bash
+npx svelte-kit sync
+```
 
 ### Build for Production
 
@@ -48,7 +57,13 @@ http://localhost:4200
 npm run build
 ```
 
-The build artifacts will be stored in the `dist/` directory.
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+The build artifacts will be stored in the `build/` directory.
 
 ### Deploy to GitHub Pages
 
@@ -68,7 +83,7 @@ This project includes a GitHub Actions workflow for automatic deployment to GitH
    ```
 
 3. The GitHub Actions workflow will automatically:
-   - Build the Angular app with production configuration
+   - Build the SvelteKit app with production configuration
    - Deploy to GitHub Pages
    - Make it available at: `https://<username>.github.io/acki.live/`
 
@@ -84,79 +99,78 @@ npm test
 
 ```
 src/
-├── app/
+├── lib/
 │   ├── components/
-│   │   ├── navbar/              # Top navigation component
-│   │   ├── network-stats/       # Collapsible network statistics
-│   │   └── ui/
-│   │       ├── card/            # Reusable card component
-│   │       ├── badge/           # Badge component with variants
-│   │       ├── stat-card/       # Statistics card component
-│   │       └── data-table/      # Data table component
-│   ├── pages/
-│   │   ├── blocks/              # Blocks page
-│   │   ├── transactions/        # Transactions page
-│   │   ├── messages/            # Messages page
-│   │   └── contracts/           # Contracts page
+│   │   ├── Navbar.svelte         # Top navigation component
+│   │   └── ui/                   # Reusable UI components
 │   ├── services/
-│   │   ├── blockchain.service.ts  # Mock blockchain data
-│   │   ├── i18n.service.ts        # Internationalization
-│   │   └── theme.service.ts       # Theme management
-│   ├── app.component.ts
-│   └── app.routes.ts
-├── styles.scss                  # Global styles with CSS variables
-└── index.html
+│   │   ├── blockchain.ts         # Blockchain data service
+│   │   └── search.ts            # Search functionality
+│   ├── stores/
+│   │   ├── i18n.ts              # Internationalization store
+│   │   └── theme.ts             # Theme management store
+│   └── utils/
+│       └── time.ts              # Time utility functions
+├── routes/
+│   ├── +layout.svelte           # Root layout
+│   ├── +layout.ts               # Layout data loading
+│   ├── +page.svelte             # Home page
+│   ├── +page.ts                 # Home page data loading
+│   ├── accounts/[id]/           # Account detail pages
+│   ├── blocks/                  # Blocks listing and detail pages
+│   ├── contracts/               # Contracts page
+│   ├── messages/                # Messages listing and detail pages
+│   ├── showcase/                # Demo showcase page
+│   ├── stats/                   # Statistics page
+│   └── transactions/            # Transactions listing and detail pages
+├── app.css                      # Global styles
+├── app.html                     # HTML template
+└── hooks.server.ts              # Server-side hooks
 ```
 
 ## Technologies Used
 
-- **Angular 17** - Modern web framework with standalone components
-- **Tailwind CSS** - Utility-first CSS framework with `@apply` directive
-- **RxJS** - Reactive programming library
+- **SvelteKit** - Full-stack web framework with SSR/SPA capabilities
+- **Svelte** - Component framework with reactive programming
 - **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **Vite** - Fast build tool and dev server
 
 ## Features in Detail
 
+### SvelteKit Features
+
+- **Server-Side Rendering (SSR)** - Fast initial page loads with SEO benefits
+- **Static Site Generation (SSG)** - Pre-rendered pages for optimal performance
+- **Client-Side Navigation** - Smooth SPA-like navigation after initial load
+- **File-based Routing** - Routes defined by file structure in `src/routes/`
+- **Reactive Components** - Svelte's reactive programming model
+
 ### Reusable UI Components
 
-All UI components are built using Tailwind's `@apply` directive for better maintainability:
+UI components are built using Svelte's component system with Tailwind CSS:
 
-- **CardComponent** - Container with optional hover effects
-- **BadgeComponent** - Color-coded badges with variants (success, pending, failed, info, warning, primary, secondary)
-- **StatCardComponent** - Statistics display with icon, label, and value
-- **DataTableComponent** - Responsive data table with custom scrollbars
+- **Navbar Component** - Navigation with theme and language switching
+- **Card Components** - Reusable containers with consistent styling
+- **Data Tables** - Responsive tables for blockchain data display
 
-### Network Statistics
+### Internationalization
 
-- Displayed at the top of every page
-- Collapsible view with smooth animations
-- Preference saved in localStorage
-- Shows 8 key metrics: total blocks, transactions, hashrate, active addresses, avg block time, difficulty, market cap, and price
+- Multi-language support with reactive stores
+- Language preference persistence
+- Dynamic content switching between English and Russian
 
-### Navigation
-- Top navigation menu with easy access to all sections
-- Active route highlighting
-- Language switcher (EN/RU)
-- Theme toggle (dark/light)
+### Theme System
 
-### Dark Theme
+- Dark/light theme toggle
+- CSS custom properties for consistent theming
+- Theme preference persistence in localStorage
 
-The dark theme uses a darker color palette for better contrast:
-- Primary background: `rgba(15, 19, 26, 1)`
-- Secondary background: `rgba(20, 24, 32, 1)`
-- Tertiary background: `rgba(30, 35, 45, 1)`
+### Data Management
 
-### Data Tables
-- Responsive layout with horizontal scrolling on mobile
-- Hover effects for better UX
-- Color-coded status indicators using badge components
-- Custom scrollbar styling
-
-### Mock Data
-Currently using mock data for demonstration. To integrate with a real blockchain:
-1. Update `BlockchainService` to connect to your blockchain API
-2. Replace mock data methods with actual API calls
-3. Add proper error handling and loading states
+- Service layer for blockchain data fetching
+- Search functionality across different data types
+- Time utilities for blockchain timestamp formatting
 
 ## Customization
 
@@ -164,13 +178,13 @@ Currently using mock data for demonstration. To integrate with a real blockchain
 Edit `tailwind.config.js` to customize the color scheme.
 
 ### Translations
-Add or modify translations in `src/app/services/i18n.service.ts`.
+Add or modify translations in `src/lib/stores/i18n.ts`.
 
 ### Theme
-Customize theme variables in `src/styles.scss`.
+Customize theme variables in `src/app.css`.
 
 ### UI Components
-All UI components are located in `src/app/components/ui/` and use `@apply` directives for easy customization.
+All UI components are located in `src/lib/components/` and follow Svelte's component conventions.
 
 ## Browser Support
 
@@ -179,22 +193,39 @@ All UI components are located in `src/app/components/ui/` and use `@apply` direc
 - Safari (latest)
 - Edge (latest)
 
+## SvelteKit Configuration
+
+This project uses several SvelteKit configuration files:
+
+- `svelte.config.js` - Main SvelteKit configuration
+- `vite.config.ts` - Vite build tool configuration
+- `tsconfig.json` - TypeScript configuration that extends SvelteKit's generated config
+- `.svelte-kit/` - Auto-generated folder with types and build artifacts
+
+### Important Notes
+
+- The `.svelte-kit` folder is auto-generated and should not be committed to version control
+- Run `npx svelte-kit sync` to regenerate types after route changes
+- TypeScript configuration extends from `.svelte-kit/tsconfig.json` for proper SvelteKit type support
+
 ## Architecture Highlights
 
-### Component-Based Design
-- Standalone components for better tree-shaking
-- Reusable UI components with consistent styling
-- Separation of concerns between presentation and data
+### File-based Routing
+- Routes are defined by the file structure in `src/routes/`
+- `+page.svelte` files define page components
+- `+layout.svelte` files define layout components
+- `+page.ts` and `+layout.ts` files handle data loading
 
 ### State Management
-- LocalStorage for persistent user preferences (theme, language, stats collapse state)
-- RxJS for reactive data flow
-- Service-based architecture for data management
+- Svelte stores for reactive state management
+- LocalStorage integration for persistent user preferences
+- Service layer for data fetching and business logic
 
 ### Styling Approach
-- Tailwind CSS with `@apply` directive for component styles
+- Tailwind CSS for utility-first styling
 - CSS custom properties for theming
 - Responsive design with mobile-first approach
+- Component-scoped styles in Svelte components
 
 ## License
 
