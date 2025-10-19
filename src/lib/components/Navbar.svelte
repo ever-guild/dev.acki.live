@@ -142,12 +142,12 @@
 				<a href="/contracts" class="nav-link" class:active={currentPath === '/contracts'}>
 					{t('nav.contracts')}
 				</a>
-				<a href="/stats" class="nav-link" class:active={currentPath === '/stats'}>
+				<!-- <a href="/stats" class="nav-link" class:active={currentPath === '/stats'}>
 					{t('nav.stats')}
 				</a>
 				<a href="/showcase" class="nav-link" class:active={currentPath === '/showcase'}>
 					{t('nav.showcase')}
-				</a>
+				</a> -->
 			</div>
 
 			<!-- Controls -->
