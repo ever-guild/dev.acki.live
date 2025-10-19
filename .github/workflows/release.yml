@@ -34,6 +34,8 @@ jobs:
 
       - name: build acki.live
         run: npm run build
+        env:
+          NODE_ENV:"production"
 
       - name: attest build provenance
         uses: actions/attest-build-provenance@v3
@@ -45,10 +47,9 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.ACKI_LIVE_DEPLOY_KEY }}
 
-      - name: configure git user
+      - name: release acki.live
+        # language=bash
         run: |
           git config --global user.name "github-actions-bot"
           git config --global user.email "support+actions@github.com"
-
-      - name: release acki.live
-        run: npm run release
+          npm run release

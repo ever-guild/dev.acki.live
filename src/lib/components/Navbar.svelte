@@ -4,6 +4,7 @@
 	import { currentLanguage, translate, type Language } from '$lib/stores/i18n';
 	import { isDarkMode } from '$lib/stores/theme';
 	import { globalSearch, getSearchResultPath } from '$lib/services/search';
+	import { feature } from '$lib/types/features';
 
 	$: currentPath = $page.url.pathname;
 	$: t = $translate;
@@ -142,12 +143,16 @@
 				<a href="/contracts" class="nav-link" class:active={currentPath === '/contracts'}>
 					{t('nav.contracts')}
 				</a>
-				<!-- <a href="/stats" class="nav-link" class:active={currentPath === '/stats'}>
-					{t('nav.stats')}
-				</a>
-				<a href="/showcase" class="nav-link" class:active={currentPath === '/showcase'}>
-					{t('nav.showcase')}
-				</a> -->
+				{#if feature.stat}
+					<a href="/stats" class="nav-link" class:active={currentPath === '/stats'}>
+						{t('nav.stats')}
+					</a>
+				{/if}
+				{#if feature.showcase}
+					<a href="/showcase" class="nav-link" class:active={currentPath === '/showcase'}>
+						{t('nav.showcase')}
+					</a>
+				{/if}
 			</div>
 
 			<!-- Controls -->
