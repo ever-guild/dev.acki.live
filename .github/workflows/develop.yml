@@ -33,6 +33,8 @@ jobs:
           npm run build
           rm -fr build/.github
           printf "User-agent: *\nDisallow: /\n" > build/robots.txt
+        env:
+          ACKI_LIVE_FEATURES: '["stat","showcase","wasm"]'
 
       - name: setup ssh agent
         uses: webfactory/ssh-agent@v0.9.0
