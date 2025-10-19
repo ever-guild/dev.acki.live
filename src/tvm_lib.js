@@ -1045,8 +1045,6 @@ async function __wbg_init(input) {
 }
 
 
-export default __wbg_init;
-
 //****************************************************************** WRAPPER END
 
 function replaceUndefinedWithNulls(value) {
@@ -2309,8 +2307,6 @@ async function __wbg_init(input) {
     return __wbg_finalize_init(instance, module);
 }
 
-
-export default __wbg_init;
 
 //****************************************************************** WRAPPER END
     function replaceUndefinedWithNulls(value) {
