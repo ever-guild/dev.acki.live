@@ -290,11 +290,11 @@
 											>
 												{parseFloat(tx.balance_delta) >= 0 ? '+' : ''}{formatBalance(
 													tx.balance_delta
-												)} TON
+												)}
 											</span>
 										</td>
 										<td class="table-td">
-											<span class="text-muted">{formatBalance(tx.total_fees)} TON</span>
+											<span class="text-muted">{formatBalance(tx.total_fees)}</span>
 										</td>
 										<td class="table-td">
 											<LiveTimestamp timestamp={tx.now} className="time-text" />
