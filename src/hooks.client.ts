@@ -1,6 +1,17 @@
+import { feature } from "$lib/types/features";
+import {BinaryLibrary} from "@tvmsdk/core/dist/bin";
 import { TvmClient } from "@tvmsdk/core";
-// import { libWeb } from "@tvmsdk/lib-web/index.js";
-import { libWeb } from "./tvm_lib.js";
+import { libWeb, libWebSetup } from"./tvm_lib.js";
 
-// TvmClient.useBinaryLibrary(libWeb);
-console.log("TVM Client configured with libWeb", TvmClient, libWeb);//, libWeb);
+if (feature.wasm) {
+	(async () => {
+		libWebSetup({
+			binaryURL: '/tvmsdk.wasm',
+		});
+		TvmClient.useBinaryLibrary(libWeb as () => Promise<BinaryLibrary>);
+
+		const client = new TvmClient();
+		const keys = await client.crypto.generate_random_sign_keys();
+		console.log('TVM Client configured with libWeb', { keys });
+	})();
+}

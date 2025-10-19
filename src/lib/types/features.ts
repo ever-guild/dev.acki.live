@@ -1,6 +1,7 @@
 export interface FeatureFlags {
 	stat?: boolean;
 	showcase?: boolean;
+	wasm?: boolean;
 }
 
 declare global {
