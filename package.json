@@ -5,7 +5,7 @@
   "scripts": {
     "start": "vite dev",
     "dev": "vite dev",
-    "release:gh-pages": "gh-pages --no-history --nojekyll --cname acki.live --repo git@github.com:ever-guild/acki.live.git --dotfiles --branch release --dist build --message 'release'",
+    "release:gh-pages": "gh-pages --nojekyll --cname acki.live --repo git@github.com:ever-guild/acki.live.git --dotfiles --branch release --dist build --message 'release'",
     "release": "npm run build && npm run release:gh-pages",
     "build:after": "cp build/index.html build/404.html && cp -r etc/.github build",
     "build": "vite build && npm run build:after",
@@ -19,6 +19,7 @@
     "@sveltejs/adapter-static": "^3.0.1",
     "@sveltejs/kit": "^2.5.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
+    "@types/node": "^24.8.1",
     "autoprefixer": "^10.4.16",
     "gh-pages": "^6.3.0",
     "postcss": "^8.4.31",
