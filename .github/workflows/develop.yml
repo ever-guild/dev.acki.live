@@ -28,7 +28,11 @@ jobs:
         run: npm install
 
       - name: build dev.acki.live
-        run: npm run build
+        # language=bash
+        run: |
+          npm run build
+          rm -fr build/.github
+          printf "User-agent: *\nDisallow: /\n" > build/robots.txt
 
       - name: setup ssh agent
         uses: webfactory/ssh-agent@v0.9.0
@@ -39,12 +43,10 @@ jobs:
         # language=bash
         run: |
           ssh-keyscan -t ed25519 gitlab.com >> ~/.ssh/known_hosts
-          ssh -T git@gitlab.com
           git clone --depth=1 git@gitlab.com:ever-guild/dev.acki.live.git
           rm -fr dev.acki.live/public/*
-          rm -fr build/.github
           cp -r build/* dev.acki.live/public/
-          
+
           git config --global user.name "github-actions-bot"
           git config --global user.email "support+actions@github.com"
           git -C dev.acki.live add public
