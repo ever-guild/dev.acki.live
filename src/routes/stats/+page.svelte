@@ -3,6 +3,7 @@
 	import { getStats, type NetworkStats } from '$lib/services/blockchain';
 	import { translate } from '$lib/stores/i18n';
 	import Card from '$lib/components/ui/Card.svelte';
+	import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
 	import StatCard from '$lib/components/ui/StatCard.svelte';
 	import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
 	import Badge from '$lib/components/ui/Badge.svelte';
@@ -36,31 +37,7 @@
 			<div class="skeleton skeleton-rect h-64"></div>
 		</SkeletonLoader>
 	{:else if error}
-		<div class="text-center py-16">
-			<div class="text-red-500 mb-4">
-				<svg
-					class="w-16 h-16 mx-auto"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-					></path>
-				</svg>
-			</div>
-			<h3 class="text-lg font-semibold mb-2">Failed to load statistics</h3>
-			<p class="text-muted mb-4">{error}</p>
-			<button
-				class="px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors"
-				on:click={() => window.location.reload()}
-			>
-				Retry
-			</button>
-		</div>
+		<ErrorCard title="Failed to load statistics" message={error} onRetry={() => window.location.reload()} />
 	{:else if stats}
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 			<StatCard label={t('stats.totalBlocks')} value={stats.totalBlocks.toLocaleString()} />

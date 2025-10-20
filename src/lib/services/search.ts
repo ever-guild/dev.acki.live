@@ -1,4 +1,5 @@
 import { environment } from '$lib/environment';
+import { GetAccountQuery } from '$lib/../graphql-queries';
 
 export interface SearchResult {
 	type: 'block' | 'transaction' | 'message' | 'account';
@@ -25,7 +26,38 @@ export async function globalSearch(query: string): Promise<SearchResponse> {
 	const results: SearchResult[] = [];
 
 	try {
-		// First, try the universal search query
+		const firstTwoChars = trimmedQuery.substring(0, 2);
+		const accountPrefixes = ['0:', '-1:'];
+	
+		// Check if it's an account address (starts with 0: or -1:)
+		if (accountPrefixes.includes(firstTwoChars)) {
+			// Verify account exists
+			const accountResponse = await fetch(environment.graphqlEndpoint, {
+				method: 'POST',
+				headers: { 'Content-Type': 'text/plain' },
+				body: JSON.stringify({
+					query: GetAccountQuery,
+					variables: { address: trimmedQuery }
+				})
+			});
+
+			const accountData = await accountResponse.json();
+			
+			if (accountData.data?.account?.info?.boc) {
+				results.push({
+					type: 'account',
+					id: trimmedQuery
+				});
+			}
+			
+			// TODO: Return one result, not multiple
+			return {
+				found: results.length > 0,
+				results
+			};
+		}
+		
+		//universal search query
 		const response = await fetch(environment.graphqlEndpoint, {
 			method: 'POST',
 			headers: { 'Content-Type': 'text/plain' },
@@ -76,36 +108,6 @@ export async function globalSearch(query: string): Promise<SearchResponse> {
 				id: message.id,
 				relatedTransactionId: message.dst_transaction?.id || message.src_transaction?.id
 			});
-		}
-
-		// Check if it's an account address (starts with 0: or -1:)
-		if (trimmedQuery.match(/^(-1|0):/)) {
-			// Verify account exists
-			const accountResponse = await fetch(environment.graphqlEndpoint, {
-				method: 'POST',
-				headers: { 'Content-Type': 'text/plain' },
-				body: JSON.stringify({
-					query: `
-						query GetAccount($address: String!) {
-							account(address: $address) {
-								info {
-									boc
-								}
-							}
-						}
-					`,
-					variables: { address: trimmedQuery }
-				})
-			});
-
-			const accountData = await accountResponse.json();
-			
-			if (accountData.data?.account?.info?.boc) {
-				results.push({
-					type: 'account',
-					id: trimmedQuery
-				});
-			}
 		}
 
 		return {

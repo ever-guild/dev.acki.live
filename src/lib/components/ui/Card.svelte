@@ -3,18 +3,16 @@
 </script>
 
 <div 
-	class="rounded-xl border shadow-lg overflow-hidden bg-secondary border-custom"
+	class="card"
 	class:hoverable
 >
 	<slot />
 </div>
 
 <style>
-	.bg-secondary {
+	.card {
+		@apply rounded-xl border shadow-lg overflow-hidden relative;
 		background-color: var(--bg-secondary);
-	}
-
-	.border-custom {
 		border-color: var(--border-color);
 	}
 

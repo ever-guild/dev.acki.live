@@ -4,6 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { translate } from '$lib/stores/i18n';
 	import Card from '$lib/components/ui/Card.svelte';
+	import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
 	import Badge from '$lib/components/ui/Badge.svelte';
 	import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
 	import { environment } from '$lib/environment';
@@ -152,26 +153,7 @@
 		</SkeletonLoader>
 	{:else if error}
 		<Card>
-			<div class="p-8 text-center">
-				<div class="text-red-500 mb-4">
-					<svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
-				</div>
-				<h3 class="text-lg font-semibold mb-2">Failed to load block</h3>
-				<p class="text-muted mb-4">{error}</p>
-				<button
-					class="px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors"
-					on:click={loadBlock}
-				>
-					Retry
-				</button>
-			</div>
+			<ErrorCard title="Failed to load block" message={error} onRetry={loadBlock} />
 		</Card>
 	{:else if block}
 		<!-- Overview Card -->
