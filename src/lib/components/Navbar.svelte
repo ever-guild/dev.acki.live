@@ -4,8 +4,8 @@
   import { currentLanguage, translate, type Language } from '$lib/stores/i18n';
   import { isDarkMode } from '$lib/stores/theme';
   import { globalSearch, getSearchResultPath } from '$lib/services/search';
-  import { feature } from '$lib/types/features';
-
+  import { environment } from '$lib/environment';
+  
   $: currentPath = $page.url.pathname;
   $: t = $translate;
 
@@ -190,7 +190,7 @@
         >
           {t('nav.contracts')}
         </a>
-        {#if feature.stat}
+        {#if environment.develop}
           <a
             href="/stats"
             class="nav-link"
@@ -199,7 +199,7 @@
             {t('nav.stats')}
           </a>
         {/if}
-        {#if feature.showcase}
+        {#if environment.develop}
           <a
             href="/showcase"
             class="nav-link"

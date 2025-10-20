@@ -14,7 +14,6 @@ const config = {
 			strict: true
 		}),
 		paths: {
-			base: process.env.GITHUB_PAGES === 'true' ? '/acki.live' : ''
 		}
 	}
 };
