@@ -1,4 +1,4 @@
-name: release dev.acki.live
+name: release shellnet.acki.live
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: "release dev.acki.live"
+  group: "release shellnet.acki.live"
   cancel-in-progress: true
 
 jobs:
@@ -27,25 +27,26 @@ jobs:
       - name: install dependencies
         run: npm install
 
-      - name: build dev.acki.live
+      - name: build shellnet.acki.live
         # language=bash
         run: |
           npm run build
           rm -fr build/.github
           printf "User-agent: *\nDisallow: /\n" > build/robots.txt
         env:
-          ACKI_LIVE_FEATURES: '["stat","showcase","wasm"]'
+          NODE_ENV: "production"
+          ACKI_LIVE_GRAPHQL: "https://shellnet.ackinacki.org/graphql"
 
       - name: setup ssh agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.DEV_ACKI_LIVE_DEPLOY_KEY }}
+          ssh-private-key: ${{ secrets.SHELLNET_ACKI_LIVE_DEPLOY_KEY }}
 
-      - name: release dev.acki.live
+      - name: release shellnet.acki.live
         # language=bash
         run: |
           ssh-keyscan -t ed25519 gitlab.com >> ~/.ssh/known_hosts
-          git clone --depth=1 git@gitlab.com:ever-guild/dev.acki.live.git release
+          git clone --depth=1 git@gitlab.com:ever-guild/shellnet.acki.live.git release
           rm -fr release/public/*
           cp -r build/* release/public/
 

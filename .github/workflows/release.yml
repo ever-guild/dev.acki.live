@@ -36,7 +36,7 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: "production"
-          ACKI_LIVE_FEATURES: '["stat","showcase","wasm"]'
+          ACKI_LIVE_GRAPHQL: "https://mainnet.ackinacki.org/graphql"
 
       - name: attest build provenance
         uses: actions/attest-build-provenance@v3
