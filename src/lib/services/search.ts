@@ -1,5 +1,5 @@
 import { environment } from '$lib/environment';
-import { GetAccountQuery } from '$lib/../graphql-queries';
+import { getAccountDetails, isHash } from './blockchain';
 
 export interface SearchResult {
 	type: 'block' | 'transaction' | 'message' | 'account';
@@ -26,30 +26,16 @@ export async function globalSearch(query: string): Promise<SearchResponse> {
 	const results: SearchResult[] = [];
 
 	try {
-		const firstTwoChars = trimmedQuery.substring(0, 2);
-		const accountPrefixes = ['0:', '-1:'];
-	
-		// Check if it's an account address (starts with 0: or -1:)
-		if (accountPrefixes.includes(firstTwoChars)) {
-			// Verify account exists
-			const accountResponse = await fetch(environment.graphqlEndpoint, {
-				method: 'POST',
-				headers: { 'Content-Type': 'text/plain' },
-				body: JSON.stringify({
-					query: GetAccountQuery,
-					variables: { address: trimmedQuery }
-				})
-			});
-
-			const accountData = await accountResponse.json();
-			
-			if (accountData.data?.account?.info?.boc) {
+		if (!isHash(trimmedQuery)) {
+			const account = await getAccountDetails(trimmedQuery);
+      
+      if (account) {
 				results.push({
 					type: 'account',
-					id: trimmedQuery
+					id: account.id
 				});
 			}
-			
+
 			// TODO: Return one result, not multiple
 			return {
 				found: results.length > 0,

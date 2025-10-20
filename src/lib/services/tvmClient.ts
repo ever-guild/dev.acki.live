@@ -1,5 +1,30 @@
 import { TvmClient } from "@tvmsdk/core";
+import indexerAbi from '/src/data/contracts/mvsystem/Indexer.abi.json?raw';
+
+const indexerCode = 'te6ccgECIwEABTUABCSK7VMg4wMgwP/jAiDA/uMC8gseAwEiArSNCGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAT4aSHbPNMAAY4igwjXGCD4KMjOzsn5AAHTAAGU0/9QM5MC+ELiIPhl+RDyqJXTAAHyeuLTPwEcAgFO+EMhufK0IPgjgQPoqIIIG3dAoLnytPhj0x8B+CO88rnTHwHbPPI8BANa7UTQgQFA1yHXCgD4ZiLQ0wP6QDD4aak4ANwhxwDjAiHXDR/yvCHjAwHbPPI8HR0EBFAgghAxmusDu+MCIIIQQ/WwObvjAiCCEEqi0HG64wIgghBqk6xjuuMCEQkHBQN+MPhG8uBM+EJu4wAhk9TR0N76QNTU0//U0z/U0dDU1NM/0wfU1NHQ1NTT/9TT/9TR0NT0BNP/+kDR2zzbPPIAHAYYAfD4RSBukjBw3vhNuvLhkvgA2zyAE2H4a4ASYoAScGR/+EqAFGHIz4WIzo0EkBfXhAAAAAAAAAAAAAAAAAAADM8WgBRiyM+QCdUYYszKAMzMy/9V4MjMyz/MzMs/ywdVgMjMzMzL/1VAyMzL/8z0AMv/zc3Nzclx+wANAzQw+Eby4Ez4Qm7jACGT1NHQ3vpA0ds82zzyABwIGAAa+En4S8cF8uGX+AD4awIoIIIQP9hWVbrjAiCCEEP1sDm64wIOCgN+MPhG8uBM+EJu4wAhk9TR0N76QNTU0//U0z/U0dDU1NM/0wfU1NHQ1NTT/9TT/9TR0NT0BNP/03/R2zzjAPIAHAsTAvT4ACDC//LhmiCBA+i58uGagvAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaDIz4oAQMv/ydD4SccF8uGX2zz4S4ATYccFgBJigBJwZIASYfhK+EnIz4WIzo0EkBfXhAAAAAAAAAAAAAAAAAAADM8WgBRiyA0MAGjPkAnVGGLMygDMzMv/VeDIzMs/zMzLP8sHVYDIzMzMy/9VQMjMy//M9ADL/83Nzc3JcfsAACz4J28QghgXSHboALzcghgXSHboAMcoAmIw+Eby4EzR2zwijh4k0NMB+kAwMcjPhyDOgGLPQBLPkv9hWVbMzMlw+wCRW+LjAPIADxMCBIiIIBAADkluZGV4ZXIDMiDAAeMCIIIQH2q/6rrjAiCCEDGa6wO64wIXFRIDcDD4RvLgTPhCbuMA0ds8Io4gJNDTAfpAMDHIz4cgznHPC2ECyM+SxmusDszOzclw+wCRW+LjAPIAHBQTACjtRNDT/9M/MfhDWMjL/8s/zsntVAAI+Er4SwMkMPhG8uBM+EJu4wDR2zzbPPIAHBYYADj4SfgoxwXy4Zf4APgoyM+FCM6Ac89AyYEAoPsABPgw+EJu4wD4RvJzIZPU0dDe+kDT/9N/1NHQ+kDR+AD4Kts8IG7yf9DU0Yj5AAH5ALry4Zf4bFj4awH4bYLwIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgyM+KAEDL/8nQ+En4TMcFmPhJIccF8uGX3zDbPPIAHBkgGAA8+E34TPhL+Er4Q/hCyMv/yz/Pg8zOWcjOy//Nye1UAhjQIIs4rbNYxwWKiuIaGwEK103Q2zwbAEjXTNCLL0pA1yb0BDHTCTGLX0vfLATo1yYg10rCAZLXTZIwbeIARO1E0NP/0z/TANT6QNTR0PpA0//R+G34bPhr+Gr4Zvhj+GIACvhG8uBMAxD0pCD0vfLATiIhHwEAIAAKMS4wLjAAFHNvbCAwLjc5LjMAAA==';
 
 const tvmClient = new TvmClient();
 
 export default tvmClient;
+
+export async function getAddressByName(name: string): Promise<string> {
+  const encodedMessage = await tvmClient.abi.encode_message({
+    abi: {
+      type: 'Json',
+      value: indexerAbi
+    },
+    deploy_set: {
+      code: indexerCode,
+      initial_data: {
+        _pubkey: '0x0',
+        _name: name
+      }
+    },
+    signer: {
+      type: 'None',
+    }
+  });
+  
+  return encodedMessage.address;
+
+}

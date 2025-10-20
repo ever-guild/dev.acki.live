@@ -1,5 +1,5 @@
 # Tasks
-- [ ] Mobile menu
+- [x] Mobile menu
 - [ ] Tables
   - [ ] Pagination
   - [ ] Filters

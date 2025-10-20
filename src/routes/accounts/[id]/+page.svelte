@@ -1,4 +1,3 @@
-
 <script lang="ts">
   function trimMiddle(str: string, maxLength: number): string {
     if (!str) return '';
@@ -8,7 +7,6 @@
   }
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
-  import { goto } from '$app/navigation';
   import { translate } from '$lib/stores/i18n';
   import Card from '$lib/components/ui/Card.svelte';
   import Badge from '$lib/components/ui/Badge.svelte';
@@ -16,36 +14,9 @@
   import LiveTimestamp from '$lib/components/ui/LiveTimestamp.svelte';
   import CopyIcon from '$lib/components/ui/CopyIcon.svelte';
   import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
-  import { environment } from '$lib/environment';
-  import tvmClient from '$lib/services/tvmClient';
-  import { GetAccountQuery } from '$lib/../graphql-queries';
-
-  interface Balance {
-    id: number;
-    name: string;
-    value: number;
-  }
-
-  interface AccountDetails {
-    accType: number;
-    accTypeName: string;
-    balances: Balance[];
-    bits: number;
-    boc: string;
-    cells: number;
-    code: string;
-    codeHash: string;
-    data: string;
-    dataHash: string;
-    id: string;
-    initCodeHash: string;
-    jsonVersion: number;
-    lastPaid: Date;
-    lastTransLt: number;
-    publicCells: number;
-    workchainId: number;
-  }
-
+  import { getAccountTransactions } from '$lib/services/graphql';
+  import { getAccountDetails, type AccountDetails } from '$lib/services/blockchain';
+  
   interface Transaction {
     id: string;
     now: number;
@@ -65,12 +36,12 @@
     destroyed: boolean;
   }
 
-  $: accountId = $page.params.id ?? '';
+  $: accountOrName = $page.params.id ?? '';
   $: t = $translate;
 
   let account: AccountDetails | null = null;
   let transactions: Transaction[] = [];
-  let loading = true;
+  let accountLoading = true;
   let error: string | null = null;
   let transactionsLoading = false;
 
@@ -100,81 +71,24 @@
     await loadAccount();
   });
 
-  async function loadAccount() {
-    loading = true;
+  async function loadView() {
     error = null;
+    loadAccount();
+    loadTransactions();
+  }
+
+  async function loadAccount() {
+    accountLoading = true;
 
     try {
       // TODO: pass account from search bar to avoid re-fetching
-      const response = await fetch(environment.graphqlEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({
-          query: GetAccountQuery,
-          variables: { address: accountId },
-        }),
-      });
-
-      const result = await response.json();
-
-      if (result.errors) {
-        throw new Error(result.errors[0]?.message || 'Failed to load account');
-      }
-
-      if (!result.data?.account?.info) {
-        throw new Error('Account not found');
-      }
-
-      const accountInfo = result.data.account.info;
-      const accountData = await tvmClient.boc.parse_account({
-        boc: accountInfo.boc,
-      });
-
-      if (!accountData?.parsed) {
-        throw new Error('Failed to parse account BOC');
-      }
-
-  account = {
-        accType: accountData.parsed.acc_type,
-        accTypeName: accountData.parsed.acc_type_name,
-        balances: accountData.parsed.balance_other
-          .map((bo: any) => ({
-            id: bo.currency,
-            name: bo.currency === 1 ? 'NACKL' : '',
-            value: parseInt(bo.value, 16),
-          }))
-          .concat([
-            {
-              id: 0,
-              name: 'SHELL',
-              value: parseInt(accountData.parsed.balance, 16),
-            },
-          ]),
-        bits: parseInt(accountData.parsed.bits, 16),
-        boc: accountInfo.boc,
-        cells: parseInt(accountData.parsed.cells, 16),
-        code: accountData.parsed.code,
-        codeHash: accountData.parsed.code_hash,
-        data: accountData.parsed.data,
-        dataHash: accountData.parsed.data_hash,
-        id: accountData.parsed.id,
-        initCodeHash: accountData.parsed.init_code_hash,
-        jsonVersion: accountData.parsed.json_version,
-        lastPaid: new Date(accountData.parsed.last_paid * 1000),
-        lastTransLt: parseInt(accountData.parsed.last_trans_lt, 16),
-        publicCells: parseInt(accountData.parsed.public_cells, 16),
-        workchainId: accountData.parsed.workchain_id,
-  };
-  // show account details immediately, load transactions asynchronously
-  loading = false;
-
-      // kick off transactions loading but don't block rendering
-      loadTransactions();
+      account = await getAccountDetails(accountOrName);
     } catch (err) {
       error =
         err instanceof Error ? err.message : 'Failed to load account details';
       console.error('Error loading account:', err);
     } finally {
+      accountLoading = false;
     }
   }
 
@@ -182,47 +96,7 @@
     transactionsLoading = true;
 
     try {
-      const response = await fetch(environment.graphqlEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({
-          query: `
-						query GetAccountTransactions($limit: Int!, $address: String!) {
-							transactions(
-								orderBy: [{ path: "now", direction: DESC }]
-								limit: $limit
-								filter: { account_addr: { eq: $address } }
-							) {
-								id
-								now
-								now_string
-								lt
-								orig_status_name
-								end_status_name
-								total_fees(format: DEC)
-								balance_delta(format: DEC)
-								in_msg
-								outmsg_cnt
-								aborted
-								compute {
-									success
-									exit_code
-								}
-								destroyed
-							}
-						}
-					`,
-          variables: { address: accountId, limit: 20 },
-        }),
-      });
-
-      const result = await response.json();
-
-      if (result.errors) {
-        console.error('Error loading transactions:', result.errors);
-      } else if (result.data?.transactions) {
-        transactions = result.data.transactions;
-      }
+      transactions = await getAccountTransactions(accountOrName);
     } catch (err) {
       console.error('Error loading transactions:', err);
     } finally {
@@ -257,11 +131,13 @@
   <h1 class="page-title flex items-center gap-3">
     Account
     {#if account}
-      <Badge variant="info">{account.accTypeName || `Type ${account.accType}`}</Badge>
+      <Badge variant="info"
+        >{account.accTypeName || `Type ${account.accType}`}</Badge
+      >
     {/if}
   </h1>
 
-  {#if loading}
+  {#if accountLoading}
     <SkeletonLoader>
       <div class="space-y-6">
         <div class="skeleton skeleton-card h-64"></div>
@@ -270,7 +146,11 @@
     </SkeletonLoader>
   {:else if error}
     <Card>
-      <ErrorCard title="Failed to load account" message={error} onRetry={loadAccount} />
+      <ErrorCard
+        title="Failed to load account"
+        message={error}
+        onRetry={loadView}
+      />
     </Card>
   {:else if account}
     <!-- Account Overview (compact) -->
@@ -278,9 +158,13 @@
       <div class="p-4 flex flex-col gap-2">
         <div class="flex items-center gap-3">
           <span class="detail-label">Address:</span>
-          <span class="detail-value font-mono break-all">{accountId}</span>
-          <button class="copy-btn" aria-label="Copy address" on:click={copyAddress}>
-            <CopyIcon copied={copied} size={20} />
+          <span class="detail-value font-mono break-all">{account.id}</span>
+          <button
+            class="copy-btn"
+            aria-label="Copy address"
+            on:click={copyAddress}
+          >
+            <CopyIcon {copied} size={20} />
           </button>
         </div>
         <!-- Type badge moved to page title -->
@@ -288,13 +172,18 @@
           <div class="flex items-center gap-3">
             <span class="detail-label">Balance:</span>
             {#each account.balances as bal}
-              <span class="detail-value text-sm">{(bal.value / 1e9).toFixed(4)} {bal.name}</span>
+              <span class="detail-value text-sm"
+                >{(bal.value / 1e9).toFixed(4)} {bal.name}</span
+              >
             {/each}
           </div>
         {/if}
         <div class="flex items-center gap-3">
           <span class="detail-label">Last Paid:</span>
-          <LiveTimestamp timestamp={account.lastPaid.getTime() / 1000} className="time-text" />
+          <LiveTimestamp
+            timestamp={account.lastPaid.getTime() / 1000}
+            className="time-text"
+          />
         </div>
       </div>
     </Card>
@@ -401,14 +290,19 @@
                       id="account-code-hash-preview"
                       class="long-text"
                       title={account.codeHash}
-                      >{trimMiddle(account.codeHash, 66)}</span>
+                      >{trimMiddle(account.codeHash, 66)}</span
+                    >
                     <button
                       class="copy-btn small"
                       aria-label="Copy code hash"
                       on:click={() => copyLong(account?.codeHash ?? '')}
                     >
-                        <CopyIcon copied={copiedLong === account.codeHash} size={18} small={true} />
-                      </button>
+                      <CopyIcon
+                        copied={copiedLong === account.codeHash}
+                        size={18}
+                        small={true}
+                      />
+                    </button>
                   </div>
                 </div>
               {/if}
@@ -423,66 +317,89 @@
                       id="account-data-hash-preview"
                       class="long-text"
                       title={account.dataHash}
-                      >{trimMiddle(account.dataHash, 66)}</span>
+                      >{trimMiddle(account.dataHash, 66)}</span
+                    >
                     <button
                       class="copy-btn small"
                       aria-label="Copy data hash"
                       on:click={() => copyLong(account?.dataHash ?? '')}
                     >
-                        <CopyIcon copied={copiedLong === account.dataHash} size={18} small={true} />
-                      </button>
+                      <CopyIcon
+                        copied={copiedLong === account.dataHash}
+                        size={18}
+                        small={true}
+                      />
+                    </button>
                   </div>
                 </div>
               {/if}
 
               {#if account.initCodeHash}
                 <div class="long-field">
-                  <label class="detail-label" for="account-init-code-hash-preview"
-                    >Init Code Hash</label
+                  <label
+                    class="detail-label"
+                    for="account-init-code-hash-preview">Init Code Hash</label
                   >
                   <div class="long-field-row">
                     <span
                       id="account-init-code-hash-preview"
                       class="long-text"
                       title={account.initCodeHash}
-                      >{trimMiddle(account.initCodeHash, 66)}</span>
+                      >{trimMiddle(account.initCodeHash, 66)}</span
+                    >
                     <button
                       class="copy-btn small"
                       aria-label="Copy init code hash"
                       on:click={() => copyLong(account?.initCodeHash ?? '')}
                     >
-                        <CopyIcon copied={copiedLong === account.initCodeHash} size={18} small={true} />
-                      </button>
+                      <CopyIcon
+                        copied={copiedLong === account.initCodeHash}
+                        size={18}
+                        small={true}
+                      />
+                    </button>
                   </div>
                 </div>
               {/if}
               {#if account.code}
                 <div class="long-field">
-                  <label class="detail-label" for="account-code-preview">Code</label>
+                  <label class="detail-label" for="account-code-preview"
+                    >Code</label
+                  >
                   <div class="long-field-row">
                     <span
                       id="account-code-preview"
                       class="long-text"
-                      title={account.code}
-                      >{trimMiddle(account.code, 66)}</span>
+                      title={account.code}>{trimMiddle(account.code, 66)}</span
+                    >
                     <button
                       class="copy-btn small"
                       aria-label="Copy code"
                       on:click={() => copyLong(account?.code ?? '')}
                     >
-                        <CopyIcon copied={copiedLong === account.code} size={18} small={true} />
-                      </button>
+                      <CopyIcon
+                        copied={copiedLong === account.code}
+                        size={18}
+                        small={true}
+                      />
+                    </button>
                   </div>
                 </div>
               {/if}
-
             </div>
             <div>
               {#if account.lastTransLt}
                 <div class="long-field">
-                  <label class="detail-label" for="last-trans-lt">Last Transaction LT</label>
+                  <label class="detail-label" for="last-trans-lt"
+                    >Last Transaction LT</label
+                  >
                   <div class="long-field-row">
-                    <span id="last-trans-lt" class="long-text" title={String(account.lastTransLt)}>{String(account.lastTransLt)}</span>
+                    <span
+                      id="last-trans-lt"
+                      class="long-text"
+                      title={String(account.lastTransLt)}
+                      >{String(account.lastTransLt)}</span
+                    >
                   </div>
                 </div>
               {/if}
@@ -490,7 +407,11 @@
                 <div class="long-field">
                   <label class="detail-label" for="account-bits">Bits</label>
                   <div class="long-field-row">
-                    <span id="account-bits" class="long-text" title={String(account.bits)}>{String(account.bits)}</span>
+                    <span
+                      id="account-bits"
+                      class="long-text"
+                      title={String(account.bits)}>{String(account.bits)}</span
+                    >
                   </div>
                 </div>
               {/if}
@@ -498,35 +419,53 @@
                 <div class="long-field">
                   <label class="detail-label" for="account-cells">Cells</label>
                   <div class="long-field-row">
-                    <span id="account-cells" class="long-text" title={String(account.cells)}>{String(account.cells)}</span>
+                    <span
+                      id="account-cells"
+                      class="long-text"
+                      title={String(account.cells)}
+                      >{String(account.cells)}</span
+                    >
                   </div>
                 </div>
               {/if}
               {#if account.publicCells}
                 <div class="long-field">
-                  <label class="detail-label" for="public-cells">Public Cells</label>
+                  <label class="detail-label" for="public-cells"
+                    >Public Cells</label
+                  >
                   <div class="long-field-row">
-                    <span id="public-cells" class="long-text" title={String(account.publicCells)}>{String(account.publicCells)}</span>
+                    <span
+                      id="public-cells"
+                      class="long-text"
+                      title={String(account.publicCells)}
+                      >{String(account.publicCells)}</span
+                    >
                   </div>
                 </div>
               {/if}
 
               {#if account.data}
                 <div class="long-field">
-                  <label class="detail-label" for="account-data-preview">Data</label>
+                  <label class="detail-label" for="account-data-preview"
+                    >Data</label
+                  >
                   <div class="long-field-row">
                     <span
                       id="account-data-preview"
                       class="long-text"
-                      title={account.data}
-                      >{trimMiddle(account.data, 66)}</span>
+                      title={account.data}>{trimMiddle(account.data, 66)}</span
+                    >
                     <button
                       class="copy-btn small"
                       aria-label="Copy data"
                       on:click={() => copyLong(account?.data ?? '')}
                     >
-                        <CopyIcon copied={copiedLong === account.data} size={18} small={true} />
-                      </button>
+                      <CopyIcon
+                        copied={copiedLong === account.data}
+                        size={18}
+                        small={true}
+                      />
+                    </button>
                   </div>
                 </div>
               {/if}
@@ -578,7 +517,6 @@
     padding: 0.1rem 0.2rem;
   }
 
-  
   @keyframes pop-fade {
     0% {
       opacity: 0;
