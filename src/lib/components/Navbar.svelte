@@ -12,6 +12,7 @@
   let searchQuery = '';
   let isSearching = false;
   let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+  let mobileOpen = false;
 
   function switchLanguage(lang: Language) {
     currentLanguage.setLanguage(lang);
@@ -140,6 +141,25 @@
         </form>
       </div>
 
+      <!-- Mobile menu button -->
+      <div class="lg:hidden">
+        <button
+          on:click={() => (mobileOpen = !mobileOpen)}
+          aria-label="Toggle menu"
+          class="p-2 rounded-md text-secondary hover:bg-tertiary"
+        >
+          {#if mobileOpen}
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          {:else}
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          {/if}
+        </button>
+      </div>
+
       <!-- Navigation Links -->
       <div class="hidden md:flex items-center space-x-1">
         <a
@@ -190,69 +210,70 @@
         {/if}
       </div>
 
-      <!-- Controls -->
-      <div class="flex items-center space-x-4">
-        <!-- Language Switcher -->
-        <div class="flex items-center space-x-2">
-          <button
-            on:click={() => switchLanguage('en')}
-            class="px-3 py-1 rounded text-sm transition-colors"
-            class:bg-primary-600={$currentLanguage === 'en'}
-            class:text-white={$currentLanguage === 'en'}
-            class:text-secondary={$currentLanguage !== 'en'}
-            class:hover:bg-tertiary={$currentLanguage !== 'en'}
-          >
-            EN
-          </button>
-          <button
-            on:click={() => switchLanguage('ru')}
-            class="px-3 py-1 rounded text-sm transition-colors"
-            class:bg-primary-600={$currentLanguage === 'ru'}
-            class:text-white={$currentLanguage === 'ru'}
-            class:text-secondary={$currentLanguage !== 'ru'}
-            class:hover:bg-tertiary={$currentLanguage !== 'ru'}
-          >
-            RU
-          </button>
-        </div>
-
-        <!-- Theme Toggle -->
-        <button
-          on:click={toggleTheme}
-          class="p-2 rounded-lg hover:bg-tertiary transition-colors text-secondary"
-          aria-label="Toggle theme"
-        >
-          {#if $isDarkMode}
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-              />
-            </svg>
-          {:else}
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-              />
-            </svg>
-          {/if}
-        </button>
-      </div>
+      <!-- Controls (removed language and theme switcher for mobile menu) -->
     </div>
   </div>
 </nav>
+
+<!-- Mobile Menu Overlay -->
+{#if mobileOpen}
+  <div class="lg:hidden fixed inset-0 z-40 bg-black bg-opacity-50" on:click={() => (mobileOpen = false)}></div>
+  <div class="lg:hidden fixed top-0 right-0 z-50 w-72 h-full bg-secondary shadow-lg p-4 overflow-auto">
+    <div class="flex items-center justify-between mb-4">
+      <a href="/" class="flex items-center">
+        {#if $isDarkMode}
+          <img src="/AN Logo - horizontal white.svg" alt="Acki Nacki" class="h-8" />
+        {:else}
+          <img src="/AN Logo - horizontal black.svg" alt="Acki Nacki" class="h-8" />
+        {/if}
+      </a>
+      <button on:click={() => (mobileOpen = false)} aria-label="Close menu" class="p-2">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <form on:submit|preventDefault={handleSearch} class="mb-4">
+      <input
+        type="text"
+        bind:value={searchQuery}
+        on:input={handleInput}
+        placeholder="address / msg / tx / block"
+        disabled={isSearching}
+        class="w-full px-3 py-2 rounded-lg border"
+        style="background-color: var(--bg-secondary); color: var(--text-primary); border-color: var(--border-color);"
+      />
+    </form>
+
+    <nav class="space-y-2 mb-6">
+      <a href="/blocks" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/blocks'}>{t('nav.blocks')}</a>
+      <a href="/transactions" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/transactions'}>{t('nav.transactions')}</a>
+      <a href="/messages" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/messages'}>{t('nav.messages')}</a>
+      <a href="/contracts" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/contracts'}>{t('nav.contracts')}</a>
+      {#if feature.stat}
+        <a href="/stats" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/stats'}>{t('nav.stats')}</a>
+      {/if}
+      {#if feature.showcase}
+        <a href="/showcase" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/showcase'}>{t('nav.showcase')}</a>
+      {/if}
+    </nav>
+
+    <div class="flex flex-col items-center mb-8">
+      <div class="flex items-center space-x-2">
+        <button on:click={() => switchLanguage('en')} class="px-3 py-1 rounded text-sm" class:bg-primary-600={$currentLanguage === 'en'}>EN</button>
+        <button on:click={() => switchLanguage('ru')} class="px-3 py-1 rounded text-sm" class:bg-primary-600={$currentLanguage === 'ru'}>RU</button>
+      </div>
+    </div>
+
+    <div class="flex flex-col items-center mb-4">
+      <button on:click={toggleTheme} class="p-2 rounded-lg" aria-label="Toggle theme">
+        {#if $isDarkMode}
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        {:else}
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        {/if}
+      </button>
+    </div>
+  </div>
+{/if}
