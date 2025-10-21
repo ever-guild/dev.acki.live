@@ -1,5 +1,5 @@
 import { environment } from '$lib/environment';
-import { getAccountDetails, isHash } from './blockchain';
+import { getAccountDetails, getPopitGameAddress, getWalletAddress, isHash } from './blockchain';
 
 export interface SearchResult {
 	type: 'block' | 'transaction' | 'message' | 'account';
@@ -27,12 +27,12 @@ export async function globalSearch(query: string): Promise<SearchResponse> {
 
 	try {
 		if (!isHash(trimmedQuery)) {
-			const account = await getAccountDetails(trimmedQuery);
+			const account = await getPopitGameAddress(trimmedQuery);
       
       if (account) {
 				results.push({
 					type: 'account',
-					id: account.id
+					id: account
 				});
 			}
 

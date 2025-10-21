@@ -46,39 +46,55 @@
   let error: string | null = null;
   let transactionsLoading = false;
 
-  // Copy now handled internally by CopyIcon via the 'value' prop
+  // For route-change reloading and concurrency guards
+  let lastLoadedAccountOrName = '';
+  let loadToken = 0; // incremented for each load to avoid races
+  
+  // Trigger initial and subsequent loads when the route param changes
+  $: if (accountOrName && accountOrName !== lastLoadedAccountOrName) {
+    lastLoadedAccountOrName = accountOrName;
+    loadAccount(accountOrName);
+  }
 
-  onMount(async () => {
-    await loadAccount();
-  });
 
-  async function loadAccount() {
+  async function loadAccount(accountParam: string = accountOrName) {
+    const token = ++loadToken;
     accountLoading = true;
+    error = null;
+    account = null; // clear previous data while loading
 
     try {
-    error = null;
-      // TODO: pass account from search bar to avoid re-fetching
-      account = await getAccountDetails(accountOrName);
+      const acct = await getAccountDetails(accountParam);
+      if (!acct) {
+        throw new Error('Account not found');
+      }
+      // If a newer load started, bail out
+      if (token !== loadToken) return;
+  account = acct;
 
-      loadTransactions();
+  // load transactions for this account id (use local acct to avoid null checks)
+  await loadTransactions(acct.id, token);
     } catch (err) {
-      error =
-        err instanceof Error ? err.message : 'Failed to load account details';
+      if (token !== loadToken) return;
+      error = err instanceof Error ? err.message : 'Failed to load account details';
       console.error('Error loading account:', err);
     } finally {
-      accountLoading = false;
+      if (token === loadToken) accountLoading = false;
     }
   }
 
-  async function loadTransactions() {
+  async function loadTransactions(accountId: string, token: number) {
     transactionsLoading = true;
 
     try {
-      transactions = await graphql.getAccountTransactions(account.id);
+      const txs = await graphql.getAccountTransactions(accountId);
+      if (token !== loadToken) return;
+      transactions = txs;
     } catch (err) {
+      if (token !== loadToken) return;
       console.error('Error loading transactions:', err);
     } finally {
-      transactionsLoading = false;
+      if (token === loadToken) transactionsLoading = false;
     }
   }
 

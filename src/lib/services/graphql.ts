@@ -276,8 +276,8 @@ class GraphQLClient {
       { address, limit: 20 }
     );
 
-    if (response.data?.transactions) {
-      return response.data.transactions;
+    if (response?.transactions) {
+      return response.transactions;
     }
 
     throw new Error('No transactions found');

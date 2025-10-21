@@ -1,11 +1,13 @@
 import graphql from '$lib/services/graphql';
-import tvmClient, { getAddressByName } from './tvmClient';
+import tvmClient, { getIndexerAddressByName, popitGameCode } from './tvmClient';
+import indexerAbi from '/src/data/contracts/mvsystem/Indexer.abi.json?raw';
+import popitGameAbi from '/src/data/contracts/mvsystem/PopitGame.abi.json?raw';
 
 export async function getAccountDetails(addressOrName: string): Promise<AccountDetails | null> {
   let address = addressOrName.trim();
 
   if (!isAddress(address)) {
-    address = await getAddressByName(address);
+    address = await getIndexerAddressByName(address);
   }
 
   const accountBoc = await graphql.getAccountBoc(address);
@@ -51,6 +53,55 @@ export async function getAccountDetails(addressOrName: string): Promise<AccountD
   };
 
   return result;
+}
+
+export async function getWalletAddress(addressOrName: string): Promise<string> {
+  let address = addressOrName.trim();
+
+  if (!isAddress(address)) {
+    address = await getIndexerAddressByName(address);
+  }
+
+  const accountBoc = await graphql.getAccountBoc(address);
+  const { parsed: account } = await tvmClient.boc.parse_account({
+    boc: accountBoc
+  });
+  const accountData = await tvmClient.abi.decode_account_data({
+    abi: {
+      type: 'Json',
+      value: indexerAbi
+    },
+    data: account.data
+  });
+
+  return accountData.data._wallet
+}
+
+export async function getPopitGameAddress(addressOrName: string): Promise<string> {
+  let address = addressOrName.trim();
+
+  if (!isAddress(address)) {
+    address = await getWalletAddress(address);
+  }
+
+  const encodedMessage = await tvmClient.abi.encode_message({
+    abi: {
+      type: 'Json',
+      value: popitGameAbi
+    },
+    deploy_set: {
+      code: popitGameCode,
+      initial_data: {
+        _pubkey: '0x0',
+        _owner: address
+      }
+    },
+    signer: {
+      type: 'None',
+    }
+  });
+
+  return encodedMessage.address;
 }
 
 export function isAddress(input: string): boolean {
