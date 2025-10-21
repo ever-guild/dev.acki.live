@@ -18,26 +18,51 @@ const query = {
     }
   `,
   GetAccounts: `
-      query GetAccounts {
-        accounts(limit: 15, orderBy: [{path: "last_paid", direction: DESC}]) {
-          id
-          address
-          acc_type_name
-          last_paid
-          code_hash
-        }
+    query GetAccounts {
+      accounts(limit: 15, orderBy: [{path: "last_paid", direction: DESC}]) {
+        id
+        address
+        acc_type_name
+        last_paid
+        code_hash
       }
-    `,
+    }
+  `,
   GetMessages: `
-    query GetMessages {
-      messages(limit: 20, orderBy: [{path: "created_at", direction: DESC}]) {
+    query GetMessages($limit: Int!) {
+      messages(limit: $limit, orderBy: [{path: "created_at", direction: DESC}]) {
         id
         src
         dst
         value(format: DEC)
         created_at
         msg_type_name
-        body
+      }
+    }
+  `,
+  GetTransactionDetails: `
+    query GetTransactionDetails($id: String!) {
+      transactions(filter: { id: { eq: $id } }) {
+        id
+        account_addr
+        workchain_id
+        now
+        now_string
+        lt
+        block_id
+        orig_status_name
+        end_status_name
+        total_fees(format: DEC)
+        balance_delta(format: DEC)
+        outmsg_cnt
+        aborted
+        destroyed
+        tr_type_name
+        in_message { id src dst msg_type_name value(format: DEC) bounce bounced body created_at boc src_transaction {id}}
+        out_messages { id src dst msg_type_name value(format: DEC) bounce bounced body created_at boc dst_transaction {id} }
+        compute { compute_type_name success exit_code gas_used gas_fees(format: DEC) gas_limit vm_steps }
+        action { success valid no_funds result_code tot_actions msgs_created total_fwd_fees(format: DEC) total_action_fees(format: DEC) }
+        storage { storage_fees_collected(format: DEC) status_change_name }
       }
     }
   `,
@@ -167,48 +192,46 @@ class GraphQLClient {
     throw new Error('Failed to fetch contracts');
   }
 
-  async getMessages(): Promise<Message[]> {
-    const response = await this.post(query.GetMessages);
+  async getMessages(limit = 20): Promise<Message[]> {
+    const response = await this.post(query.GetMessages, { limit });
 
-    if (response.data?.messages) {
-      return response.data.messages.map((msg: any) => ({
-        id: msg.id,// || '',
-        from: msg.src,// || 'N/A',
-        to: msg.dst,// || 'N/A',
-        type: msg.msg_type_name,// || 'Unknown',
-        data: msg.body,// || '',
-        timestamp: msg.created_at,// ? new Date(msg.created_at * 1000) : new Date(),
-        value: msg.value,
-        msg_type_name: msg.msg_type_name
+    if (response?.messages) {
+      return response.messages.map((msg: any) => ({
+        id: msg.id,
+        from: msg.src,
+        to: msg.dst,
+        type: msg.msg_type_name,
+        data: msg.body,
+        timestamp: new Date(msg.created_at * 1000),
+        value: msg.value / 1e9,
+        msg_type_name: msg.msg_type_name,
       }));
     }
 
     throw new Error('Failed to fetch messages');
   }
 
-  async getTransactions(): Promise<Transaction[]> {
+  async getLatestTransactions(limit = 25): Promise<Transaction[]> {
     const response = await this.post(
       query.GetLatestTransactions,
-      { limit: 25 }
+      { limit }
     );
 
-    if (response.data?.transactions) {
-      return response.data.transactions.map((tx: any) => {
-        // const value = tx.in_message?.value ? parseFloat(tx.in_message.value) / 1e9 : 0;
+    if (response?.transactions) {
+      return response.transactions.map((tx: any) => {
+        const value = tx.in_message?.value ? parseFloat(tx.in_message.value) / 1e9 : 0;
 
-        // let status: 'success' | 'pending' | 'failed' = 'success';
-        // if (tx.aborted) status = 'failed';
-        // else if (tx.status_name === 'Preliminary' || tx.status_name === 'Proposed')
-        //   status = 'pending';
+        let status: 'success' | 'pending' | 'failed' = 'pending';
+        if (tx.aborted) status = 'failed';
+        else if (tx.status_name === 'Finalized') status = 'success';
 
         return {
-          hash: tx.id,// || '',
-          from: tx.in_message?.src,// || 'N/A',
-          to: tx.account_addr,// || 'N/A',
-          amount: tx.in_message?.value, //value,
-          status: tx.aborted ? 'failed' : tx.status_name,
-          timestamp: tx.now,// ? new Date(tx.now * 1000) : new Date(),
-          aborted: tx.aborted
+          hash: tx.id,
+          from: tx.in_message?.src,
+          to: tx.account_addr,
+          amount: value,
+          status,
+          timestamp: new Date(tx.now * 1000)
         };
       });
     }

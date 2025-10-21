@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getTransactions, type Transaction } from '$lib/services/blockchain';
+	import graphql, {type Transaction } from '$lib/services/graphql';
 	import { translate } from '$lib/stores/i18n';
 	import Card from '$lib/components/ui/Card.svelte';
 	import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
 	import Badge from '$lib/components/ui/Badge.svelte';
 	import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
 	import LiveTimestamp from '$lib/components/ui/LiveTimestamp.svelte';
+  import { formatAddress, formatHash } from '$lib/utils/formatters';
 
 	let transactions: Transaction[] = [];
 	let loading = true;
@@ -15,21 +16,13 @@
 
 	onMount(async () => {
 		try {
-			transactions = await getTransactions();
+			transactions = await graphql.getLatestTransactions();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load transactions';
 		} finally {
 			loading = false;
 		}
 	});
-
-	function formatHash(hash: string): string {
-		return `${hash.substring(0, 10)}...${hash.substring(hash.length - 8)}`;
-	}
-
-	function formatAddress(address: string): string {
-		return `${address.substring(0, 8)}...${address.substring(address.length - 6)}`;
-	}
 
 	function getStatusVariant(status: string): 'success' | 'info' | 'warning' | 'error' {
 		if (status === 'success') return 'success';
@@ -48,9 +41,9 @@
 					<div class="p-6 space-y-4">
 						{#each Array(10) as _, i}
 							<div class="flex gap-4">
-								<div class="skeleton skeleton-text w-24"></div>
-								<div class="skeleton skeleton-text w-20"></div>
-								<div class="skeleton skeleton-text w-20"></div>
+								<div class="skeleton skeleton-text flex-1"></div>
+								<div class="skeleton skeleton-text flex-1"></div>
+								<div class="skeleton skeleton-text flex-1"></div>
 								<div class="skeleton skeleton-text w-20"></div>
 								<div class="skeleton skeleton-text w-16"></div>
 								<div class="skeleton skeleton-text w-24"></div>
