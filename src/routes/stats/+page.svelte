@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getStats, type NetworkStats } from '$lib/services/blockchain';
+	import graphql, {type NetworkStats } from '$lib/services/graphql';
 	import { translate } from '$lib/stores/i18n';
 	import Card from '$lib/components/ui/Card.svelte';
 	import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
@@ -15,7 +15,7 @@
 
 	onMount(async () => {
 		try {
-			stats = await getStats();
+			stats = await graphql.getStats();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load statistics';
 		} finally {
@@ -37,7 +37,7 @@
 			<div class="skeleton skeleton-rect h-64"></div>
 		</SkeletonLoader>
 	{:else if error}
-		<ErrorCard title="Failed to load statistics" message={error} onRetry={() => window.location.reload()} />
+		<ErrorCard title={t('stats.loadErrorTitle')} message={error} onRetry={() => window.location.reload()} />
 	{:else if stats}
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 			<StatCard label={t('stats.totalBlocks')} value={stats.totalBlocks.toLocaleString()} />
@@ -45,39 +45,39 @@
 			<div class="relative">
 				<StatCard label={t('stats.hashrate')} value={stats.hashrate} />
 				<div class="absolute top-2 right-2">
-					<Badge variant="warning">Mock</Badge>
+					<Badge variant="warning">{t('stats.mock')}</Badge>
 				</div>
 			</div>
 			<div class="relative">
 				<StatCard label={t('stats.activeAddresses')} value={stats.activeAddresses.toLocaleString()} />
 				<div class="absolute top-2 right-2">
-					<Badge variant="warning">Mock</Badge>
+					<Badge variant="warning">{t('stats.mock')}</Badge>
 				</div>
 			</div>
 			<StatCard label={t('stats.avgBlockTime')} value={stats.avgBlockTime} />
 			<div class="relative">
 				<StatCard label={t('stats.difficulty')} value={stats.difficulty} />
 				<div class="absolute top-2 right-2">
-					<Badge variant="warning">Mock</Badge>
+					<Badge variant="warning">{t('stats.mock')}</Badge>
 				</div>
 			</div>
 			<div class="relative">
 				<StatCard label={t('stats.marketCap')} value={stats.marketCap} />
 				<div class="absolute top-2 right-2">
-					<Badge variant="warning">Mock</Badge>
+					<Badge variant="warning">{t('stats.mock')}</Badge>
 				</div>
 			</div>
 			<div class="relative">
 				<StatCard label={t('stats.price')} value={stats.price} />
 				<div class="absolute top-2 right-2">
-					<Badge variant="warning">Mock</Badge>
+					<Badge variant="warning">{t('stats.mock')}</Badge>
 				</div>
 			</div>
 		</div>
 
 		<Card>
 			<div class="p-6">
-				<h2 class="text-2xl font-bold text-primary mb-4">Network Overview</h2>
+				<h2 class="text-2xl font-bold text-primary mb-4">{t('stats.networkOverview')}</h2>
 				<div class="space-y-4">
 					<div class="flex justify-between items-center py-3 border-b border-custom">
 						<span class="text-secondary font-medium">{t('stats.totalBlocks')}</span>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+  import { translate } from '$lib/stores/i18n';
 
   export let value: string | null = null; // value to copy
   export let size: number = 18;
@@ -37,6 +38,8 @@
       doCopy();
     }
   }
+
+  $: t = $translate;
 </script>
 
 <span
@@ -73,7 +76,7 @@
     />
   </svg>
   {#if copied}
-    <span class="copied-popover {small ? 'small' : ''}">Copied</span>
+    <span class="copied-popover {small ? 'small' : ''}">{t('copy.copied')}</span>
   {/if}
 </span>
 

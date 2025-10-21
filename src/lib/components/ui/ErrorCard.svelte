@@ -1,7 +1,10 @@
 <script lang="ts">
-  export let title: string = 'Failed to load';
+  import { translate } from '$lib/stores/i18n';
+  $: t = $translate;
+
+  export let title: string = t('error.defaultTitle');
   export let message: string | null = null;
-  export let retryLabel: string = 'Retry';
+  export let retryLabel: string = t('error.retry');
   export let onRetry: (() => void) | null = null;
 </script>
 

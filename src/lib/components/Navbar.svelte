@@ -50,13 +50,13 @@
     isSearching = true;
     try {
       const result = await globalSearch(searchQuery);
-      if (result.found && result.results.length > 0) {
+  if (result.found && result.results.length > 0) {
         // Navigate to the first result
         const path = getSearchResultPath(result.results[0]);
         await goto(path);
         searchQuery = ''; // Clear search after navigation
       } else {
-        alert('No results found for: ' + searchQuery);
+        alert(t('navbar.noResults') + ': ' + searchQuery);
       }
     } catch (error) {
       console.error('Search error:', error);
@@ -96,7 +96,7 @@
             type="text"
             bind:value={searchQuery}
             on:input={handleInput}
-            placeholder="address / msg / tx / block"
+            placeholder={t('navbar.searchPlaceholder')}
             disabled={isSearching}
             class="w-full px-4 py-2 pl-10 pr-10 rounded-lg border transition-all"
             style="background-color: var(--bg-secondary); color: var(--text-primary); border-color: var(--border-color);"
@@ -145,7 +145,7 @@
       <div class="lg:hidden">
         <button
           on:click={() => (mobileOpen = !mobileOpen)}
-          aria-label="Toggle menu"
+          aria-label={t('navbar.toggleMenu')}
           class="p-2 rounded-md text-secondary hover:bg-tertiary"
         >
           {#if mobileOpen}
@@ -240,7 +240,7 @@
         <button
           on:click={toggleTheme}
           class="p-2 rounded-lg hover:bg-tertiary transition-colors text-secondary"
-          aria-label="Toggle theme"
+          aria-label={t('navbar.toggleTheme')}
         >
           {#if $isDarkMode}
             <svg
@@ -279,7 +279,14 @@
 
 <!-- Mobile Menu Overlay -->
 {#if mobileOpen}
-  <div class="lg:hidden fixed inset-0 z-40 bg-black bg-opacity-50" on:click={() => (mobileOpen = false)}></div>
+  <div
+    class="lg:hidden fixed inset-0 z-40 bg-black bg-opacity-50"
+    on:click={() => (mobileOpen = false)}
+    role="button"
+    tabindex="0"
+    on:keydown={(e) => e.key === 'Escape' && (mobileOpen = false)}
+    aria-label={t('navbar.closeOverlay')}
+  ></div>
   <div class="lg:hidden fixed top-0 right-0 z-50 w-72 h-full bg-secondary shadow-lg p-4 overflow-auto">
     <div class="flex items-center justify-between mb-4">
       <a href="/" class="flex items-center">
@@ -289,23 +296,23 @@
           <img src="/AN Logo - horizontal black.svg" alt="Acki Nacki" class="h-8" />
         {/if}
       </a>
-      <button on:click={() => (mobileOpen = false)} aria-label="Close menu" class="p-2">
+      <button on:click={() => (mobileOpen = false)} aria-label={t('navbar.closeMenu')} class="p-2">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
     </div>
 
-    <form on:submit|preventDefault={handleSearch} class="mb-4">
-      <input
-        type="text"
-        bind:value={searchQuery}
-        on:input={handleInput}
-        placeholder="address / msg / tx / block"
-        disabled={isSearching}
-        class="w-full px-3 py-2 rounded-lg border"
-        style="background-color: var(--bg-secondary); color: var(--text-primary); border-color: var(--border-color);"
-      />
+  <form on:submit|preventDefault={handleSearch} class="mb-4">
+        <input
+          type="text"
+          bind:value={searchQuery}
+          on:input={handleInput}
+          placeholder={t('navbar.searchPlaceholder')}
+          disabled={isSearching}
+          class="w-full px-3 py-2 rounded-lg border"
+          style="background-color: var(--bg-secondary); color: var(--text-primary); border-color: var(--border-color);"
+        />
     </form>
 
     <nav class="space-y-2 mb-6">
@@ -313,10 +320,10 @@
       <a href="/transactions" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/transactions'}>{t('nav.transactions')}</a>
       <a href="/messages" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/messages'}>{t('nav.messages')}</a>
       <a href="/contracts" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/contracts'}>{t('nav.contracts')}</a>
-      {#if feature.stat}
+  {#if environment.develop}
         <a href="/stats" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/stats'}>{t('nav.stats')}</a>
       {/if}
-      {#if feature.showcase}
+  {#if environment.develop}
         <a href="/showcase" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/showcase'}>{t('nav.showcase')}</a>
       {/if}
     </nav>

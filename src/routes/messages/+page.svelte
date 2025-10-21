@@ -52,11 +52,11 @@
 				<table class="data-table">
 						<thead class="table-header">
 							<tr>
-								<th class="table-th">{t('messages.from')}</th>
-								<th class="table-th">{t('messages.to')}</th>
-								<th class="table-th">{t('messages.type')}</th>
-								<th class="table-th">Value</th>
-								<th class="table-th">{t('messages.timestamp')}</th>
+								<th class="table-th">{t('common.from')}</th>
+								<th class="table-th">{t('common.to')}</th>
+								<th class="table-th">{t('common.type')}</th>
+								<th class="table-th">{t('common.value')}</th>
+								<th class="table-th">{t('common.time')}</th>
 							</tr>
 						</thead>
 					<tbody class="table-body">

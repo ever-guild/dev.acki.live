@@ -110,10 +110,10 @@
 
 <div class="page-container">
   <h1 class="page-title flex items-center gap-3">
-    Account
+    {t('account.title')}
     {#if account}
       <Badge variant="info"
-        >{account.accTypeName || `Type ${account.accType}`}</Badge
+  >{account.accTypeName || `${t('account.type')} ${account.accType}`}</Badge
       >
     {/if}
   </h1>
@@ -138,7 +138,7 @@
     <Card>
       <div class="p-4 flex flex-col gap-2">
         <div class="flex items-center gap-3">
-          <span class="detail-label">Address:</span>
+          <span class="detail-label">{t('common.address')}</span>
           <span class="detail-value font-mono break-all">{account.id}</span>
           <button class="copy-btn" aria-label="Copy address">
             <CopyIcon value={account.id} size={20} />
@@ -147,7 +147,7 @@
         <!-- Type badge moved to page title -->
         {#if account.balances && account.balances.length > 0}
           <div class="flex items-center gap-3">
-            <span class="detail-label">Balance:</span>
+            <span class="detail-label">{t('account.balance')}</span>
             {#each account.balances as bal}
               <span class="detail-value text-sm"
                 >{(bal.value / 1e9).toFixed(4)} {bal.name}</span
@@ -156,7 +156,7 @@
           </div>
         {/if}
         <div class="flex items-center gap-3">
-          <span class="detail-label">Last Paid:</span>
+          <span class="detail-label">{t('account.lastPaid')}</span>
           <LiveTimestamp
             timestamp={account.lastPaid.getTime() / 1000}
             className="time-text"
@@ -168,7 +168,7 @@
     <!-- Recent Transactions (moved up) -->
     <Card>
       <div class="p-6">
-        <h2 class="text-xl font-bold mb-2">Recent Transactions</h2>
+  <h2 class="text-xl font-bold mb-2">{t('account.recentTransactions')}</h2>
         {#if transactionsLoading}
           <SkeletonLoader>
             <div class="space-y-4">
@@ -192,18 +192,18 @@
                 d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
               ></path>
             </svg>
-            <p>No transactions found for this account</p>
+            <p>{t('account.noTransactions')}</p>
           </div>
         {:else}
           <div class="table-wrapper">
             <table class="data-table">
               <thead class="table-header">
                 <tr>
-                  <th class="table-th">Transaction ID</th>
-                  <th class="table-th">Status</th>
-                  <th class="table-th">Balance Change</th>
-                  <th class="table-th">Fees</th>
-                  <th class="table-th">Time</th>
+                  <th class="table-th">{t('account.txId')}</th>
+                  <th class="table-th">{t('common.status')}</th>
+                  <th class="table-th">{t('account.balanceChange')}</th>
+                  <th class="table-th">{t('account.fees')}</th>
+                  <th class="table-th">{t('common.time')}</th>
                 </tr>
               </thead>
               <tbody class="table-body">
@@ -219,7 +219,7 @@
                     </td>
                     <td class="table-td">
                       <Badge variant={getStatusVariant(tx.end_status_name)}>
-                        {tx.aborted ? 'Aborted' : tx.end_status_name}
+                        {tx.aborted ? t('account.aborted') : tx.end_status_name}
                       </Badge>
                     </td>
                     <td class="table-td">
@@ -254,13 +254,13 @@
     {#if account.code || account.data}
       <Card>
         <div class="p-6">
-          <h2 class="text-xl font-bold mb-2">Code & Data</h2>
+    <h2 class="text-xl font-bold mb-2">{t('account.codeData')}</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
             <div>
               {#if account.codeHash}
                 <div class="long-field">
                   <label class="detail-label" for="account-code-hash-preview"
-                    >Code Hash</label
+                    >{t('account.codeHash')}</label
                   >
                   <div class="long-field-row">
                     <span
@@ -279,7 +279,7 @@
               {#if account.dataHash}
                 <div class="long-field">
                   <label class="detail-label" for="account-data-hash-preview"
-                    >Data Hash</label
+                    >{t('account.dataHash')}</label
                   >
                   <div class="long-field-row">
                     <span
@@ -299,7 +299,7 @@
                 <div class="long-field">
                   <label
                     class="detail-label"
-                    for="account-init-code-hash-preview">Init Code Hash</label
+                    for="account-init-code-hash-preview">{t('account.initCodeHash')}</label
                   >
                   <div class="long-field-row">
                     <span
@@ -317,7 +317,7 @@
               {#if account.code}
                 <div class="long-field">
                   <label class="detail-label" for="account-code-preview"
-                    >Code</label
+                    >{t('account.code')}</label
                   >
                   <div class="long-field-row">
                     <span
@@ -336,7 +336,7 @@
               {#if account.lastTransLt}
                 <div class="long-field">
                   <label class="detail-label" for="last-trans-lt"
-                    >Last Transaction LT</label
+                    >{t('account.lastTransLt')}</label
                   >
                   <div class="long-field-row">
                     <span
@@ -350,7 +350,7 @@
               {/if}
               {#if account.bits}
                 <div class="long-field">
-                  <label class="detail-label" for="account-bits">Bits</label>
+                  <label class="detail-label" for="account-bits">{t('account.bits')}</label>
                   <div class="long-field-row">
                     <span
                       id="account-bits"
@@ -362,7 +362,7 @@
               {/if}
               {#if account.cells}
                 <div class="long-field">
-                  <label class="detail-label" for="account-cells">Cells</label>
+                  <label class="detail-label" for="account-cells">{t('account.cells')}</label>
                   <div class="long-field-row">
                     <span
                       id="account-cells"
@@ -376,7 +376,7 @@
               {#if account.publicCells}
                 <div class="long-field">
                   <label class="detail-label" for="public-cells"
-                    >Public Cells</label
+                    >{t('account.publicCells')}</label
                   >
                   <div class="long-field-row">
                     <span
@@ -392,7 +392,7 @@
               {#if account.data}
                 <div class="long-field">
                   <label class="detail-label" for="account-data-preview"
-                    >Data</label
+                    >{t('common.data')}</label
                   >
                   <div class="long-field-row">
                     <span

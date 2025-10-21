@@ -52,17 +52,17 @@
 					</div>
 				</SkeletonLoader>
 			{:else if error}
-				<ErrorCard title="Failed to load transactions" message={error} onRetry={() => window.location.reload()} />
+				<ErrorCard title={t('transactions.loadErrorTitle')} message={error} onRetry={() => window.location.reload()} />
 			{:else}
 				<table class="data-table">
 						<thead class="table-header">
 							<tr>
 								<th class="table-th">{t('transactions.hash')}</th>
-								<th class="table-th">{t('transactions.from')}</th>
-								<th class="table-th">{t('transactions.to')}</th>
-								<th class="table-th">{t('transactions.amount')}</th>
-								<th class="table-th">{t('transactions.status')}</th>
-								<th class="table-th">{t('transactions.time')}</th>
+								<th class="table-th">{t('common.from')}</th>
+								<th class="table-th">{t('common.to')}</th>
+								<th class="table-th">{t('common.amount')}</th>
+								<th class="table-th">{t('common.status')}</th>
+								<th class="table-th">{t('common.time')}</th>
 							</tr>
 						</thead>
 					<tbody class="table-body">

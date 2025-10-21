@@ -150,18 +150,18 @@
 
 <div class="page-container">
 	<div class="mb-4">
-		<button
+			<button
 			on:click={() => goto('/transactions')}
 			class="text-primary hover:text-primary-600 flex items-center gap-2"
 		>
 			<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
 			</svg>
-			Back to Transactions
+			{t('transactions.details.back')}
 		</button>
 	</div>
 
-	<h1 class="page-title">Transaction Details</h1>
+	<h1 class="page-title">{t('transactions.details.title')}</h1>
 
 	{#if loading}
 		<SkeletonLoader>
@@ -177,10 +177,10 @@
 	{:else if transaction}
 		<Card>
 			<div class="p-6">
-				<h2 class="text-2xl font-bold text-primary mb-2">Overview</h2>
+				<h2 class="text-2xl font-bold text-primary mb-2">{t('transactions.details.overview')}</h2>
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div class="detail-item">
-						<div class="detail-label">Transaction ID</div>
+						<div class="detail-label">{t('transactions.details.txId')}</div>
 						<div class="detail-value font-mono text-sm break-all">
 							{transaction.id}
 							<button
@@ -201,7 +201,7 @@
 					</div>
 
 					<div class="detail-item">
-						<div class="detail-label">Status</div>
+						<div class="detail-label">{t('transactions.details.status')}</div>
 						<div class="detail-value">
 							<Badge variant={getStatusVariant(transaction.aborted)}>
 								{transaction.aborted ? 'Failed' : 'Success'}
@@ -210,32 +210,32 @@
 					</div>
 
 					<div class="detail-item">
-						<div class="detail-label">Account Address</div>
+						<div class="detail-label">{t('transactions.details.accountAddress')}</div>
 						<div class="detail-value font-mono text-sm">{transaction.account_addr}</div>
 					</div>
 
 					<div class="detail-item">
-						<div class="detail-label">Timestamp</div>
+						<div class="detail-label">{t('transactions.details.timestamp')}</div>
 						<div class="detail-value">{formatTime(transaction.now)}</div>
 					</div>
 
 					<div class="detail-item">
-						<div class="detail-label">Balance Delta</div>
+						<div class="detail-label">{t('transactions.details.balanceDelta')}</div>
 						<div class="detail-value">{formatValue(transaction.balance_delta)}</div>
 					</div>
 
 					<div class="detail-item">
-						<div class="detail-label">Total Fees</div>
+						<div class="detail-label">{t('transactions.details.totalFees')}</div>
 						<div class="detail-value text-red-600">{formatValue(transaction.total_fees)}</div>
 					</div>
 
 					<div class="detail-item">
-						<div class="detail-label">Transaction Type</div>
+						<div class="detail-label">{t('transactions.details.type')}</div>
 						<div class="detail-value">{transaction.tr_type_name}</div>
 					</div>
 
 					<div class="detail-item">
-						<div class="detail-label">Workchain ID</div>
+						<div class="detail-label">{t('transactions.details.workchainId')}</div>
 						<div class="detail-value">{transaction.workchain_id}</div>
 					</div>
 				</div>
@@ -245,10 +245,10 @@
 		{#if transaction.compute}
 			<Card>
 				<div class="p-6">
-					<h2 class="text-2xl font-bold text-primary mb-2">Compute Phase</h2>
+					<h2 class="text-2xl font-bold text-primary mb-2">{t('transactions.details.computePhase')}</h2>
 					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 						<div class="detail-item">
-							<div class="detail-label">Success</div>
+							<div class="detail-label">{t('transactions.details.compute.success')}</div>
 							<div class="detail-value">
 								<Badge variant={transaction.compute.success ? 'success' : 'error'}>
 									{transaction.compute.success ? 'Yes' : 'No'}
@@ -257,17 +257,17 @@
 						</div>
 
 						<div class="detail-item">
-							<div class="detail-label">Exit Code</div>
+							<div class="detail-label">{t('transactions.details.compute.exitCode')}</div>
 							<div class="detail-value">{transaction.compute.exit_code}</div>
 						</div>
 
 						<div class="detail-item">
-							<div class="detail-label">Gas Used</div>
+							<div class="detail-label">{t('transactions.details.compute.gasUsed')}</div>
 							<div class="detail-value">{formatValue(transaction.compute.gas_used)}</div>
 						</div>
 
 						<div class="detail-item">
-							<div class="detail-label">Gas Fees</div>
+							<div class="detail-label">{t('transactions.details.compute.gasFees')}</div>
 							<div class="detail-value">{formatValue(transaction.compute.gas_fees)}</div>
 						</div>
 					</div>
@@ -278,20 +278,20 @@
 		{#if transaction.in_message}
 			<Card>
 				<div class="p-6">
-					<h2 class="text-2xl font-bold text-primary mb-2">Input Message</h2>
+					<h2 class="text-2xl font-bold text-primary mb-2">{t('transactions.details.inputMsg')}</h2>
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<div class="detail-item">
-							<div class="detail-label">From</div>
+							<div class="detail-label">{t('common.from')}</div>
 							<div class="detail-value font-mono text-sm">{transaction.in_message.src}</div>
 						</div>
 
 						<div class="detail-item">
-							<div class="detail-label">To</div>
+							<div class="detail-label">{t('common.to')}</div>
 							<div class="detail-value font-mono text-sm">{transaction.in_message.dst}</div>
 						</div>
 
 						<div class="detail-item">
-							<div class="detail-label">Value</div>
+							<div class="detail-label">{t('common.value')}</div>
 							<div class="detail-value">{formatValue(transaction.in_message.value)}</div>
 						</div>
 
@@ -307,23 +307,23 @@
 		{#if transaction.out_messages && transaction.out_messages.length > 0}
 			<Card>
 				<div class="p-6">
-					<h2 class="text-2xl font-bold text-primary mb-2">Output Messages ({transaction.out_messages.length})</h2>
+					<h2 class="text-2xl font-bold text-primary mb-2">{t('transactions.details.outputMsgs')} ({transaction.out_messages.length})</h2>
 					<div class="space-y-4">
 						{#each transaction.out_messages as msg, i}
 							<div class="border border-custom rounded-lg p-4">
 								<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 									<div class="detail-item">
-										<div class="detail-label">From</div>
+										<div class="detail-label">{t('common.from')}</div>
 										<div class="detail-value font-mono text-xs">{msg.src}</div>
 									</div>
 
 									<div class="detail-item">
-										<div class="detail-label">To</div>
+										<div class="detail-label">{t('common.to')}</div>
 										<div class="detail-value font-mono text-xs">{msg.dst}</div>
 									</div>
 
 									<div class="detail-item">
-										<div class="detail-label">Value</div>
+										<div class="detail-label">{t('common.value')}</div>
 										<div class="detail-value">{formatValue(msg.value)}</div>
 									</div>
 								</div>

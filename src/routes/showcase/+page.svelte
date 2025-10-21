@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { translate } from '$lib/stores/i18n';
-	import { getBlocks, getTransactions, getMessages } from '$lib/services/blockchain';
-	import type { Block, Transaction, Message } from '$lib/services/blockchain';
+	import graphql from '$lib/services/graphql';
+	import type { Block, Transaction, Message } from '$lib/services/graphql';
 	import Card from '$lib/components/ui/Card.svelte';
 	import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
 	import Badge from '$lib/components/ui/Badge.svelte';
@@ -58,9 +58,9 @@
 	async function loadShowcaseData() {
 		try {
 			const [blocks, transactions, messages] = await Promise.all([
-				getBlocks(),
-				getTransactions(),
-				getMessages()
+				graphql.getLatestBlocks(),
+				graphql.getLatestTransactions(),
+				graphql.getMessages()
 			]);
 
 			processRecentActivity(blocks, transactions);
@@ -217,11 +217,11 @@
 			</div>
 		</SkeletonLoader>
 	{:else if error}
-		<ErrorCard title="Failed to load showcase data" message={error} onRetry={() => window.location.reload()} />
+		<ErrorCard title={t('showcase.loadErrorTitle')} message={error} onRetry={() => window.location.reload()} />
 	{:else}
 		<!-- Network Health Section -->
 		<div class="mb-8">
-			<h2 class="section-title">Network Health</h2>
+			<h2 class="section-title">{t('showcase.networkHealth')}</h2>
 			<Card>
 			<div class="health-container">
 				<div class="health-meter">
@@ -246,8 +246,8 @@
 							></path>
 						</svg>
 						<div>
-							<div class="stat-label">Block Production</div>
-							<div class="stat-value">Normal</div>
+							<div class="stat-label">{t('showcase.stat.blockProduction')}</div>
+							<div class="stat-value">{t('showcase.stat.normal')}</div>
 						</div>
 					</div>
 					<div class="health-stat">
@@ -265,8 +265,8 @@
 							></path>
 						</svg>
 						<div>
-							<div class="stat-label">Transaction Throughput</div>
-							<div class="stat-value">High</div>
+							<div class="stat-label">{t('showcase.stat.transactionThroughput')}</div>
+							<div class="stat-value">{t('showcase.stat.high')}</div>
 						</div>
 					</div>
 					<div class="health-stat">
@@ -284,8 +284,8 @@
 							></path>
 						</svg>
 						<div>
-							<div class="stat-label">Network Latency</div>
-							<div class="stat-value">Low</div>
+							<div class="stat-label">{t('showcase.stat.networkLatency')}</div>
+							<div class="stat-value">{t('showcase.stat.low')}</div>
 						</div>
 					</div>
 				</div>
@@ -296,7 +296,7 @@
 	<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
 		<!-- Recent Activity Feed -->
 		<div>
-			<h2 class="section-title">Recent Activity</h2>
+			<h2 class="section-title">{t('showcase.recentActivity')}</h2>
 			<Card>
 				<div class="activity-feed">
 					{#each recentActivity as activity}
@@ -352,7 +352,7 @@
 
 		<!-- Top Active Accounts -->
 		<div>
-			<h2 class="section-title">Top Active Accounts</h2>
+			<h2 class="section-title">{t('showcase.topActiveAccounts')}</h2>
 			<Card>
 				<div class="top-accounts">
 					{#each topAccounts as account, i}
@@ -374,7 +374,7 @@
 						</div>
 					{/each}
 					{#if topAccounts.length === 0}
-						<div class="empty-state">Loading account data...</div>
+						<div class="empty-state">{t('showcase.loadingAccountData')}</div>
 					{/if}
 				</div>
 			</Card>
@@ -383,7 +383,7 @@
 
 	<!-- Block Production Rate -->
 	<div class="mb-8">
-		<h2 class="section-title">Block Production Rate (Last 12 Hours)</h2>
+	<h2 class="section-title">{t('showcase.blockProductionRate')}</h2>
 		<Card>
 			<div class="production-chart">
 				{#each blockProductionRate as data}
@@ -400,7 +400,7 @@
 
 	<!-- Message Type Distribution -->
 	<div class="mb-8">
-		<h2 class="section-title">Message Type Distribution</h2>
+	<h2 class="section-title">{t('showcase.messageTypeDistribution')}</h2>
 		<Card>
 			<div class="message-types">
 				{#each Object.entries(messageTypeDistribution) as [type, count]}
@@ -413,7 +413,7 @@
 					</div>
 				{/each}
 				{#if Object.keys(messageTypeDistribution).length === 0}
-					<div class="empty-state">Loading message data...</div>
+					<div class="empty-state">{t('showcase.loadingMessageData')}</div>
 				{/if}
 		</Card>
 	</div>

@@ -70,10 +70,10 @@
 			<table class="data-table">
 				<thead class="table-header">
 					<tr>
-						<th class="table-th">Name</th>
-						<th class="table-th">Address</th>
-						<th class="table-th">Description</th>
-						<th class="table-th">Type</th>
+						<th class="table-th">{t('contracts.headers.name')}</th>
+						<th class="table-th">{t('contracts.headers.address')}</th>
+						<th class="table-th">{t('contracts.headers.description')}</th>
+						<th class="table-th">{t('contracts.headers.type')}</th>
 					</tr>
 				</thead>
 				<tbody class="table-body">
@@ -91,7 +91,7 @@
 								<span class="text-sm">{contract.description}</span>
 							</td>
 							<td class="table-td">
-								<Badge variant="warning">System</Badge>
+								<Badge variant="warning">{t('contracts.type.system')}</Badge>
 							</td>
 						</tr>
 					{/each}
