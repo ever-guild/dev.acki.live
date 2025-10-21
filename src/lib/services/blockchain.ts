@@ -1,8 +1,8 @@
 import graphql from '$lib/services/graphql';
 import tvmClient, { getIndexerAddressByName, popitGameCode } from './tvmClient';
-import indexerAbi from '../../data/contracts/mvsystem/Indexer.abi.json?raw';
-import popitGameAbi from '../../data/contracts/mvsystem/PopitGame.abi.json?raw';
-import MvMultifactorAbi from '../../data/contracts/mvsystem/MvMultifactor.abi.json?raw';
+import indexerAbi from '/src/data/contracts/mvsystem/Indexer.abi.json?raw';
+import popitGameAbi from '/src/data/contracts/mvsystem/PopitGame.abi.json?raw';
+import MvMultifactorAbi from '/src/data/contracts/mvsystem/Mvmultifactor.abi.json?raw';
 
 export enum AccountType {
   Indexer = 'Indexer',
