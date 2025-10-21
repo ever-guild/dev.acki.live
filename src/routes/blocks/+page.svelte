@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getBlocks, type Block } from '$lib/services/blockchain';
+	import graphql, { type Block } from '$lib/services/graphql';
 	import { translate } from '$lib/stores/i18n';
 	import Card from '$lib/components/ui/Card.svelte';
 	import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
 	import Badge from '$lib/components/ui/Badge.svelte';
 	import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
 	import LiveTimestamp from '$lib/components/ui/LiveTimestamp.svelte';
+  import { formatHash, formatAddress } from '$lib/utils/formatters';
 
 	let blocks: Block[] = [];
 	let loading = true;
@@ -15,21 +16,15 @@
 
 	onMount(async () => {
 		try {
-			blocks = await getBlocks();
+			blocks = await graphql.getLatestBlocks();
 		} catch (err) {
+      console.log('Error loading blocks:', err);
 			error = err instanceof Error ? err.message : 'Failed to load blocks';
 		} finally {
 			loading = false;
 		}
 	});
 
-	function formatHash(hash: string): string {
-		return `${hash.substring(0, 10)}...${hash.substring(hash.length - 8)}`;
-	}
-
-	function formatAddress(address: string): string {
-		return `${address.substring(0, 8)}...${address.substring(address.length - 6)}`;
-	}
 </script>
 
 <div class="page-container">
