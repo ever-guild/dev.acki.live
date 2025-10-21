@@ -6,9 +6,9 @@ export function formatAddress(address: string): string {
   return `${address.substring(0, 8)}...${address.substring(address.length - 6)}`;
 }
 
-export function formatStringAsNumber(value?: string): string {
-  if (!value || value === '0') return '0';
-  const num = parseFloat(value);
+export function formatBalance(balance?: string): string {
+  if (!balance || balance === '0') return '0';
+  const num = parseFloat(balance);
   if (num >= 1e9) return `${(num / 1e9).toFixed(2)}B`;
   if (num >= 1e6) return `${(num / 1e6).toFixed(2)}M`;
   if (num >= 1e3) return `${(num / 1e3).toFixed(2)}K`;

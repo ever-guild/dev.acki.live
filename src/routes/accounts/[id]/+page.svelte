@@ -14,8 +14,9 @@
   import LiveTimestamp from '$lib/components/ui/LiveTimestamp.svelte';
   import CopyIcon from '$lib/components/ui/CopyIcon.svelte';
   import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
-  import { getAccountTransactions } from '$lib/services/graphql';
+  import graphql from '$lib/services/graphql';
   import { getAccountDetails, type AccountDetails } from '$lib/services/blockchain';
+  import { formatHash } from '$lib/utils/formatters';
   
   interface Transaction {
     id: string;
@@ -71,18 +72,15 @@
     await loadAccount();
   });
 
-  async function loadView() {
-    error = null;
-    loadAccount();
-    loadTransactions();
-  }
-
   async function loadAccount() {
     accountLoading = true;
 
     try {
+    error = null;
       // TODO: pass account from search bar to avoid re-fetching
       account = await getAccountDetails(accountOrName);
+
+      loadTransactions();
     } catch (err) {
       error =
         err instanceof Error ? err.message : 'Failed to load account details';
@@ -96,25 +94,12 @@
     transactionsLoading = true;
 
     try {
-      transactions = await getAccountTransactions(accountOrName);
+      transactions = await graphql.getAccountTransactions(account.id);
     } catch (err) {
       console.error('Error loading transactions:', err);
     } finally {
       transactionsLoading = false;
     }
-  }
-
-  function formatBalance(balance: string): string {
-    try {
-      const value = parseFloat(balance) / 1e9;
-      return value.toFixed(4);
-    } catch {
-      return '0.0000';
-    }
-  }
-
-  function formatHash(hash: string): string {
-    return `${hash.substring(0, 10)}...${hash.substring(hash.length - 8)}`;
   }
 
   function getStatusVariant(
@@ -149,7 +134,7 @@
       <ErrorCard
         title="Failed to load account"
         message={error}
-        onRetry={loadView}
+        onRetry={loadAccount}
       />
     </Card>
   {:else if account}

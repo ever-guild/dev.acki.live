@@ -6,7 +6,7 @@
 	import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
 	import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
 	import LiveTimestamp from '$lib/components/ui/LiveTimestamp.svelte';
-  import { formatAddress, formatStringAsNumber } from '$lib/utils/formatters';
+  import { formatAddress, formatBalance } from '$lib/utils/formatters';
   import tvmClient from '$lib/services/tvmClient';
 
 	let messages: Message[] = [];
@@ -74,7 +74,7 @@
 									<span class="text-primary-500 font-medium">{message.type}</span>
 								</td>
 								<td class="table-td">
-									<span class="font-semibold text-primary">{formatStringAsNumber(message.value)}</span>
+									<span class="font-semibold text-primary">{formatBalance(message.value)}</span>
 								</td>
 								<td class="table-td">
 									<LiveTimestamp timestamp={Math.floor(message.timestamp.getTime() / 1000)} className="time-text" />
