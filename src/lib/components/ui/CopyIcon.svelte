@@ -1,17 +1,58 @@
 <script lang="ts">
-  export let copied = false;
+  import { createEventDispatcher } from 'svelte';
+
+  export let value: string | null = null; // value to copy
   export let size: number = 18;
   export let className = '';
   export let small = false;
+
+  const dispatch = createEventDispatcher();
+
+  let copied = false;
+  let copyTimeout: number | null = null;
+
+  function doCopy() {
+    if (!value) return;
+    // Use navigator.clipboard if available
+    navigator.clipboard
+      .writeText(value)
+      .then(() => {
+        copied = true;
+        dispatch('copy', { value });
+        if (copyTimeout) window.clearTimeout(copyTimeout);
+        copyTimeout = window.setTimeout(() => {
+          copied = false;
+          copyTimeout = null;
+        }, 1500);
+      })
+      .catch((err) => {
+        // Still provide feedback by briefly toggling copied to false/true
+        console.error('Copy failed', err);
+      });
+  }
+
+  function onKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      doCopy();
+    }
+  }
 </script>
 
-<span style="position:relative;display:inline-flex;align-items:center;">
+<span
+  style="position:relative;display:inline-flex;align-items:center;"
+  role="button"
+  tabindex="0"
+  on:click={doCopy}
+  on:keydown={onKeyDown}
+  aria-label="Copy to clipboard"
+>
   <svg
     width={size}
     height={size}
     fill="none"
     viewBox="0 0 24 24"
-    class={`copy-icon${copied ? ' copied' : ''} ${className}`}
+  class={`copy-icon${copied ? ' copied' : ''} ${className}`}
     xmlns="http://www.w3.org/2000/svg"
   >
     <path

@@ -16,7 +16,7 @@
   import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
   import graphql from '$lib/services/graphql';
   import { getAccountDetails, type AccountDetails } from '$lib/services/blockchain';
-  import { formatHash } from '$lib/utils/formatters';
+  import { formatBalance, formatHash } from '$lib/utils/formatters';
   
   interface Transaction {
     id: string;
@@ -46,27 +46,7 @@
   let error: string | null = null;
   let transactionsLoading = false;
 
-  // Copy helpers for small and long fields
-  let copied = false;
-  let copiedLong: string | null = null;
-
-  function copyAddress() {
-    if (!accountId) return;
-    navigator.clipboard.writeText(accountId).then(() => {
-      copied = true;
-      setTimeout(() => (copied = false), 1500);
-    });
-  }
-
-  function copyLong(value: string) {
-    if (!value) return;
-    navigator.clipboard.writeText(value).then(() => {
-      copiedLong = value;
-      setTimeout(() => {
-        if (copiedLong === value) copiedLong = null;
-      }, 1500);
-    });
-  }
+  // Copy now handled internally by CopyIcon via the 'value' prop
 
   onMount(async () => {
     await loadAccount();
@@ -144,12 +124,8 @@
         <div class="flex items-center gap-3">
           <span class="detail-label">Address:</span>
           <span class="detail-value font-mono break-all">{account.id}</span>
-          <button
-            class="copy-btn"
-            aria-label="Copy address"
-            on:click={copyAddress}
-          >
-            <CopyIcon {copied} size={20} />
+          <button class="copy-btn" aria-label="Copy address">
+            <CopyIcon value={account.id} size={20} />
           </button>
         </div>
         <!-- Type badge moved to page title -->
@@ -277,16 +253,8 @@
                       title={account.codeHash}
                       >{trimMiddle(account.codeHash, 66)}</span
                     >
-                    <button
-                      class="copy-btn small"
-                      aria-label="Copy code hash"
-                      on:click={() => copyLong(account?.codeHash ?? '')}
-                    >
-                      <CopyIcon
-                        copied={copiedLong === account.codeHash}
-                        size={18}
-                        small={true}
-                      />
+                    <button class="copy-btn small" aria-label="Copy code hash">
+                      <CopyIcon value={account.codeHash} size={18} small={true} />
                     </button>
                   </div>
                 </div>
@@ -304,16 +272,8 @@
                       title={account.dataHash}
                       >{trimMiddle(account.dataHash, 66)}</span
                     >
-                    <button
-                      class="copy-btn small"
-                      aria-label="Copy data hash"
-                      on:click={() => copyLong(account?.dataHash ?? '')}
-                    >
-                      <CopyIcon
-                        copied={copiedLong === account.dataHash}
-                        size={18}
-                        small={true}
-                      />
+                    <button class="copy-btn small" aria-label="Copy data hash">
+                      <CopyIcon value={account.dataHash} size={18} small={true} />
                     </button>
                   </div>
                 </div>
@@ -332,16 +292,8 @@
                       title={account.initCodeHash}
                       >{trimMiddle(account.initCodeHash, 66)}</span
                     >
-                    <button
-                      class="copy-btn small"
-                      aria-label="Copy init code hash"
-                      on:click={() => copyLong(account?.initCodeHash ?? '')}
-                    >
-                      <CopyIcon
-                        copied={copiedLong === account.initCodeHash}
-                        size={18}
-                        small={true}
-                      />
+                    <button class="copy-btn small" aria-label="Copy init code hash">
+                      <CopyIcon value={account.initCodeHash} size={18} small={true} />
                     </button>
                   </div>
                 </div>
@@ -357,16 +309,8 @@
                       class="long-text"
                       title={account.code}>{trimMiddle(account.code, 66)}</span
                     >
-                    <button
-                      class="copy-btn small"
-                      aria-label="Copy code"
-                      on:click={() => copyLong(account?.code ?? '')}
-                    >
-                      <CopyIcon
-                        copied={copiedLong === account.code}
-                        size={18}
-                        small={true}
-                      />
+                    <button class="copy-btn small" aria-label="Copy code">
+                      <CopyIcon value={account.code} size={18} small={true} />
                     </button>
                   </div>
                 </div>
@@ -440,16 +384,8 @@
                       class="long-text"
                       title={account.data}>{trimMiddle(account.data, 66)}</span
                     >
-                    <button
-                      class="copy-btn small"
-                      aria-label="Copy data"
-                      on:click={() => copyLong(account?.data ?? '')}
-                    >
-                      <CopyIcon
-                        copied={copiedLong === account.data}
-                        size={18}
-                        small={true}
-                      />
+                    <button class="copy-btn small" aria-label="Copy data">
+                      <CopyIcon value={account.data} size={18} small={true} />
                     </button>
                   </div>
                 </div>
