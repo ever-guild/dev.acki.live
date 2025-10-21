@@ -133,6 +133,8 @@ const translations: Translations = {
     'account.address': 'Address',
     'account.balance': 'Balance',
     'account.lastPaid': 'Last Paid',
+    'account.linkedAccounts': 'Linked Accounts',
+    'account.linked.none': 'No linked accounts',
     'account.recentTransactions': 'Recent Transactions',
     'account.noTransactions': 'No transactions found for this account',
     'account.txId': 'Transaction ID',
@@ -151,6 +153,7 @@ const translations: Translations = {
     'account.cells': 'Cells',
     'account.publicCells': 'Public Cells',
     'account.data': 'Data',
+    'account.name': 'Name',
     'status.failed': 'Failed'
   },
   ru: {
@@ -276,6 +279,9 @@ const translations: Translations = {
     'account.address': 'Адрес',
     'account.balance': 'Баланс',
     'account.lastPaid': 'Последняя выплата',
+    'account.name': 'Имя',
+    'account.linkedAccounts': 'Связанные аккаунты',
+    'account.linked.none': 'Связанных аккаунтов нет',
     'account.recentTransactions': 'Последние транзакции',
     'account.noTransactions': 'Транзакции для этого аккаунта не найдены',
     'account.txId': 'ID транзакции',

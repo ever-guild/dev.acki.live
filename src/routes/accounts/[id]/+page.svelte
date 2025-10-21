@@ -6,7 +6,6 @@
     return str.slice(0, part) + '...' + str.slice(str.length - part);
   }
   import { page } from '$app/stores';
-  import { onMount } from 'svelte';
   import { translate } from '$lib/stores/i18n';
   import Card from '$lib/components/ui/Card.svelte';
   import Badge from '$lib/components/ui/Badge.svelte';
@@ -15,9 +14,13 @@
   import CopyIcon from '$lib/components/ui/CopyIcon.svelte';
   import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
   import graphql from '$lib/services/graphql';
-  import { getAccountDetails, type AccountDetails } from '$lib/services/blockchain';
+  import {
+    getAccountDetails,
+    type AccountDetails,
+    AccountType,
+  } from '$lib/services/blockchain';
   import { formatBalance, formatHash } from '$lib/utils/formatters';
-  
+
   interface Transaction {
     id: string;
     now: number;
@@ -41,6 +44,8 @@
   $: t = $translate;
 
   let account: AccountDetails | null = null;
+  let accountName: string | null = null;
+  let linkedAccounts: Map<AccountType, string> = new Map();
   let transactions: Transaction[] = [];
   let accountLoading = true;
   let error: string | null = null;
@@ -49,13 +54,18 @@
   // For route-change reloading and concurrency guards
   let lastLoadedAccountOrName = '';
   let loadToken = 0; // incremented for each load to avoid races
-  
+
   // Trigger initial and subsequent loads when the route param changes
-  $: if (accountOrName && accountOrName !== lastLoadedAccountOrName) {
+  import { browser } from '$app/environment';
+
+  $: if (
+    browser &&
+    accountOrName &&
+    accountOrName !== lastLoadedAccountOrName
+  ) {
     lastLoadedAccountOrName = accountOrName;
     loadAccount(accountOrName);
   }
-
 
   async function loadAccount(accountParam: string = accountOrName) {
     const token = ++loadToken;
@@ -64,19 +74,44 @@
     account = null; // clear previous data while loading
 
     try {
-      const acct = await getAccountDetails(accountParam);
-      if (!acct) {
+      const accountDetails = await getAccountDetails(accountParam);
+      if (!accountDetails) {
         throw new Error('Account not found');
       }
       // If a newer load started, bail out
       if (token !== loadToken) return;
-  account = acct;
+      account = accountDetails;
+      // cache the computed name so the template won't need to call getName() again
+      accountName = await account.getName?.();
 
-  // load transactions for this account id (use local acct to avoid null checks)
-  await loadTransactions(acct.id, token);
+      account.getLinkedAccounts().then((accounts) => {
+        linkedAccounts = accounts;
+
+        if (linkedAccounts.has(AccountType.PopitGame)) {
+          const popitGameAddress = linkedAccounts.get(AccountType.PopitGame)!;
+          getAccountDetails(popitGameAddress).then((popitGameAccount) => {
+            console.log('PopitGame account details:', popitGameAccount);
+            if (!popitGameAccount) return;
+
+            const extraBalance = {
+              id: 0,
+              name: 'NACKL locked in PopitGame',
+              value:
+                popitGameAccount.balances.find((bal) => bal.name === 'NACKL')
+                  ?.value || 0,
+            };
+
+            account!.balances = [...account!.balances, extraBalance];
+          });
+        }
+      });
+
+      // load transactions for this account id (use local accountDetails to avoid null checks)
+      loadTransactions(account.id, token);
     } catch (err) {
       if (token !== loadToken) return;
-      error = err instanceof Error ? err.message : 'Failed to load account details';
+      error =
+        err instanceof Error ? err.message : 'Failed to load account details';
       console.error('Error loading account:', err);
     } finally {
       if (token === loadToken) accountLoading = false;
@@ -112,9 +147,14 @@
   <h1 class="page-title flex items-center gap-3">
     {t('account.title')}
     {#if account}
-      <Badge variant="info"
-  >{account.accTypeName || `${t('account.type')} ${account.accType}`}</Badge
-      >
+      {#if account.type}
+        <Badge variant="success">
+          {account.type}
+        </Badge>
+      {/if}
+      <Badge variant="info">
+        {account.accTypeName || `${t('account.type')} ${account.accType}`}
+      </Badge>
     {/if}
   </h1>
 
@@ -134,33 +174,80 @@
       />
     </Card>
   {:else if account}
-    <!-- Account Overview (compact) -->
+    <!-- Account Overview -->
     <Card>
-      <div class="p-4 flex flex-col gap-2">
-        <div class="flex items-center gap-3">
-          <span class="detail-label">{t('common.address')}</span>
-          <span class="detail-value font-mono break-all">{account.id}</span>
-          <button class="copy-btn" aria-label="Copy address">
-            <CopyIcon value={account.id} size={20} />
-          </button>
-        </div>
-        <!-- Type badge moved to page title -->
-        {#if account.balances && account.balances.length > 0}
-          <div class="flex items-center gap-3">
-            <span class="detail-label">{t('account.balance')}</span>
-            {#each account.balances as bal}
-              <span class="detail-value text-sm"
-                >{(bal.value / 1e9).toFixed(4)} {bal.name}</span
-              >
-            {/each}
-          </div>
-        {/if}
-        <div class="flex items-center gap-3">
-          <span class="detail-label">{t('account.lastPaid')}</span>
-          <LiveTimestamp
-            timestamp={account.lastPaid.getTime() / 1000}
-            className="time-text"
-          />
+      <div class="p-4">
+        <div class="table-wrapper">
+          <table class="table">
+            <tbody>
+              <tr>
+                <td class="table-label">{t('common.address')}</td>
+                <td class="table-value">
+                  <div class="addr-row">
+                    <span class="font-mono addr-text" title={account.id}
+                      >{account.id}</span
+                    >
+                    <button class="copy-btn" aria-label="Copy address">
+                      <CopyIcon value={account.id} size={20} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              {#if accountName}
+                <tr>
+                  <td class="table-label">{t('account.name')}</td>
+                  <td class="table-value">
+                    <span class="detail-value">{accountName}</span>
+                  </td>
+                </tr>
+              {/if}
+              {#if account.balances && account.balances.length > 0}
+                <tr>
+                  <td class="table-label">{t('account.balance')}</td>
+                  <td class="table-value">
+                    <ul class="value-list">
+                      {#each account.balances as bal}
+                        <li class="value-list-item">
+                          <span class="detail-value text-sm"
+                            >{(bal.value / 1e9).toFixed(4)}</span
+                          >
+                          <span class="text-sm text-gray-500">{bal.name}</span>
+                        </li>
+                      {/each}
+                    </ul>
+                  </td>
+                </tr>
+              {/if}
+              <tr>
+                <td class="table-label">{t('account.lastPaid')}</td>
+                <td class="table-value">
+                  <LiveTimestamp
+                    timestamp={account.lastPaid.getTime() / 1000}
+                    className="time-text"
+                  />
+                </td>
+              </tr>
+              {#if linkedAccounts && linkedAccounts.size > 0}
+                <tr>
+                  <td class="table-label">{t('account.linkedAccounts')}</td>
+                  <td class="table-value">
+                    <ul class="value-list">
+                      {#each linkedAccounts as [type, addr]}
+                        <li class="value-list-item">
+                          <a
+                            href={`/accounts/${addr}`}
+                            class="address-text hover:text-primary-600"
+                          >
+                            {type} - {trimMiddle(addr, 36)}
+                          </a>
+                        </li>
+                      {/each}
+                    </ul>
+                  </td>
+                </tr>
+              {/if}
+            </tbody>
+          </table>
         </div>
       </div>
     </Card>
@@ -168,7 +255,9 @@
     <!-- Recent Transactions (moved up) -->
     <Card>
       <div class="p-6">
-  <h2 class="text-xl font-bold mb-2">{t('account.recentTransactions')}</h2>
+        <h2 class="text-xl font-bold mb-2">
+          {t('account.recentTransactions')}
+        </h2>
         {#if transactionsLoading}
           <SkeletonLoader>
             <div class="space-y-4">
@@ -254,7 +343,7 @@
     {#if account.code || account.data}
       <Card>
         <div class="p-6">
-    <h2 class="text-xl font-bold mb-2">{t('account.codeData')}</h2>
+          <h2 class="text-xl font-bold mb-2">{t('account.codeData')}</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
             <div>
               {#if account.codeHash}
@@ -270,7 +359,11 @@
                       >{trimMiddle(account.codeHash, 66)}</span
                     >
                     <button class="copy-btn small" aria-label="Copy code hash">
-                      <CopyIcon value={account.codeHash} size={18} small={true} />
+                      <CopyIcon
+                        value={account.codeHash}
+                        size={18}
+                        small={true}
+                      />
                     </button>
                   </div>
                 </div>
@@ -289,7 +382,11 @@
                       >{trimMiddle(account.dataHash, 66)}</span
                     >
                     <button class="copy-btn small" aria-label="Copy data hash">
-                      <CopyIcon value={account.dataHash} size={18} small={true} />
+                      <CopyIcon
+                        value={account.dataHash}
+                        size={18}
+                        small={true}
+                      />
                     </button>
                   </div>
                 </div>
@@ -299,7 +396,8 @@
                 <div class="long-field">
                   <label
                     class="detail-label"
-                    for="account-init-code-hash-preview">{t('account.initCodeHash')}</label
+                    for="account-init-code-hash-preview"
+                    >{t('account.initCodeHash')}</label
                   >
                   <div class="long-field-row">
                     <span
@@ -308,8 +406,15 @@
                       title={account.initCodeHash}
                       >{trimMiddle(account.initCodeHash, 66)}</span
                     >
-                    <button class="copy-btn small" aria-label="Copy init code hash">
-                      <CopyIcon value={account.initCodeHash} size={18} small={true} />
+                    <button
+                      class="copy-btn small"
+                      aria-label="Copy init code hash"
+                    >
+                      <CopyIcon
+                        value={account.initCodeHash}
+                        size={18}
+                        small={true}
+                      />
                     </button>
                   </div>
                 </div>
@@ -350,7 +455,9 @@
               {/if}
               {#if account.bits}
                 <div class="long-field">
-                  <label class="detail-label" for="account-bits">{t('account.bits')}</label>
+                  <label class="detail-label" for="account-bits"
+                    >{t('account.bits')}</label
+                  >
                   <div class="long-field-row">
                     <span
                       id="account-bits"
@@ -362,7 +469,9 @@
               {/if}
               {#if account.cells}
                 <div class="long-field">
-                  <label class="detail-label" for="account-cells">{t('account.cells')}</label>
+                  <label class="detail-label" for="account-cells"
+                    >{t('account.cells')}</label
+                  >
                   <div class="long-field-row">
                     <span
                       id="account-cells"
@@ -454,6 +563,41 @@
     padding: 0.1rem 0.2rem;
   }
 
+  .addr-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0; /* allow flex child to shrink */
+  }
+
+  .addr-text {
+    display: inline-block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .value-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .value-list-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.125rem 0;
+  }
+
+  :global(.dark) .value-list-item {
+    color: #d1d5db;
+  }
+
   @keyframes pop-fade {
     0% {
       opacity: 0;
@@ -489,5 +633,53 @@
 
   .hash-text {
     @apply font-mono text-sm;
+  }
+
+  /* Table Styles */
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+  .table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: auto;
+  }
+  .table td {
+    padding: 0.5rem 1rem 0.5rem 0;
+    border-bottom: 1px solid #cbd5e1;
+    vertical-align: top;
+  }
+  .table tr:last-child td {
+    border-bottom: none;
+  }
+  :global(.dark) .table td {
+    border-bottom: 1px solid #1e293b;
+  }
+  :global(.dark) .table tr:last-child td {
+    border-bottom: none;
+  }
+  :global(.dark) .table td {
+    border-bottom: 1px solid #1e293b;
+  }
+  .table-label {
+    font-weight: 600;
+    color: #374151;
+    background: none;
+    width: 1px;
+    white-space: nowrap;
+    max-width: max-content;
+  }
+  .table-value {
+    color: #111827;
+    word-break: break-word;
+    width: auto;
+  }
+  :global(.dark) .table-label {
+    color: #d1d5db;
+  }
+  :global(.dark) .table-value {
+    color: #f3f4f6;
   }
 </style>

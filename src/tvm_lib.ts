@@ -14,6 +14,7 @@
 
 // This file is just a template that used to generate index.js at npm installation stage
 
+import { environment } from '$lib/environment';
 import workerScript from './worker?raw';
 
 let options = null;
@@ -74,7 +75,9 @@ function withSeparateWorker() {
 
   worker.onmessage = (evt) => {
     const message = evt.data;
-    console.log('response', message);
+    if (environment.develop) {
+      console.log('response', message);
+    }
     switch (message.type) {
       case "init":
         initComplete = true;

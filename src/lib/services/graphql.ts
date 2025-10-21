@@ -294,7 +294,9 @@ class GraphQLClient {
     });
     const result = await response.json();
 
-    console.log('GraphQL response:', result);
+    if (environment.develop) {
+      console.log('GraphQL response:', result);
+    }
 
     if (result.errors) {
       console.error('Error loading data:', result.errors);
