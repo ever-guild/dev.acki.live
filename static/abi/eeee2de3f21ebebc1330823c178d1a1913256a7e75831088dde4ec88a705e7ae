@@ -1,0 +1,117 @@
+{
+  "name": "DappConfig",
+  "compiler": "sol 0.79.0",
+  "abi": {
+    "ABI version": 2,
+    "version": "2.4",
+    "header": [
+      "pubkey",
+      "time",
+      "expire"
+    ],
+    "functions": [
+      {
+        "name": "constructor",
+        "inputs": [
+          {
+            "name": "dapp_id",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "name": "is_unlimit",
+                "type": "bool"
+              },
+              {
+                "name": "available_balance",
+                "type": "int128"
+              }
+            ],
+            "name": "data",
+            "type": "tuple"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "setNewConfig",
+        "id": "0x5",
+        "inputs": [
+          {
+            "name": "value",
+            "type": "int128"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "getDetails",
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "dapp_id",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "name": "is_unlimit",
+                "type": "bool"
+              },
+              {
+                "name": "available_balance",
+                "type": "int128"
+              }
+            ],
+            "name": "data",
+            "type": "tuple"
+          }
+        ]
+      }
+    ],
+    "events": [],
+    "fields": [
+      {
+        "init": true,
+        "name": "_pubkey",
+        "type": "uint256"
+      },
+      {
+        "init": false,
+        "name": "_timestamp",
+        "type": "uint64"
+      },
+      {
+        "init": false,
+        "name": "_constructorFlag",
+        "type": "bool"
+      },
+      {
+        "components": [
+          {
+            "name": "is_unlimit",
+            "type": "bool"
+          },
+          {
+            "name": "available_balance",
+            "type": "int128"
+          }
+        ],
+        "init": false,
+        "name": "_data",
+        "type": "tuple"
+      },
+      {
+        "init": false,
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "init": false,
+        "name": "_dapp_id",
+        "type": "uint256"
+      }
+    ]
+  }
+}

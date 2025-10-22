@@ -1,0 +1,270 @@
+{
+  "name": "BlockManagerContractRoot",
+  "compiler": "sol 0.78.2",
+  "abi": {
+    "ABI version": 2,
+    "version": "2.4",
+    "header": [
+      "pubkey",
+      "time",
+      "expire"
+    ],
+    "functions": [
+      {
+        "name": "constructor",
+        "inputs": [
+          {
+            "name": "giver",
+            "type": "address"
+          },
+          {
+            "name": "licenseBMRoot",
+            "type": "address"
+          },
+          {
+            "name": "epochDuration",
+            "type": "uint32"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "setNewCode",
+        "inputs": [
+          {
+            "name": "id",
+            "type": "uint8"
+          },
+          {
+            "name": "code",
+            "type": "cell"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "increaseBM",
+        "inputs": [
+          {
+            "name": "pubkey",
+            "type": "uint256"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "deployAckiNackiBlockManagerNodeWallet",
+        "inputs": [
+          {
+            "name": "pubkey",
+            "type": "uint256"
+          },
+          {
+            "name": "whiteListLicense",
+            "type": "map(uint256,bool)"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "getReward",
+        "inputs": [
+          {
+            "name": "pubkey",
+            "type": "uint256"
+          },
+          {
+            "name": "rewarded",
+            "type": "uint32"
+          },
+          {
+            "name": "startBM",
+            "type": "uint32"
+          },
+          {
+            "name": "isEnd",
+            "type": "bool"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "getAckiNackiBlockManagerNodeWalletAddress",
+        "inputs": [
+          {
+            "name": "pubkey",
+            "type": "uint256"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "wallet",
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "name": "getCodes",
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "code",
+            "type": "map(uint8,cell)"
+          }
+        ]
+      },
+      {
+        "name": "getVersion",
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "value0",
+            "type": "string"
+          },
+          {
+            "name": "value1",
+            "type": "string"
+          }
+        ]
+      }
+    ],
+    "events": [],
+    "fields": [
+      {
+        "init": true,
+        "name": "_pubkey",
+        "type": "uint256"
+      },
+      {
+        "init": false,
+        "name": "_constructorFlag",
+        "type": "bool"
+      },
+      {
+        "init": false,
+        "name": "messages",
+        "type": "map(uint32,map(uint256,bool))"
+      },
+      {
+        "components": [
+          {
+            "name": "messageHash",
+            "type": "uint256"
+          },
+          {
+            "name": "expireAt",
+            "type": "uint32"
+          }
+        ],
+        "init": false,
+        "name": "lastMessage",
+        "type": "tuple"
+      },
+      {
+        "init": false,
+        "name": "__value",
+        "type": "uint256"
+      },
+      {
+        "init": false,
+        "name": "_code",
+        "type": "map(uint8,cell)"
+      },
+      {
+        "init": false,
+        "name": "_licenseBMRoot",
+        "type": "address"
+      },
+      {
+        "init": false,
+        "name": "_numberOfActiveBlockManagers",
+        "type": "uint128"
+      },
+      {
+        "init": false,
+        "name": "_owner_wallet",
+        "type": "optional(address)"
+      },
+      {
+        "init": false,
+        "name": "_giver",
+        "type": "address"
+      },
+      {
+        "init": false,
+        "name": "_networkStart",
+        "type": "uint32"
+      },
+      {
+        "init": false,
+        "name": "_epochDuration",
+        "type": "uint32"
+      },
+      {
+        "init": false,
+        "name": "_prevEpochDuration",
+        "type": "uint32"
+      },
+      {
+        "init": false,
+        "name": "_epochStart",
+        "type": "uint32"
+      },
+      {
+        "init": false,
+        "name": "_epochEnd",
+        "type": "uint32"
+      },
+      {
+        "init": false,
+        "name": "_numberOfActiveBlockManagersAtEpochStart",
+        "type": "uint128"
+      },
+      {
+        "init": false,
+        "name": "_numberOfActiveBlockManagersAtPrevEpochStart",
+        "type": "uint128"
+      },
+      {
+        "init": false,
+        "name": "_reward_adjustment",
+        "type": "uint128"
+      },
+      {
+        "init": false,
+        "name": "_reward_adjustment_prev_epoch",
+        "type": "uint128"
+      },
+      {
+        "init": false,
+        "name": "_reward_last_time",
+        "type": "uint32"
+      },
+      {
+        "init": false,
+        "name": "_min_reward_period",
+        "type": "uint32"
+      },
+      {
+        "init": false,
+        "name": "_reward_period",
+        "type": "uint32"
+      },
+      {
+        "init": false,
+        "name": "_calc_reward_num",
+        "type": "uint32"
+      },
+      {
+        "init": false,
+        "name": "_reward_sum",
+        "type": "uint128"
+      },
+      {
+        "init": false,
+        "name": "_reward_sum_prev_epoch",
+        "type": "uint128"
+      }
+    ]
+  }
+}

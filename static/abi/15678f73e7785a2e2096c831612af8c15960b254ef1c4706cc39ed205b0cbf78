@@ -1,0 +1,228 @@
+{
+  "name": "BlockKeeperCoolerContract",
+  "compiler": "sol 0.78.2",
+  "abi": {
+    "ABI version": 2,
+    "version": "2.4",
+    "header": [
+      "pubkey",
+      "time",
+      "expire"
+    ],
+    "functions": [
+      {
+        "name": "constructor",
+        "inputs": [
+          {
+            "name": "waitStep",
+            "type": "uint64"
+          },
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "root",
+            "type": "address"
+          },
+          {
+            "name": "bls_pubkey",
+            "type": "bytes"
+          },
+          {
+            "name": "code",
+            "type": "map(uint8,cell)"
+          },
+          {
+            "name": "signerIndex",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "name": "num",
+                "type": "uint256"
+              },
+              {
+                "name": "stake",
+                "type": "uint128"
+              }
+            ],
+            "name": "licenses",
+            "type": "tuple[]"
+          },
+          {
+            "name": "epochDuration",
+            "type": "uint128"
+          },
+          {
+            "name": "is_continue",
+            "type": "bool"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "slash",
+        "inputs": [
+          {
+            "name": "slash_type",
+            "type": "uint8"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "touch",
+        "inputs": [],
+        "outputs": []
+      },
+      {
+        "name": "getDetails",
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "pubkey",
+            "type": "uint256"
+          },
+          {
+            "name": "root",
+            "type": "address"
+          },
+          {
+            "name": "seqNoStart",
+            "type": "uint64"
+          },
+          {
+            "name": "seqNoFinish",
+            "type": "uint64"
+          },
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "signerIndex",
+            "type": "uint16"
+          },
+          {
+            "name": "NACKLBalance",
+            "type": "varuint32"
+          }
+        ]
+      },
+      {
+        "name": "getVersion",
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "value0",
+            "type": "string"
+          },
+          {
+            "name": "value1",
+            "type": "string"
+          }
+        ]
+      }
+    ],
+    "events": [],
+    "fields": [
+      {
+        "init": true,
+        "name": "_pubkey",
+        "type": "uint256"
+      },
+      {
+        "init": false,
+        "name": "_constructorFlag",
+        "type": "bool"
+      },
+      {
+        "init": false,
+        "name": "messages",
+        "type": "map(uint32,map(uint256,bool))"
+      },
+      {
+        "components": [
+          {
+            "name": "messageHash",
+            "type": "uint256"
+          },
+          {
+            "name": "expireAt",
+            "type": "uint32"
+          }
+        ],
+        "init": false,
+        "name": "lastMessage",
+        "type": "tuple"
+      },
+      {
+        "init": false,
+        "name": "__value",
+        "type": "uint256"
+      },
+      {
+        "init": false,
+        "name": "_code",
+        "type": "map(uint8,cell)"
+      },
+      {
+        "init": true,
+        "name": "_owner_pubkey",
+        "type": "uint256"
+      },
+      {
+        "init": false,
+        "name": "_root",
+        "type": "address"
+      },
+      {
+        "init": true,
+        "name": "_seqNoStart",
+        "type": "uint64"
+      },
+      {
+        "init": false,
+        "name": "_seqNoFinish",
+        "type": "uint64"
+      },
+      {
+        "init": false,
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "init": false,
+        "name": "_bls_pubkey",
+        "type": "bytes"
+      },
+      {
+        "init": false,
+        "name": "_stake",
+        "type": "uint256"
+      },
+      {
+        "init": false,
+        "name": "_signerIndex",
+        "type": "uint16"
+      },
+      {
+        "components": [
+          {
+            "name": "num",
+            "type": "uint256"
+          },
+          {
+            "name": "stake",
+            "type": "uint128"
+          }
+        ],
+        "init": false,
+        "name": "_licenses",
+        "type": "tuple[]"
+      }
+    ]
+  }
+}

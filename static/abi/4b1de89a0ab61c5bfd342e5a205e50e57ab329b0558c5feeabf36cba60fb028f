@@ -1,0 +1,506 @@
+{
+  "name": "BlockKeeperEpochContract",
+  "compiler": "sol 0.77.0",
+  "abi": {
+    "ABI version": 2,
+    "version": "2.4",
+    "header": [
+      "pubkey",
+      "time",
+      "expire"
+    ],
+    "functions": [
+      {
+        "name": "constructor",
+        "inputs": [
+          {
+            "name": "waitStep",
+            "type": "uint64"
+          },
+          {
+            "name": "epochDuration",
+            "type": "uint64"
+          },
+          {
+            "name": "bls_pubkey",
+            "type": "bytes"
+          },
+          {
+            "name": "code",
+            "type": "map(uint8,cell)"
+          },
+          {
+            "name": "isContinue",
+            "type": "bool"
+          },
+          {
+            "name": "sumReputationCoef",
+            "type": "uint128"
+          },
+          {
+            "name": "signerIndex",
+            "type": "uint16"
+          },
+          {
+            "components": [
+              {
+                "name": "num",
+                "type": "uint256"
+              },
+              {
+                "name": "stake",
+                "type": "uint128"
+              }
+            ],
+            "name": "licenses",
+            "type": "tuple[]"
+          },
+          {
+            "name": "virtualStake",
+            "type": "optional(uint128)"
+          },
+          {
+            "name": "reward_sum",
+            "type": "uint128"
+          },
+          {
+            "name": "myIp",
+            "type": "string"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "setStake",
+        "inputs": [
+          {
+            "name": "totalStake",
+            "type": "uint256"
+          },
+          {
+            "name": "numberOfActiveBlockKeepers",
+            "type": "uint128"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "continueStake",
+        "inputs": [
+          {
+            "name": "epochDuration",
+            "type": "uint64"
+          },
+          {
+            "name": "waitStep",
+            "type": "uint64"
+          },
+          {
+            "name": "bls_pubkey",
+            "type": "bytes"
+          },
+          {
+            "name": "signerIndex",
+            "type": "uint16"
+          },
+          {
+            "name": "rep_coef",
+            "type": "uint128"
+          },
+          {
+            "components": [
+              {
+                "name": "num",
+                "type": "uint256"
+              },
+              {
+                "name": "stake",
+                "type": "uint128"
+              }
+            ],
+            "name": "licenses",
+            "type": "tuple[]"
+          },
+          {
+            "name": "virtualStake",
+            "type": "optional(uint128)"
+          },
+          {
+            "name": "ProxyList",
+            "type": "map(uint8,string)"
+          },
+          {
+            "name": "reward_sum",
+            "type": "uint128"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "cancelContinueStake",
+        "inputs": [],
+        "outputs": []
+      },
+      {
+        "name": "slash",
+        "inputs": [
+          {
+            "name": "slash_type",
+            "type": "uint8"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "touch",
+        "inputs": [],
+        "outputs": []
+      },
+      {
+        "name": "canDelete",
+        "inputs": [
+          {
+            "name": "reward",
+            "type": "uint256"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "destroy",
+        "inputs": [],
+        "outputs": []
+      },
+      {
+        "name": "destroy_slash",
+        "inputs": [
+          {
+            "name": "slash_type",
+            "type": "uint8"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "changeReputation",
+        "inputs": [
+          {
+            "name": "is_inc",
+            "type": "bool"
+          },
+          {
+            "name": "value",
+            "type": "uint128"
+          },
+          {
+            "name": "num",
+            "type": "uint256"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "changeReputationContinue",
+        "inputs": [
+          {
+            "name": "value",
+            "type": "uint128"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "getDetails",
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "pubkey",
+            "type": "uint256"
+          },
+          {
+            "name": "root",
+            "type": "address"
+          },
+          {
+            "name": "seqNoStart",
+            "type": "uint64"
+          },
+          {
+            "name": "seqNoFinish",
+            "type": "uint64"
+          },
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "continueStakes",
+            "type": "uint256"
+          },
+          {
+            "name": "isContinue",
+            "type": "bool"
+          },
+          {
+            "name": "signerIndex",
+            "type": "uint16"
+          },
+          {
+            "name": "signerIndexContinue",
+            "type": "uint16"
+          },
+          {
+            "name": "proxyListContinue",
+            "type": "map(uint8,string)"
+          },
+          {
+            "name": "myIp",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "getProxyListContinue",
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "proxyListContinue",
+            "type": "map(uint8,string)"
+          }
+        ]
+      },
+      {
+        "name": "getEpochCoolerCodeHash",
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "epochCoolerCodeHash",
+            "type": "uint256"
+          }
+        ]
+      },
+      {
+        "name": "getVersion",
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "value0",
+            "type": "string"
+          },
+          {
+            "name": "value1",
+            "type": "string"
+          }
+        ]
+      }
+    ],
+    "events": [],
+    "fields": [
+      {
+        "init": true,
+        "name": "_pubkey",
+        "type": "uint256"
+      },
+      {
+        "init": false,
+        "name": "_constructorFlag",
+        "type": "bool"
+      },
+      {
+        "init": false,
+        "name": "messages",
+        "type": "map(uint32,map(uint256,bool))"
+      },
+      {
+        "components": [
+          {
+            "name": "messageHash",
+            "type": "uint256"
+          },
+          {
+            "name": "expireAt",
+            "type": "uint32"
+          }
+        ],
+        "init": false,
+        "name": "lastMessage",
+        "type": "tuple"
+      },
+      {
+        "init": false,
+        "name": "__value",
+        "type": "uint256"
+      },
+      {
+        "init": false,
+        "name": "_code",
+        "type": "map(uint8,cell)"
+      },
+      {
+        "init": true,
+        "name": "_owner_pubkey",
+        "type": "uint256"
+      },
+      {
+        "init": false,
+        "name": "_root",
+        "type": "address"
+      },
+      {
+        "init": true,
+        "name": "_seqNoStart",
+        "type": "uint64"
+      },
+      {
+        "init": false,
+        "name": "_seqNoFinish",
+        "type": "uint64"
+      },
+      {
+        "init": false,
+        "name": "_bls_pubkey",
+        "type": "bytes"
+      },
+      {
+        "init": false,
+        "name": "_isContinue",
+        "type": "bool"
+      },
+      {
+        "init": false,
+        "name": "_waitStep",
+        "type": "uint64"
+      },
+      {
+        "init": false,
+        "name": "_stake",
+        "type": "uint256"
+      },
+      {
+        "init": false,
+        "name": "_totalStake",
+        "type": "uint256"
+      },
+      {
+        "init": false,
+        "name": "_owner_address",
+        "type": "address"
+      },
+      {
+        "init": false,
+        "name": "_epochDurationContinue",
+        "type": "uint64"
+      },
+      {
+        "init": false,
+        "name": "_waitStepContinue",
+        "type": "uint64"
+      },
+      {
+        "init": false,
+        "name": "_bls_pubkeyContinue",
+        "type": "bytes"
+      },
+      {
+        "init": false,
+        "name": "_stakeContinue",
+        "type": "uint256"
+      },
+      {
+        "init": false,
+        "name": "_epochDuration",
+        "type": "uint64"
+      },
+      {
+        "init": false,
+        "name": "_numberOfActiveBlockKeepers",
+        "type": "uint128"
+      },
+      {
+        "init": false,
+        "name": "_unixtimeStart",
+        "type": "uint32"
+      },
+      {
+        "init": false,
+        "name": "_sumReputationCoef",
+        "type": "uint128"
+      },
+      {
+        "init": false,
+        "name": "_sumReputationCoefContinue",
+        "type": "uint128"
+      },
+      {
+        "init": false,
+        "name": "_signerIndex",
+        "type": "uint16"
+      },
+      {
+        "init": false,
+        "name": "_signerIndexContinue",
+        "type": "uint16"
+      },
+      {
+        "init": false,
+        "name": "_proxyListContinue",
+        "type": "map(uint8,string)"
+      },
+      {
+        "init": false,
+        "name": "_myIp",
+        "type": "string"
+      },
+      {
+        "components": [
+          {
+            "name": "num",
+            "type": "uint256"
+          },
+          {
+            "name": "stake",
+            "type": "uint128"
+          }
+        ],
+        "init": false,
+        "name": "_licenses",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "name": "num",
+            "type": "uint256"
+          },
+          {
+            "name": "stake",
+            "type": "uint128"
+          }
+        ],
+        "init": false,
+        "name": "_licensesContinue",
+        "type": "tuple[]"
+      },
+      {
+        "init": false,
+        "name": "_virtualStake",
+        "type": "optional(uint128)"
+      },
+      {
+        "init": false,
+        "name": "_virtualStakeContinue",
+        "type": "optional(uint128)"
+      },
+      {
+        "init": false,
+        "name": "_reward_sum",
+        "type": "uint128"
+      },
+      {
+        "init": false,
+        "name": "_reward_sum_continue",
+        "type": "uint128"
+      }
+    ]
+  }
+}
