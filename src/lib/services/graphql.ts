@@ -116,24 +116,44 @@ const query = {
         filter: { account_addr: { eq: $address } }
       ) {
         id
+        account_addr
+        workchain_id
         now
         now_string
         lt
+        block_id
         orig_status_name
         end_status_name
         total_fees(format: DEC)
         balance_delta(format: DEC)
-        in_msg
         outmsg_cnt
         aborted
-        compute {
-          success
-          exit_code
-        }
         destroyed
+        tr_type_name
+        in_message { id src dst msg_type_name value(format: DEC) bounce bounced body created_at boc src_transaction {id}}
+        out_messages { id src dst msg_type_name value(format: DEC) bounce bounced body created_at boc dst_transaction {id} }
+        compute { compute_type_name success exit_code gas_used gas_fees(format: DEC) gas_limit vm_steps }
+        action { success valid no_funds result_code tot_actions msgs_created total_fwd_fees(format: DEC) total_action_fees(format: DEC) }
+        storage { storage_fees_collected(format: DEC) status_change_name }
       }
     }
   `,
+        // id
+        // now
+        // now_string
+        // lt
+        // orig_status_name
+        // end_status_name
+        // total_fees(format: DEC)
+        // balance_delta(format: DEC)
+        // in_msg
+        // outmsg_cnt
+        // aborted
+        // compute {
+        //   success
+        //   exit_code
+        // }
+        // destroyed
 }
 
 class GraphQLClient {

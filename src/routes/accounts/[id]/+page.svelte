@@ -18,8 +18,11 @@
     getAccountDetails,
     type AccountDetails,
     AccountType,
+    knownContracts,
   } from '$lib/services/blockchain';
   import { formatBalance, formatHash } from '$lib/utils/formatters';
+  import tvmClient from '$lib/services/tvmClient';
+import popitGameAbi from '/src/data/contracts/mvsystem/PopitGame.abi.json?raw';
 
   interface Transaction {
     id: string;
@@ -90,7 +93,6 @@
         if (linkedAccounts.has(AccountType.PopitGame)) {
           const popitGameAddress = linkedAccounts.get(AccountType.PopitGame)!;
           getAccountDetails(popitGameAddress).then((popitGameAccount) => {
-            console.log('PopitGame account details:', popitGameAccount);
             if (!popitGameAccount) return;
 
             const extraBalance = {
@@ -123,6 +125,69 @@
 
     try {
       const txs = await graphql.getAccountTransactions(accountId);
+      console.log(txs);
+
+      const dst = await getAccountDetails(txs[0].in_message.dst);
+      console.log('DST account:', dst);
+      
+      const { parsed } = await tvmClient.boc.parse_message({
+        boc: txs[0].in_message.boc,
+      });
+      console.log('Parsed transaction:', parsed);
+
+      if (knownContracts.get(dst!.codeHash) === AccountType.PopitGame) {
+        console.log('PopitGame transaction detected');
+
+        try {
+          const asd = await tvmClient.abi.decode_boc({
+            params: [],
+            boc: txs[0].in_message.boc,
+            allow_partial: true,
+          });
+          console.log('Decoded PopitGame BOC:', asd);
+        } catch (err) {
+          console.error('Error decoding PopitGame BOC:', err);
+        }
+
+        try {
+          const decodedBody = await tvmClient.abi.decode_message_body({
+            abi: {
+              type: 'Json',
+              value: popitGameAbi,
+            },
+            body: parsed.body,
+            is_internal: parsed.msg_type_name === 'internal',
+          });
+          console.log('Decoded PopitGame message body:', decodedBody);
+        } catch (err) {
+          console.error('Error decoding PopitGame message body:', err);
+        }
+
+        try {
+          const decoded = await tvmClient.abi.decode_message({
+            abi: {
+              type: 'Json',
+              value: popitGameAbi,
+            },
+            message: parsed.boc,
+          });
+          console.log('Decoded PopitGame message:', decoded);
+        } catch (err) {
+          console.error('Error decoding PopitGame message:', err);
+        }
+      }
+
+      
+      // const parsed2 = await tvmClient.abi.decode_message_body({
+      //   abi: {
+      //     type: 'Json',
+      //     value: account!.abi,
+      //   },
+      //   body: txs[0].in_message.body,
+      // });
+
+      // console.log('Parsed transaction 2:', parsed2);
+
       if (token !== loadToken) return;
       transactions = txs;
     } catch (err) {

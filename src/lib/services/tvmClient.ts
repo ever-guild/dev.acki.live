@@ -8,7 +8,6 @@ const tvmClient = new TvmClient();
 
 export default tvmClient;
 
-
 export async function getIndexerAddressByName(name: string): Promise<string> {
   const encodedMessage = await tvmClient.abi.encode_message({
     abi: {
@@ -28,5 +27,4 @@ export async function getIndexerAddressByName(name: string): Promise<string> {
   });
 
   return encodedMessage.address;
-
 }
