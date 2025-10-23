@@ -211,7 +211,11 @@
 
 					<div class="detail-item">
 						<div class="detail-label">{t('transactions.details.accountAddress')}</div>
-						<div class="detail-value font-mono text-sm">{transaction.account_addr}</div>
+						<div class="detail-value font-mono text-sm">
+              <a href="/accounts/{transaction.account_addr}" class="hover:text-primary-600">
+                {transaction.account_addr}
+              </a>
+            </div>
 					</div>
 
 					<div class="detail-item">
@@ -282,12 +286,20 @@
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<div class="detail-item">
 							<div class="detail-label">{t('common.from')}</div>
-							<div class="detail-value font-mono text-sm">{transaction.in_message.src}</div>
+							<div class="detail-value font-mono text-sm">
+                <a href="/accounts/{transaction.in_message.src}" class="hover:text-primary-600">
+                  {formatAddress(transaction.in_message.src)}
+                </a>
+              </div>
 						</div>
 
 						<div class="detail-item">
 							<div class="detail-label">{t('common.to')}</div>
-							<div class="detail-value font-mono text-sm">{transaction.in_message.dst}</div>
+							<div class="detail-value font-mono text-sm">
+                <a href="/accounts/{transaction.in_message.dst}" class="hover:text-primary-600">
+                  {formatAddress(transaction.in_message.dst)}
+                </a>
+              </div>
 						</div>
 
 						<div class="detail-item">
@@ -314,12 +326,20 @@
 								<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 									<div class="detail-item">
 										<div class="detail-label">{t('common.from')}</div>
-										<div class="detail-value font-mono text-xs">{msg.src}</div>
+										<div class="detail-value font-mono text-xs">
+                      <a href="/accounts/{msg.src}" class="hover:text-primary-600">
+                        {formatAddress(msg.src)}
+                      </a>
+                    </div>
 									</div>
 
 									<div class="detail-item">
 										<div class="detail-label">{t('common.to')}</div>
-										<div class="detail-value font-mono text-xs">{msg.dst}</div>
+                    <div class="detail-value font-mono text-xs">
+                      <a href="/accounts/{msg.dst}" class="hover:text-primary-600">
+                        {formatAddress(msg.dst)}
+                      </a>
+                    </div>
 									</div>
 
 									<div class="detail-item">
