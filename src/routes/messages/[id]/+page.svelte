@@ -7,6 +7,7 @@
 	import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
 	import Badge from '$lib/components/ui/Badge.svelte';
 	import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
+	import AccountLink from '$lib/components/ui/AccountLink.svelte';
 	import { environment } from '$lib/environment';
 
 	interface MessageDetails {
@@ -176,27 +177,15 @@
 					<div class="detail-item">
 						<div class="detail-label">From</div>
 						<div class="detail-value font-mono text-sm break-all">
-                        {#if message.src}
-                          <a href="/accounts/{message.src}" title="{message.src}" class="hover:text-primary-600">
-                            {message.src}
-                          </a>
-                        {:else}
-                          {t('common.external')}
-                        {/if}
-                        </div>
+              <AccountLink address={message.src} showFullAddress={true} />
+            </div>
 					</div>
 
 					<div class="detail-item">
 						<div class="detail-label">To</div>
 						<div class="detail-value font-mono text-sm break-all">
-                        {#if message.dst}
-                          <a href="/accounts/{message.dst}" title="{message.dst}" class="hover:text-primary-600">
-                            {message.dst}
-                          </a>
-                        {:else}
-                          {t('common.external')}
-                        {/if}
-                        </div>
+              <AccountLink address={message.dst} showFullAddress={true} />
+            </div>
 					</div>
 
 					<div class="detail-item">

@@ -90,7 +90,6 @@
         if (linkedAccounts.has(AccountType.PopitGame)) {
           const popitGameAddress = linkedAccounts.get(AccountType.PopitGame)!;
           getAccountDetails(popitGameAddress).then((popitGameAccount) => {
-            console.log('PopitGame account details:', popitGameAccount);
             if (!popitGameAccount) return;
 
             const extraBalance = {

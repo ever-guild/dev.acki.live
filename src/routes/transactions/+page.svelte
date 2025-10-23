@@ -85,23 +85,12 @@
                 </td>
                 <td class="table-td">
                   <span class="address-text">
-                    {#if tx.from}
-                      <a
-                        href="/accounts/{tx.from}"
-                        class="hover:text-primary-600"
-                      >
-                        {formatAddress(tx.from)}
-                      </a>
-                    {:else}
-                      {t('common.external')}
-                    {/if}
+                    <AccountLink address={tx.from} />
                   </span>
                 </td>
                 <td class="table-td">
                   <span class="address-text">
-                    <a href="/accounts/{tx.to}" class="hover:text-primary-600">
-                      {formatAddress(tx.to)}
-                    </a>
+                    <AccountLink address={tx.to} />
                   </span>
                 </td>
                 <td class="table-td">

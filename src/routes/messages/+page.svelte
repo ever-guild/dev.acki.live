@@ -6,8 +6,8 @@
 	import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
 	import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
 	import LiveTimestamp from '$lib/components/ui/LiveTimestamp.svelte';
-  import {formatAddress, formatBalance, formatHash} from '$lib/utils/formatters';
-  import tvmClient from '$lib/services/tvmClient';
+  import { formatBalance, formatHash } from '$lib/utils/formatters';
+  import AccountLink from '$lib/components/ui/AccountLink.svelte';
 
 	let messages: Message[] = [];
 	let loading = true;
@@ -69,24 +69,10 @@
 									</a>
 								</td>
 								<td class="table-td">
-                  {#if message.from}
-                    <a href="/accounts/{message.from}" class="hover:text-primary-600">
-                      {formatAddress(message.from)}
-                    </a>
-                  {:else}
-                    {t('common.external')}
-                  {/if}
+                  <AccountLink address={message.from} />
 								</td>
 								<td class="table-td">
-									<span>
-                  {#if message.to}
-                    <a href="/accounts/{message.to}" class="hover:text-primary-600">
-                      {formatAddress(message.to)}
-                    </a>
-                  {:else}
-                    {t('common.external')}
-                  {/if}
-                  </span>
+                  <AccountLink address={message.to} />
 								</td>
 								<td class="table-td">
 									<span class="text-primary-500 font-medium">{message.type}</span>

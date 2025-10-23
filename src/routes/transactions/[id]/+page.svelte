@@ -7,7 +7,9 @@
 	import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
 	import Badge from '$lib/components/ui/Badge.svelte';
 	import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
+	import AccountLink from '$lib/components/ui/AccountLink.svelte';
 	import { environment } from '$lib/environment';
+  import {formatHash} from "$lib/utils/formatters";
 
 	interface TransactionDetails {
 		id: string;
@@ -212,9 +214,7 @@
 					<div class="detail-item">
 						<div class="detail-label">{t('transactions.details.accountAddress')}</div>
 						<div class="detail-value font-mono text-sm">
-              <a href="/accounts/{transaction.account_addr}" class="hover:text-primary-600">
-                {transaction.account_addr}
-              </a>
+              <AccountLink address={transaction.account_addr} showFullAddress={true} />
             </div>
 					</div>
 
@@ -300,9 +300,7 @@
 						<div class="detail-item">
 							<div class="detail-label">{t('common.to')}</div>
 							<div class="detail-value font-mono text-sm">
-                <a href="/accounts/{transaction.in_message.dst}" class="hover:text-primary-600">
-                  {formatAddress(transaction.in_message.dst)}
-                </a>
+                <AccountLink address={transaction.in_message.dst} />
               </div>
 						</div>
 
@@ -333,18 +331,14 @@
 									<div class="detail-item">
 										<div class="detail-label">{t('common.from')}</div>
 										<div class="detail-value font-mono text-xs">
-                      <a href="/accounts/{msg.src}" class="hover:text-primary-600">
-                        {formatAddress(msg.src)}
-                      </a>
+                      <AccountLink address={msg.src} />
                     </div>
 									</div>
 
 									<div class="detail-item">
 										<div class="detail-label">{t('common.to')}</div>
                     <div class="detail-value font-mono text-xs">
-                      <a href="/accounts/{msg.dst}" class="hover:text-primary-600">
-                        {formatAddress(msg.dst)}
-                      </a>
+                      <AccountLink address={msg.dst} />
                     </div>
 									</div>
 

@@ -2,6 +2,7 @@
 	import { translate } from '$lib/stores/i18n';
 	import Card from '$lib/components/ui/Card.svelte';
 	import Badge from '$lib/components/ui/Badge.svelte';
+	import AccountLink from '$lib/components/ui/AccountLink.svelte';
 
 	$: t = $translate;
 
@@ -83,9 +84,7 @@
 								<span class="font-semibold">{contract.name}</span>
 							</td>
 							<td class="table-td">
-								<a href="/accounts/{contract.address}" class="hash-text hover:text-primary-600">
-									{formatAddress(contract.address)}
-								</a>
+								<AccountLink address={contract.address} showFullAddress={true} />
 							</td>
 							<td class="table-td">
 								<span class="text-sm">{contract.description}</span>
