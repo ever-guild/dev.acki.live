@@ -8,7 +8,7 @@ import {log} from "$lib/utils/log";
 
 export enum AccountType {
   Indexer = 'Indexer',
-  MvMultifactor = 'Mobile Verifier Multitactor',
+  MvMultifactor = 'Mobile Verifier Multifactor',
   PopitGame = 'Popit Game'
 }
 
