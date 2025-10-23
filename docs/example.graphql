@@ -1,0 +1,21 @@
+fragment infoMessage on Message {
+    id
+}
+
+fragment shortTransaction on Transaction {
+    now
+    id
+    block_id
+}
+
+fragment infoTransaction on Transaction {
+    ...shortTransaction
+    in_message { ...infoMessage }
+    out_messages { ...infoMessage }
+}
+
+query transactionList {
+    first: transactions(limit: 1 orderBy: { direction: ASC path: "now"}) { ...shortTransaction }
+    last: transactions(limit: 1 orderBy: { direction: DESC path: "now"}) { ...shortTransaction }
+    range: transactions(limit: 100 orderBy: { direction: DESC path: "now"}) { ...infoTransaction }
+}

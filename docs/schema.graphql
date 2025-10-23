@@ -1,0 +1,1253 @@
+# This file was generated. Do not edit manually.
+
+schema {
+  query: QueryRoot
+}
+
+"Indicates that an Input Object is a OneOf Input Object (and thus requires exactly one of its field be provided)"
+directive @oneOf on INPUT_OBJECT
+
+"""
+
+# Account type
+
+Recall that a smart contract and an account are the same thing in the
+context of the TVM-based Blockchain, and that these terms can be used
+interchangeably, at least as long as only small (or “usual”) smart contracts
+are considered. A large smart-contract may employ several accounts lying in
+different shardchains of the same workchain for load balancing purposes.
+
+An account is identified by its full address and is completely described by
+its state. In other words, there is nothing else in an account apart from
+its address and state.
+"""
+type Account {
+  """
+
+  Returns the current status of the account.
+
+  - 0 – uninit
+  - 1 – active
+  - 2 – frozen
+  - 3 – nonExist
+  """
+  acc_type: Int
+  acc_type_name: AccountStatusEnum!
+  address: String!
+  balance(format: BigIntFormat): String
+  balance_other: [OtherCurrency!]
+  """
+
+  Contains sum of all the bits used by the cells of the account. Used in
+  storage fee calculation.
+  """
+  bits(format: BigIntFormat): String
+  "Bag of cells with the account struct encoded as base64."
+  boc: String
+  """
+
+  Contains number of the cells of the account. Used in storage fee
+  calculation.
+  """
+  cells(format: BigIntFormat): String
+  "If present, contains smart-contract code encoded with in base64."
+  code: String
+  "`code` field root hash."
+  code_hash: String!
+  dapp_id: String
+  "If present, contains smart-contract data encoded with in base64."
+  data: String
+  "`data` field root hash."
+  data_hash: String!
+  """
+
+  If present, accumulates the storage payments that could not be exacted
+  from the balance of the account, represented by a strictly positive
+  amount of nano tokens; it can be present only for uninitialized or
+  frozen accounts that have a balance of zero Grams (but may have
+  non-zero balances in non gram cryptocurrencies). When due_payment
+  becomes larger than the value of a configurable parameter of the
+  blockchain, the ac- count is destroyed altogether, and its balance,
+  if any, is transferred to the zero account.
+  """
+  due_payment(format: BigIntFormat): String
+  id: String!
+  "account 's initial code hash (when it was deployed)."
+  init_code_hash: String!
+  """
+
+  Contains either the unixtime of the most recent storage payment
+  collected (usually this is the unixtime of the most recent transaction),
+  or the unixtime when the account was created (again, by a transaction).
+  """
+  last_paid: Int
+  last_trans_lt(format: BigIntFormat): String
+  "If present, contains library code used in smart-contract."
+  library: String
+  "`library` field root hash."
+  library_hash: String
+  prev_code_hash: String
+  """
+
+  Merkle proof that account is a part of shard state it cut from as a bag
+  of cells with Merkle proof struct encoded as base64.
+  """
+  proof: String
+  """
+
+  Contains the number of public cells of the account. Used in storage fee
+  calculation.
+  """
+  public_cells(format: BigIntFormat): String
+  "Is present and non-zero only in instances of large smart contracts."
+  split_depth: Int
+  """
+
+  Contains the representation hash of an instance of `StateInit` when an
+  account is frozen.
+  """
+  state_hash: String
+  """
+
+  May be present only in the masterchain—and within the masterchain, only
+  in some fundamental smart contracts required for the whole system to
+  function.
+  """
+  tick: Boolean
+  """
+
+  May be present only in the masterchain—and within the masterchain, only
+  in some fundamental smart contracts required for the whole system to
+  function.
+  """
+  tock: Boolean
+  "Workchain id of the account address (id field)."
+  workchain_id: Int!
+}
+
+"An edge in a connection."
+type AccountEventEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: Event!
+}
+
+type AccountEventsConnection {
+  "A list of edges."
+  edges: [AccountEventEdge!]!
+  "A list of nodes."
+  nodes: [Event!]!
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+}
+
+type AccountQuery {
+  """
+
+  This node could be used for a cursor-based pagination of account
+  events (aka outgoing external messages).
+  """
+  events(
+    after: String,
+    before: String,
+    "This field is mutually exclusive with 'last'."
+    first: Int,
+    "This field is mutually exclusive with 'first'."
+    last: Int
+  ): AccountEventsConnection
+  "Account information."
+  info: SingleAccount
+}
+
+type Block {
+  account_blocks: [BlockAccountBlocks!]
+  after_merge: Boolean
+  after_split: Boolean
+  aggregated_signature: [Int!]!
+  before_split: Boolean
+  "Serialized bag of cells of this block encoded with base64."
+  boc: String
+  """
+
+  Collection-unique field for pagination and sorting. This field is
+  designed to retain logical order.
+  """
+  chain_order: String
+  "Public key of the collator who produced this block."
+  created_by: String
+  directives: Directives!
+  "Logical creation time automatically set by the block formation end."
+  end_lt(format: BigIntFormat): String
+  "Shard block file hash."
+  file_hash: String!
+  flags: Int
+  gen_catchain_seqno: Float
+  gen_software_capabilities(format: BigIntFormat): String
+  gen_software_version: Float
+  "uint 32 generation time stamp."
+  gen_utime: Int
+  gen_utime_string: String!
+  gen_validator_list_hash_short: Float
+  "uint32 global block ID."
+  global_id: Int
+  hash: String
+  id: String!
+  in_msg_descr: [InMsg]
+  "true if this block is a key block."
+  key_block: Boolean
+  master: BlockMaster
+  master_ref: ExtBlkRef
+  "seq_no of masterchain block which commited the block."
+  master_seq_no: Int
+  "Returns last known master block at the time of shard generation."
+  min_ref_mc_seqno: Float
+  out_msg_descr: [OutMsg]
+  prev_alt_ref: ExtBlkRef
+  "Returns a number of a previous key block."
+  prev_key_block_seqno: Float
+  prev_ref: ExtBlkRef
+  prev_vert_alt_ref: ExtBlkRef
+  "External block reference for previous block in case of vertical blocks."
+  prev_vert_ref: ExtBlkRef
+  producer_id: String
+  rand_seed: String!
+  seq_no: Int!
+  shard: String
+  signature_occurrences: [Int!]!
+  """
+
+  Logical creation time automatically set by the block formation start.
+  Logical time is a component of the Acki Nacki Blockchain that also plays
+  an important role in message delivery is the logical time, usually
+  denoted by Lt. It is a non-negative 64-bit integer, assigned to
+  certain events. For more details, see the Acki Nacki blockchain
+  specification.
+  """
+  start_lt(format: BigIntFormat): String
+  """
+
+  Returns block processing status:
+  - 0 – unknown
+  - 1 – proposed
+  - 2 – finalized
+  - 3 – refused
+  """
+  status: Int!
+  "Returns block processing status name."
+  status_name: BlockProcessingStatusEnum!
+  thread_id: String
+  tr_count: Int
+  value_flow: BlockValueFlow
+  "uin32 block version identifier."
+  version: Float
+  vert_seq_no: Float
+  want_merge: Boolean
+  want_split: Boolean
+  "int64 workchain identifier."
+  workchain_id: Int
+}
+
+type BlockAccountBlocks {
+  account_addr: String
+  new_hash: String
+  old_hash: String
+  tr_count: Int
+  transactions: [BlockAccountBlocksTransactions!]
+}
+
+type BlockAccountBlocksTransactions {
+  lt(format: BigIntFormat): String
+  total_fees(format: BigIntFormat): String
+  total_fees_other: [OtherCurrency!]
+  transaction_id: String
+}
+
+type BlockMaster {
+  shard_hashes: BlockMasterShardHashes
+}
+
+type BlockMasterShardHashes {
+  descr: BlockMasterShardHashesDescr
+  shard: String
+  workchain_id: Int
+}
+
+type BlockMasterShardHashesDescr {
+  gen_utime: Float
+  root_hash: String
+}
+
+type BlockValueFlow {
+  created(format: BigIntFormat): String
+  created_other: [OtherCurrency!]
+  exported(format: BigIntFormat): String
+  exported_other: [OtherCurrency!]
+  fees_collected(format: BigIntFormat): String
+  fees_collected_other: [OtherCurrency!]
+  fees_imported(format: BigIntFormat): String
+  fees_imported_other: [OtherCurrency!]
+  from_prev_blk(format: BigIntFormat): String
+  from_prev_blk_other: [OtherCurrency!]
+  imported(format: BigIntFormat): String
+  imported_other: [OtherCurrency!]
+  minted(format: BigIntFormat): String
+  minted_other: [OtherCurrency!]
+  to_next_blk(format: BigIntFormat): String
+  to_next_blk_other: [OtherCurrency!]
+}
+
+"An edge in a connection."
+type BlockchainAccountEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: BlockchainAccountQuery!
+}
+
+type BlockchainAccountQuery {
+  "Account information (e.g. boc)."
+  info(
+    "Optional block hash. If byBlock is specified then the account info will be returned from the shard state defined by the specified block. Otherwise the account info will be returned from the last known shard state."
+    byBlock: String
+  ): Account
+  """
+
+  This node could be used for a cursor-based pagination of account
+  messages.
+  """
+  messages(
+    after: String,
+    "By default there is special latency added for the fetched recent data (several seconds) to ensure impossibility of inserts before the latest fetched cursor (data consistency, for reliable pagination). It is possible to disable this guarantee and to reduce the latency of realtime data by setting this flag to true."
+    allow_latest_inconsistent_data: Boolean,
+    "Defines query scope. If true then query performed on a maximum time range supported by the cloud. If false then query performed on a recent time range supported by the cloud. You can find an actual information about time ranges on evercloud documentation."
+    archive: Boolean,
+    before: String,
+    "Filter messages by counterparties (max - 5 counterparties)."
+    counterparties: [String!],
+    "This field is mutually exclusive with 'last'."
+    first: Int,
+    "This field is mutually exclusive with 'first'."
+    last: Int,
+    master_seq_no_range: BlockchainMasterSeqNoFilter,
+    "Optional filter by min value (unoptimized, query could be dropped by timeout)."
+    min_value: String,
+    "Filter messages by type (multiple are allowed, all messages if not specified)."
+    msg_type: [BlockchainMessageTypeFilterEnum!]
+  ): BlockchainMessagesConnection
+  "This node could be used for a cursor-based pagination of account transactions."
+  transactions(
+    aborted: Boolean,
+    after: String,
+    "By default there is special latency added for the fetched recent data (several seconds) to ensure impossibility of inserts before the latest fetched cursor (data consistency, for reliable pagination). It is possible to disable this guarantee and to reduce the latency of realtime data by setting this flag to true."
+    allow_latest_inconsistent_data: Boolean,
+    "Defines query scope. If true then query performed on a maximum time range supported by the cloud. If false then query performed on a recent time range supported by the cloud. You can find an actual information about time ranges on evercloud documentation."
+    archive: Boolean,
+    before: String,
+    "This field is mutually exclusive with 'last'."
+    first: Int,
+    "This field is mutually exclusive with 'first'."
+    last: Int,
+    master_seq_no_range: BlockchainMasterSeqNoFilter,
+    "Optional filter by max balance_delta (unoptimized, query could be dropped by timeout)."
+    max_balance_delta: String,
+    "Optional filter by min balance_delta (unoptimized, query could be dropped by timeout)."
+    min_balance_delta: String
+  ): BlockchainTransactionsConnection
+}
+
+type BlockchainAccountsConnection {
+  "A list of edges."
+  edges: [BlockchainAccountEdge!]!
+  "A list of nodes."
+  nodes: [BlockchainAccountQuery!]!
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+}
+
+type BlockchainBlocksConnection {
+  "A list of edges."
+  edges: [BlockchainBlocksEdge!]!
+  "A list of nodes."
+  nodes: [Block!]!
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+}
+
+"An edge in a connection."
+type BlockchainBlocksEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: Block!
+}
+
+"An edge in a connection."
+type BlockchainMessageEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: Message!
+}
+
+type BlockchainMessagesConnection {
+  "A list of edges."
+  edges: [BlockchainMessageEdge!]!
+  "A list of nodes."
+  nodes: [Message!]!
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+}
+
+type BlockchainQuery {
+  "Account-related information."
+  account(address: String!): BlockchainAccountQuery
+  "This node could be used for a cursor-based pagination of blocks."
+  accounts(
+    after: String,
+    before: String,
+    "Filter by code hash"
+    codeHash: String,
+    "This field is mutually exclusive with 'last'."
+    first: Int,
+    "This field is mutually exclusive with 'first'."
+    last: Int
+  ): BlockchainAccountsConnection
+  block(hash: String!): Block
+  "This node could be used for a cursor-based pagination of blocks."
+  blocks(
+    after: String,
+    "By default there is special latency added for the fetched recent data (several seconds) to ensure impossibility of inserts before the latest fetched cursor (data consistency, for reliable pagination). It is possible to disable this guarantee and to reduce the latency of realtime data by setting this flag to true."
+    allow_latest_inconsistent_data: Boolean,
+    before: String,
+    "This field is mutually exclusive with 'last'."
+    first: Int,
+    "This field is mutually exclusive with 'first'."
+    last: Int,
+    master_seq_no_range: BlockchainMasterSeqNoFilter,
+    "Optional filter by maximum transactions in a block (unoptimized, query could be dropped by timeout)"
+    max_tr_count: Int,
+    "Optional filter by minimum transactions in a block (unoptimized, query could be dropped by timeout)"
+    min_tr_count: Int
+  ): BlockchainBlocksConnection
+  message(hash: String!): Message
+  transaction(hash: String!): Transaction
+  "This node could be used for a cursor-based pagination of transactions."
+  transactions(
+    after: String,
+    "By default there is special latency added for the fetched recent data (several seconds) to ensure impossibility of inserts before the latest fetched cursor (data consistency, for reliable pagination). It is possible to disable this guarantee and to reduce the latency of realtime data by setting this flag to true."
+    allow_latest_inconsistent_data: Boolean,
+    before: String,
+    "Optional filter by code hash of the account before execution."
+    code_hash: String,
+    "This field is mutually exclusive with 'last'."
+    first: Int,
+    "This field is mutually exclusive with 'first'."
+    last: Int,
+    "Optional filter by max balance_delta (unoptimized, query could be dropped by timeout)."
+    max_balance_delta: String,
+    "Optional filter by min balance_delta (unoptimized, query could be dropped by timeout)."
+    min_balance_delta: String
+  ): BlockchainTransactionsConnection
+}
+
+type BlockchainTransactionsConnection {
+  "A list of edges."
+  edges: [BlockchainTransactionsEdge!]!
+  "A list of nodes."
+  nodes: [Transaction!]!
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+}
+
+"An edge in a connection."
+type BlockchainTransactionsEdge {
+  "A cursor for use in pagination"
+  cursor: String!
+  "The item at the end of the edge"
+  node: Transaction!
+}
+
+type Directives {
+  shareStateResourceAddress: String
+}
+
+type Event {
+  body: String
+  """
+
+  Creation unixtime automatically set by the generating transaction.
+  The creation unixtime equals the creation unixtime of the block
+  containing the generating transaction.
+  """
+  created_at: Int
+  "Returns destination address string."
+  dst: String
+  msg_chain_order: String
+  msg_id: String!
+}
+
+type ExtBlkRef {
+  end_lt(format: BigIntFormat): String
+  file_hash: String
+  root_hash: String
+  seq_no: Float
+}
+
+type InMsg {
+  fwd_fee(format: BigIntFormat): String
+  ihr_fee(format: BigIntFormat): String
+  in_msg: MsgEnvelope
+  msg_id: String
+  msg_type: Int
+  msg_type_name: InMsgTypeEnum
+  out_msg: MsgEnvelope
+  proof_created: String
+  proof_delivered: String
+  transaction_id: String
+  transit_fee(format: BigIntFormat): String
+}
+
+"GraphQL Server info"
+type Info {
+  "The maximum number of records returned by the request."
+  batchSize: Int
+  "Blocks latency in ms (server time - max of blocks.gen_utime * 1000)."
+  blocksLatency: Float
+  """
+
+  **EXPERIMENTAL**
+  Reliable upper boundary for pagination by chain_order field. Before this
+  boundary data inserts are almost impossible (work in progress to
+  make them fully impossible when the feature goes into production).
+  """
+  chainOrderBoundary: String
+  "Alternative endpoints of q-server."
+  endpoints: [String]
+  "Last block time in ms (maximum value of blocks.gen_utime * 1000)."
+  lastBlockTime: Float
+  """
+
+  Overall latency (maximum value of blocksLatency, messagesLatency and
+  transactionsLatency).
+  """
+  latency: Float
+  """
+
+  Messages latency in ms (server time - max of messages.created_at *
+  1000).
+  """
+  messagesLatency: Float
+  "Shows whether rempReceipts subscription is enabled."
+  rempEnabled: Boolean @deprecated(reason: "Unused in the AckiNacki network")
+  "Server unix time in ms."
+  time: Float
+  """
+
+  Transactions latency in ms (server time - max of transactions.now *
+  1000).
+  """
+  transactionsLatency: Float
+  "Server version."
+  version: String
+}
+
+type Message {
+  block_id: String
+  "A bag of cells with the message structure encoded as base64."
+  boc: String
+  body: String
+  "`body` field root hash."
+  body_hash: String
+  """
+
+  Bounce flag. If the transaction has been aborted, and the inbound
+  message has its bounce flag set, then it is “bounced” by
+  automatically generating an outbound message (with the bounce flag
+  clear) to its original sender.
+  """
+  bounce: Boolean
+  """
+
+  Bounced flag. If the transaction has been aborted, and the inbound
+  message has its bounce flag set, then it is “bounced” by
+  automatically generating an outbound message (with the bounce flag
+  clear) to its original sender.
+  """
+  bounced: Boolean
+  "Represents contract code in deploy messages."
+  code: String
+  "`code` field root hash."
+  code_hash: String
+  """
+
+  Creation unixtime automatically set by the generating transaction.
+  The creation unixtime equals the creation unixtime of the block
+  containing the generating transaction.
+  """
+  created_at: Int
+  "Logical creation time automatically set by the generating transaction."
+  created_lt(format: BigIntFormat): String
+  "Represents initial data for a contract in deploy messages."
+  data: String
+  "`data` field root hash."
+  data_hash: String
+  "Returns destination address string."
+  dst: String
+  """
+
+  Collection-unique field for pagination and sorting. This field is
+  designed to retain logical output order (for logical input order use
+  transaction.in_message).
+  """
+  dst_chain_order: String
+  "Acki Nacki transaction"
+  dst_transaction: Transaction
+  "Workchain id of the destination address (dst field)."
+  dst_workchain_id: Int
+  """
+
+  Original total forwarding fee paid for using the HR mechanism; it is
+  automatically computed from some configuration parameters and the
+  size of the message at the time the message is generated.
+  """
+  fwd_fee(format: BigIntFormat): String
+  id: String!
+  "IHR is disabled for the message."
+  ihr_disabled: Boolean
+  """
+
+  This value is subtracted from the value attached to the message and
+  awarded to the validators of the destination shardchain if they
+  include the message by the IHR mechanism.
+  """
+  ihr_fee(format: BigIntFormat): String
+  "Represents contract library in deploy messages."
+  library: String
+  "`library` field root hash."
+  library_hash: String
+  """
+
+  Returns the type of message.
+  - 0 – internal
+  - 1 – extIn
+  - 2 – extOut
+  """
+  msg_type: Int
+  msg_type_name: MessageTypeEnum
+  """
+
+  Merkle proof that message is a part of a block it cut from. It is a
+  bag of cells with Merkle proof struct encoded as base64.
+  """
+  proof: String
+  "Returns source address string."
+  src: String
+  """
+
+  Collection-unique field for pagination and sorting. This field is
+  designed to retain logical output order (for logical input order use
+  transaction.in_message).
+  """
+  src_chain_order: String
+  src_dapp_id: String
+  "Acki Nacki transaction"
+  src_transaction: Transaction
+  "Workchain id of the source address (src field)."
+  src_workchain_id: Int
+  """
+
+  Returns internal processing status according to the numbers shown.
+  - 0 – unknown
+  - 1 – queued
+  - 2 – processing
+  - 3 – preliminary
+  - 4 – proposed
+  - 5 – finalized
+  - 6 – refused
+  - 7 – transiting
+  """
+  status: Int
+  status_name: MessageProcessingStatusEnum
+  """
+
+  This is only used for special contracts in masterchain to deploy
+  messages.
+  """
+  tick: Boolean
+  """
+
+  This is only used for special contracts in masterchain to deploy
+  messages.
+  """
+  tock: Boolean
+  transaction_id: String
+  "May or may not be present"
+  value(format: BigIntFormat): String
+  value_other: [OtherCurrency!]
+}
+
+type MsgEnvelope {
+  cur_addr: String
+  fwd_fee_remaining(format: BigIntFormat): String
+  msg_id: String
+  next_addr: String
+}
+
+type OtherCurrency {
+  currency: Float
+  value(format: BigIntFormat): String
+}
+
+type OutMsg {
+  import_block_lt(format: BigIntFormat): String
+  imported: InMsg
+  msg_env_hash: String
+  msg_id: String
+  msg_type: Int
+  msg_type_name: OutMsgTypeEnum
+  next_addr_pfx(format: BigIntFormat): String
+  next_workchain: Int
+  out_msg: MsgEnvelope
+  reimport: InMsg
+  transaction_id: String
+}
+
+"Information about pagination in a connection"
+type PageInfo {
+  "When paginating forwards, the cursor to continue."
+  endCursor: String
+  "When paginating forwards, are there more items?"
+  hasNextPage: Boolean!
+  "When paginating backwards, are there more items?"
+  hasPreviousPage: Boolean!
+  "When paginating backwards, the cursor to continue."
+  startCursor: String
+}
+
+type QueryRoot {
+  account(address: String!): AccountQuery
+  accounts(filter: AccountFilter, limit: Int, orderBy: [QueryOrderBy], timeout: Float): [Account]
+  "Blockchain-related information (blocks, transactions, etc.)"
+  blockchain: BlockchainQuery
+  blocks(filter: BlockFilter, limit: Int, orderBy: [QueryOrderBy], timeout: Float): [Block]
+  info: Info
+  messages(filter: MessageFilter, limit: Int, orderBy: [QueryOrderBy], timeout: Float): [Message]
+  transactions(filter: TransactionFilter, limit: Int, orderBy: [QueryOrderBy], timeout: Float): [Transaction]
+}
+
+type SingleAccount {
+  "Bag of cells with the account struct encoded as base64."
+  boc: String
+  dapp_id: String
+  id: String!
+}
+
+type Transaction {
+  aborted: Boolean!
+  account_addr: String
+  action: TransactionAction!
+  """
+
+  Account balance change after the transaction. Because fwd_fee is
+  collected by the validators of the receiving shard, total_fees value
+  does not include Sum(out_msg.fwd_fee[]), but includes
+  in_msg.fwd_fee. The formula is:
+  balance_delta = in_msg.value - total_fees - Sum(out_msg.value[]) -
+  Sum(out_msg.fwd_fee[])
+  """
+  balance_delta(format: BigIntFormat): String
+  block_id: String!
+  boc: String!
+  bounce: TransactionBounce
+  """
+
+  Collection-unique field for pagination and sorting.
+  This field is designed to retain logical order.
+  """
+  chain_order: String!
+  """
+
+  Code hash of the account before transaction execution.
+  If an account was not activated before execution then this field
+  contains code hash after account execution.
+  """
+  code_hash: String
+  """
+
+  Code hash of the account before transaction execution. If an account was
+  not activated before execution then this field contains code hash
+  after account execution.
+  """
+  compute: TransactionCompute!
+  credit: TransactionCredit
+  credit_first: Boolean!
+  destroyed: Boolean!
+  """
+
+  The end state of an account after a transaction, 1 is returned to
+  indicate a finalized transaction at an active account.
+  - 0 – uninit
+  - 1 – active
+  - 2 – frozen
+  - 3 – nonExist
+  """
+  end_status: Int!
+  end_status_name: AccountStatusEnum!
+  "Fee for inbound external message import."
+  ext_in_msg_fee(format: BigIntFormat): String
+  id: String!
+  in_message: Message
+  in_msg: String!
+  installed: Boolean
+  """
+
+  Logical time. A component of the TVM-based Blockchain that also plays an
+  important role in message delivery is the logical time, usually
+  denoted by Lt. It is a non-negative 64-bit integer, assigned to
+  certain events. For more details, see [the TON blockchain specification](https://test.ton.org/tblkch.pdf).
+  """
+  lt(format: BigIntFormat): String
+  """
+
+  seq_no of masterchain block which commited shard block containing the
+  transaction.
+  """
+  master_seq_no: Float
+  "Merkle update field."
+  new_hash: String
+  now: Int!
+  now_string: String!
+  "Merkle update field."
+  old_hash: String
+  """
+
+  The initial state of account. Note that in this case the query may
+  return 0, if the account was not active before the transaction and 1
+  if it was already active.
+  - 0 – uninit
+  - 1 – active
+  - 2 – frozen
+  - 3 – nonExist
+  """
+  orig_status: Int!
+  orig_status_name: AccountStatusEnum!
+  out_messages: [Message]
+  out_msgs: [String!]!
+  """
+
+  The number of generated outbound messages (one of the common transaction
+  parameters defined by the specification).
+  """
+  outmsg_cnt: Int!
+  prepare_transaction: String
+  prev_trans_hash: String
+  prev_trans_lt(format: BigIntFormat): String
+  proof: String
+  split_info: TransactionSplitInfo
+  """
+
+  Transaction processing status.
+  - 0 – unknown
+  - 1 – preliminary
+  - 2 – proposed
+  - 3 – finalized
+  - 4 – refused
+  """
+  status: Int!
+  status_name: TransactionProcessingStatusEnum!
+  storage: TransactionStorage!
+  """
+
+  Total amount of fees collected by the validators.
+  Because fwd_fee is collected by the validators of the receiving shard,
+  total_fees value does not include Sum(out_msg.fwd_fee[]), but includes
+  in_msg.fwd_fee. The formula is:
+  total_fees = in_msg.value - balance_delta - Sum(out_msg.value[]) -
+  Sum(out_msg.fwd_fee[])
+  """
+  total_fees(format: BigIntFormat): String
+  """
+
+  Same as above, but reserved for non gram coins that may appear in the
+  blockchain.
+  Transaction type according to the original blockchain specification,
+  clause 4.2.4.
+  - 0 – ordinary
+  - 1 – storage
+  - 2 – tick
+  - 3 – tock
+  - 4 – splitPrepare
+  - 5 – splitInstall
+  - 6 – mergePrepare
+  - 7 – mergeInstall
+  """
+  tr_type: Int!
+  tr_type_name: TransactionTypeEnum!
+  "VM debug trace."
+  tt: String
+  "Workchain id of the account address (account_addr field)."
+  workchain_id: Int!
+}
+
+type TransactionAction {
+  action_list_hash: String!
+  msgs_created: Int
+  """
+
+  The flag indicates absence of funds required to create an outbound
+  message.
+  """
+  no_funds: Boolean!
+  result_arg: Int
+  result_code: Int!
+  skipped_actions: Int!
+  spec_actions: Int!
+  status_change: Int!
+  status_change_name: AccountStatusChangeEnum!
+  success: Boolean!
+  tot_actions: Int!
+  total_action_fees(format: BigIntFormat): String
+  total_fwd_fees(format: BigIntFormat): String
+  total_msg_size_bits: Float
+  total_msg_size_cells: Float
+  valid: Boolean!
+}
+
+type TransactionBounce {
+  bounce_type: Int
+  bounce_type_name: BounceTypeEnum
+  fwd_fees(format: BigIntFormat): String
+  msg_fees(format: BigIntFormat): String
+  msg_size_bits: Float
+  msg_size_cells: Float
+  req_fwd_fees(format: BigIntFormat): String
+}
+
+type TransactionCompute {
+  """
+
+  The flag reflects whether this has resulted in the activation of a
+  previously frozen, uninitialized or non-existent account.
+  """
+  account_activated: Boolean!
+  compute_type: Int!
+  compute_type_name: ComputeTypeEnum!
+  exit_arg: Int
+  """
+
+  These parameter represents the status values returned by TVM; for a
+  successful transaction, exit_code has to be 0 or 1.
+  """
+  exit_code: Int
+  """
+
+  This parameter may be non-zero only for external inbound messages.
+  It is the lesser of either the amount of gas that can be paid from the
+  account balance or the maximum gas credit.
+  """
+  gas_credit: Int
+  """
+
+  This parameter reflects the total gas fees collected by the validators
+  for executing this transaction. It must be equal to the product of
+  gas_used and gas_price from the current block header.
+  """
+  gas_fees(format: BigIntFormat): String
+  """
+
+  This parameter reflects the gas limit for this instance of TVM.
+  It equals the lesser of either the Grams credited in the credit phase
+  from the value of the inbound message divided by the current gas price,
+  or the global per-transaction gas limit.
+  """
+  gas_limit(format: BigIntFormat): String
+  gas_used(format: BigIntFormat): String
+  mode: Int!
+  """
+
+  This parameter reflects whether the state passed in the message has been
+  used. If it is set, the account_activated flag is used (see below).
+  """
+  msg_state_used: Boolean!
+  skipped_reason: Int
+  "This flag is set if and only if exit_code is either 0 or 1."
+  success: Boolean!
+  """
+
+  This parameter is the representation hashes of the resulting state of
+  TVM.
+  """
+  vm_final_state_hash: String!
+  """
+
+  This parameter is the representation hashes of the original state of
+  TVM.
+  """
+  vm_init_state_hash: String!
+  """
+
+  the total number of steps performed by TVM (usually equal to two plus
+  the number of instructions executed, including implicit RETs).
+  """
+  vm_steps: Int!
+}
+
+type TransactionCredit {
+  credit(format: BigIntFormat): String
+  """
+
+  The sum of due_fees_collected and credit must equal the value of the
+  message received, plus its ihr_fee if the message has not been
+  received via Instant Hypercube Routing, IHR (otherwise the ihr_fee
+  is awarded to the validators).
+  """
+  due_fees_collected(format: BigIntFormat): String
+}
+
+type TransactionSplitInfo {
+  acc_split_depth: Int
+  cur_shard_pfx_len: Int
+  sibling_addr: String
+  this_addr: String
+}
+
+type TransactionStorage {
+  status_change: Int
+  status_change_name: AccountStatusChangeEnum
+  "This field defines the amount of storage fees collected in grams."
+  storage_fees_collected(format: BigIntFormat): String
+  """
+
+  This field represents the amount of due fees in grams, it might be
+  empty.
+  """
+  storage_fees_due(format: BigIntFormat): String
+}
+
+enum AccountStatusChangeEnum {
+  Deleted
+  Frozen
+  Unchanged
+}
+
+enum AccountStatusEnum {
+  Active
+  Frozen
+  NonExist
+  Uninit
+}
+
+"""
+
+Due to GraphQL limitations big numbers are returned as a string. You can
+specify format used to string representation for big integers.
+"""
+enum BigIntFormat {
+  "Decimal representation"
+  DEC
+  "Hexadecimal representation started with 0x (default)"
+  HEX
+}
+
+enum BlockProcessingStatusEnum {
+  FINALIZED
+  PROPOSED
+  REFUSED
+  UNKNOWN
+}
+
+enum BlockchainMessageTypeFilterEnum {
+  "External inbound"
+  ExtIn
+  "External outbound"
+  ExtOut
+  "Internal inbound"
+  IntIn
+  "Internal outbound"
+  IntOut
+}
+
+enum BounceTypeEnum {
+  NegFunds
+  NoFunds
+  Ok
+}
+
+enum ComputeTypeEnum {
+  Skipped
+  Vm
+}
+
+enum InMsgTypeEnum {
+  DiscardedFinal
+  DiscardedTransit
+  External
+  Final
+  Ihr
+  Immediately
+  Transit
+}
+
+enum MessageProcessingStatusEnum {
+  Finalized
+  Preliminary
+  Processing
+  Proposed
+  Queued
+  Refused
+  Transiting
+  Unknown
+}
+
+enum MessageTypeEnum {
+  ExtIn
+  ExtOut
+  Internal
+}
+
+enum OutMsgTypeEnum {
+  Dequeue
+  DequeueImmediately
+  DequeueShort
+  External
+  Immediately
+  None
+  OutMsgNew
+  Transit
+  TransitRequired
+}
+
+"Specify sort order direction"
+enum QueryOrderByDirection {
+  "Documents will be sorted in ascended order (e.g. from A to Z)"
+  ASC
+  "Documents will be sorted in descendant order (e.g. from Z to A)"
+  DESC
+}
+
+enum TransactionProcessingStatusEnum {
+  Finalized
+  Preliminary
+  Proposed
+  Refused
+  Unknown
+}
+
+enum TransactionTypeEnum {
+  MergeInstall
+  MergePrepare
+  Ordinary
+  SplitInstall
+  SplitPrepare
+  Storage
+  Tick
+  Tock
+}
+
+input AccountFilter {
+  OR: AccountFilter
+  dapp_id: StringFilter
+  id: StringFilter
+}
+
+input BlockFilter {
+  OR: BlockFilter
+  after_merge: BooleanFilter
+  after_split: BooleanFilter
+  flags: IntFilter
+  gen_utime: FloatFilter
+  id: StringFilter
+  key_block: BooleanFilter
+  prev_alt_ref: ExtBlkRefFilter
+  prev_ref: ExtBlkRefFilter
+  shard: StringFilter
+  status: IntFilter
+  tr_count: IntFilter
+  workchain_id: IntFilter
+}
+
+input BlockchainMasterSeqNoFilter {
+  end: Int
+  start: Int
+}
+
+input BooleanFilter {
+  eq: Boolean
+  ne: Boolean
+}
+
+input ExtBlkRefFilter {
+  OR: ExtBlkRefFilter
+  end_lt: StringFilter
+  file_hash: StringFilter
+  root_hash: StringFilter
+  seq_no: FloatFilter
+}
+
+input FloatFilter {
+  eq: Float
+  ge: Float
+  gt: Float
+  in: [Float]
+  le: Float
+  lt: Float
+  ne: Float
+  notIn: [Float]
+}
+
+input IntFilter {
+  eq: Int
+  ge: Int
+  gt: Int
+  in: [Int]
+  le: Int
+  lt: Int
+  ne: Int
+  notIn: [Int]
+}
+
+input MessageFilter {
+  created_at: FloatFilter
+  dst: StringFilter
+  id: StringFilter
+  msg_type: IntFilter
+  or: MessageFilter
+  src: StringFilter
+  status: IntFilter
+}
+
+"""
+
+Specify how to sort results. You can sort documents in result set using more
+than one field.
+"""
+input QueryOrderBy {
+  "Sort order direction"
+  direction: QueryOrderByDirection
+  """
+
+  Path to field which must be used as a sort criteria. If field resides
+  deep in structure path items must be separated with dot (e.g.
+  "foo.bar.baz").
+  """
+  path: String
+}
+
+input StringFilter {
+  eq: String
+  ge: String
+  in: [String]
+  le: String
+  ne: String
+  notIn: [String]
+}
+
+input TransactionFilter {
+  account_addr: StringFilter
+  block_id: StringFilter
+  end_status: IntFilter
+  id: StringFilter
+  or: TransactionFilter
+  orig_status: IntFilter
+}
