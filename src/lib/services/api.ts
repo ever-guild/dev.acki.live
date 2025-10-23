@@ -2,6 +2,7 @@ import type { Abi, AbiContract } from "@tvmsdk/core";
 import { abiContract } from "@tvmsdk/core";
 import tvmClient from "$lib/services/tvmClient";
 import { log } from "$lib/utils/log";
+import { getAlias } from "$lib/services/abiMap";
 
 export interface CodeInfo {
   name: string;
@@ -11,6 +12,7 @@ export interface CodeInfo {
 const cashCodeSchema = new Map<string, CodeInfo|undefined>([]);
 
 export async function getCodeSchema(codeHash: string): Promise<CodeInfo|undefined> {
+  codeHash = getAlias(codeHash);
   try {
     if (cashCodeSchema.has(codeHash)) {
       log(`getCodeSchema cashed ${codeHash}`);
