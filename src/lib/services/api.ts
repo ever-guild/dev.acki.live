@@ -16,6 +16,8 @@ const alias = new Map<string, string>([
   ['18e57fc187e8ac1cc2a9b1e8907e291cd925c840c1f93d2f30fe12747dd90126', 'PopitGame'],
   ['18365592c5f1e7d319cc1a2fd58fa05ca3afbe4ac49e73bc765d139a2e2d7a29', 'PopCoinWallet'],
   ['6ec7bbad5c62158a8ada989d93e0212bd0f718e65b88fc85e711a8a22d59f694', 'AckiNackiBlockKeeperNodeWallet'],
+  ['5abf243805c7dc9bdbaaca8ea201773c62f8a83177397e191979551dc5544882', 'Boost'],
+  ['d732aaab198ae70b0f285d28a6629e141a61c752faaf7395d34b7cf32aa84f6d', 'PopCoinRoot'],
 ]);
 
 const cashCodeSchema = new Map<string, CodeInfo|undefined>([]);
