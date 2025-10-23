@@ -283,17 +283,20 @@
 			<Card>
 				<div class="p-6">
 					<h2 class="text-2xl font-bold text-primary mb-2">{t('transactions.details.inputMsg')}</h2>
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+						<div class="detail-item">
+							<div class="detail-label">{t('common.messageId')}</div>
+							<div class="detail-value font-mono text-sm">
+                <a href="/messages/{transaction.in_message.id}" class="hover:text-primary-600">
+                  {formatHash(transaction.in_message.id)}
+                </a>
+              </div>
+						</div>
+            
 						<div class="detail-item">
 							<div class="detail-label">{t('common.from')}</div>
 							<div class="detail-value font-mono text-sm">
-                {#if transaction.in_message.src}
-                  <a href="/accounts/{transaction.in_message.src}" class="hover:text-primary-600">
-                    {formatAddress(transaction.in_message.src)}
-                  </a>
-                {:else}
-                  {t('common.external')}
-                {/if}
+                <AccountLink address={transaction.in_message.src} />
               </div>
 						</div>
 
@@ -323,11 +326,19 @@
 		{#if transaction.out_messages && transaction.out_messages.length > 0}
 			<Card>
 				<div class="p-6">
-					<h2 class="text-2xl font-bold text-primary mb-2">{t('transactions.details.outputMsgs')} ({transaction.out_messages.length})</h2>
+					<h2 class="text-2xl font-bold text-primary mb-2">{t('transactions.details.outputMsg')} ({transaction.out_messages.length})</h2>
 					<div class="space-y-4">
 						{#each transaction.out_messages as msg, i}
 							<div class="border border-custom rounded-lg p-4">
 								<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="detail-item">
+                    <div class="detail-label">{t('common.messageId')}</div>
+                    <div class="detail-value font-mono text-xs">
+                      <a href="/messages/{msg.id}" class="hover:text-primary-600">
+                        {formatHash(msg.id)}
+                      </a>
+                    </div>
+                  </div>
 									<div class="detail-item">
 										<div class="detail-label">{t('common.from')}</div>
 										<div class="detail-value font-mono text-xs">
@@ -341,11 +352,12 @@
                       <AccountLink address={msg.dst} />
                     </div>
 									</div>
-
+                  {#if msg.value}
 									<div class="detail-item">
 										<div class="detail-label">{t('common.value')}</div>
 										<div class="detail-value">{formatValue(msg.value)}</div>
 									</div>
+                  {/if}
 								</div>
 							</div>
 						{/each}

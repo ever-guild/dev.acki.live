@@ -7,7 +7,8 @@
   import Badge from '$lib/components/ui/Badge.svelte';
   import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
   import LiveTimestamp from '$lib/components/ui/LiveTimestamp.svelte';
-  import { formatAddress, formatHash } from '$lib/utils/formatters';
+  import { formatHash } from '$lib/utils/formatters';
+  import AccountLink from '$lib/components/ui/AccountLink.svelte';
 
   let transactions: Transaction[] = [];
   let loading = true;

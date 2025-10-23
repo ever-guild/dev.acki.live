@@ -220,10 +220,14 @@
               <tr>
                 <td class="table-label">{t('account.lastPaid')}</td>
                 <td class="table-value">
+                  {#if account.lastPaid.getTime() !== 0}
                   <LiveTimestamp
                     timestamp={account.lastPaid.getTime() / 1000}
                     className="time-text"
                   />
+                  {:else}
+                    genesis
+                  {/if}
                 </td>
               </tr>
               {#if linkedAccounts && linkedAccounts.size > 0}

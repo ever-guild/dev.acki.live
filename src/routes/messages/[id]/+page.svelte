@@ -188,10 +188,12 @@
             </div>
 					</div>
 
-					<div class="detail-item">
+          {#if message.value}
+          <div class="detail-item">
 						<div class="detail-label">Value</div>
 						<div class="detail-value">{formatValue(message.value)}</div>
 					</div>
+          {/if}
 
 					<div class="detail-item">
 						<div class="detail-label">Created At</div>
