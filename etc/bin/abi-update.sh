@@ -3,11 +3,7 @@
 set -euo pipefail
 
 ROOT_DIR=$(cd "$(dirname "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")" && pwd)
-
-if [[ -z "${TVC_PATH}" ]]; then
-  echo "ERROR: var TVC_PATH not setup"
-  exit 1
-fi
+: "${TVC_PATH:?ERROR: var TVC_PATH not setup}"
 
 TARGET_PATH="$ROOT_DIR/static/abi"
 mkdir -p "$TARGET_PATH"

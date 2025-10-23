@@ -2,17 +2,50 @@ import type { Abi, AbiContract } from "@tvmsdk/core";
 import { abiContract } from "@tvmsdk/core";
 import tvmClient from "$lib/services/tvmClient";
 import { log } from "$lib/utils/log";
-import { getAlias } from "$lib/services/abiMap";
 
 export interface CodeInfo {
   name: string;
   abi: Abi;
 }
 
+const lastCode = new Map<string, string>([]);
+
+const alias = new Map<string, string>([
+  ['f5580a523a708377e8fadc17265def99bed081988d9b9f37e153b938390e3245', 'Indexer'],
+  ['6cc8128da9cda444e4ad83fc7064ea51c6a0bbf0e2aa4777d0807e8ed7283cdb', 'Mvmultifactor'],
+  ['18e57fc187e8ac1cc2a9b1e8907e291cd925c840c1f93d2f30fe12747dd90126', 'PopitGame'],
+]);
+
 const cashCodeSchema = new Map<string, CodeInfo|undefined>([]);
 
+export async function updateLastCodeHash(): Promise<void> {
+  if (lastCode.size > 0) {
+    return 
+  }
+  const response = await fetch('/abi/last', {
+    method: 'GET',
+  });
+  if (response.ok) {
+    const list: [string, string][] = await response.json();
+    for (const item of list) lastCode.set(item[0], item[1]);
+  }
+}
+
+export async function getAlias(codeHash: string): Promise<string> {
+  await updateLastCodeHash();
+  const contractName = alias.get(codeHash);
+  if (!contractName) {
+    return codeHash;
+  }
+  const find = lastCode.get(contractName);
+  if (!find) {
+    return codeHash;
+  }
+  return find;
+}
+
 export async function getCodeSchema(codeHash: string): Promise<CodeInfo|undefined> {
-  codeHash = getAlias(codeHash);
+  codeHash = await getAlias(codeHash);
   try {
     if (cashCodeSchema.has(codeHash)) {
       log(`getCodeSchema cashed ${codeHash}`);
