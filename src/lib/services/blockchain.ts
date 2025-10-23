@@ -3,6 +3,8 @@ import tvmClient, { getIndexerAddressByName, popitGameCode } from './tvmClient';
 import indexerAbi from '/src/data/contracts/mvsystem/Indexer.abi.json?raw';
 import popitGameAbi from '/src/data/contracts/mvsystem/PopitGame.abi.json?raw';
 import MvMultifactorAbi from '/src/data/contracts/mvsystem/Mvmultifactor.abi.json?raw';
+import {decodeData, getCodeSchema} from "$lib/services/api";
+import {log} from "$lib/utils/log";
 
 export enum AccountType {
   Indexer = 'Indexer',
@@ -64,7 +66,15 @@ export async function getAccountDetails(addressOrName: string): Promise<AccountD
     publicCells: parseInt(accountData.public_cells, 16),
     workchainId: accountData.workchain_id,
   };
-
+  const codeSchema = await getCodeSchema(accountData.init_code_hash);
+  
+  if (codeSchema && codeSchema.abi) {
+    const dataParsed = await decodeData(accountData.data, codeSchema.abi);
+    log('decodeData', { dataParsed, accountData, codeSchema });
+    if (dataParsed) {
+      result['dataParsed'] = dataParsed;
+    }
+  }
   return new AccountDetails(result as any);
 }
 
@@ -152,6 +162,7 @@ export class AccountDetails {
   lastTransLt!: number;
   publicCells!: number;
   workchainId!: number;
+  dataParsed?: any;
 
   constructor(data: AccountDetails) {
     Object.assign(this, data);

@@ -520,6 +520,16 @@
         </div>
       </Card>
     {/if}
+    {#if account.dataParsed}
+      <Card>
+        <div class="p-6">
+          <h2 class="text-xl font-bold mb-2">{t('account.data')}</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+            <pre><code>{JSON.stringify(account.dataParsed, null, 2)}</code></pre>
+          </div>
+        </div>
+      </Card>
+    {/if}
   {/if}
 </div>
 
