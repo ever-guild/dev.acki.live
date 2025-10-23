@@ -147,9 +147,9 @@
   <h1 class="page-title flex items-center gap-3">
     {t('account.title')}
     {#if account}
-      {#if account.type}
+      {#if account.contractName}
         <Badge variant="success">
-          {account.type}
+          {account.contractName}
         </Badge>
       {/if}
       <Badge variant="info">

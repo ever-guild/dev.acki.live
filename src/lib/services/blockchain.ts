@@ -73,6 +73,7 @@ export async function getAccountDetails(addressOrName: string): Promise<AccountD
     log('decodeData', { dataParsed, accountData, codeSchema });
     if (dataParsed) {
       result['dataParsed'] = dataParsed;
+      result['contractName'] = codeSchema.name;
     }
   }
   return new AccountDetails(result as any);
@@ -163,6 +164,7 @@ export class AccountDetails {
   publicCells!: number;
   workchainId!: number;
   dataParsed?: any;
+  contractName?: string;
 
   constructor(data: AccountDetails) {
     Object.assign(this, data);
