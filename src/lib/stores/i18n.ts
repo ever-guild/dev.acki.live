@@ -114,6 +114,8 @@ const translations: Translations = {
     'status.pending': '@:common.pending',
 
     // Common words
+    'common.messageId': 'Message ID',
+    'common.external': 'External',
     'common.from': 'From',
     'common.to': 'To',
     'common.value': 'Value',
@@ -260,6 +262,7 @@ const translations: Translations = {
     'status.pending': '@:common.pending',
 
     // Common words
+    'common.external': 'Внешние',
     'common.from': 'От',
     'common.to': 'Кому',
     'common.value': 'Значение',

@@ -175,12 +175,28 @@
 
 					<div class="detail-item">
 						<div class="detail-label">From</div>
-						<div class="detail-value font-mono text-sm break-all">{message.src}</div>
+						<div class="detail-value font-mono text-sm break-all">
+                        {#if message.src}
+                          <a href="/accounts/{message.src}" title="{message.src}" class="hover:text-primary-600">
+                            {message.src}
+                          </a>
+                        {:else}
+                          {t('common.external')}
+                        {/if}
+                        </div>
 					</div>
 
 					<div class="detail-item">
 						<div class="detail-label">To</div>
-						<div class="detail-value font-mono text-sm break-all">{message.dst}</div>
+						<div class="detail-value font-mono text-sm break-all">
+                        {#if message.dst}
+                          <a href="/accounts/{message.dst}" title="{message.dst}" class="hover:text-primary-600">
+                            {message.dst}
+                          </a>
+                        {:else}
+                          {t('common.external')}
+                        {/if}
+                        </div>
 					</div>
 
 					<div class="detail-item">

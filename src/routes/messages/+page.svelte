@@ -6,7 +6,7 @@
 	import ErrorCard from '$lib/components/ui/ErrorCard.svelte';
 	import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
 	import LiveTimestamp from '$lib/components/ui/LiveTimestamp.svelte';
-  import { formatAddress, formatBalance } from '$lib/utils/formatters';
+  import {formatAddress, formatBalance, formatHash} from '$lib/utils/formatters';
   import tvmClient from '$lib/services/tvmClient';
 
 	let messages: Message[] = [];
@@ -52,6 +52,7 @@
 				<table class="data-table">
 						<thead class="table-header">
 							<tr>
+								<th class="table-th">{t('common.messageId')}</th>
 								<th class="table-th">{t('common.from')}</th>
 								<th class="table-th">{t('common.to')}</th>
 								<th class="table-th">{t('common.type')}</th>
@@ -64,11 +65,28 @@
 							<tr class="table-row">
 								<td class="table-td">
 									<a href="/messages/{message.id}" class="address-text hover:text-primary-600">
-										{formatAddress(message.from)}
+										{formatHash(message.id)}
 									</a>
 								</td>
 								<td class="table-td">
-									<span class="address-text">{formatAddress(message.to)}</span>
+                  {#if message.from}
+                    <a href="/accounts/{message.from}" class="hover:text-primary-600">
+                      {formatAddress(message.from)}
+                    </a>
+                  {:else}
+                    {t('common.external')}
+                  {/if}
+								</td>
+								<td class="table-td">
+									<span>
+                  {#if message.to}
+                    <a href="/accounts/{message.to}" class="hover:text-primary-600">
+                      {formatAddress(message.to)}
+                    </a>
+                  {:else}
+                    {t('common.external')}
+                  {/if}
+                  </span>
 								</td>
 								<td class="table-td">
 									<span class="text-primary-500 font-medium">{message.type}</span>

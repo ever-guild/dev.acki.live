@@ -287,9 +287,13 @@
 						<div class="detail-item">
 							<div class="detail-label">{t('common.from')}</div>
 							<div class="detail-value font-mono text-sm">
-                <a href="/accounts/{transaction.in_message.src}" class="hover:text-primary-600">
-                  {formatAddress(transaction.in_message.src)}
-                </a>
+                {#if transaction.in_message.src}
+                  <a href="/accounts/{transaction.in_message.src}" class="hover:text-primary-600">
+                    {formatAddress(transaction.in_message.src)}
+                  </a>
+                {:else}
+                  {t('common.external')}
+                {/if}
               </div>
 						</div>
 
@@ -302,7 +306,8 @@
               </div>
 						</div>
 
-						<div class="detail-item">
+            {#if transaction.in_message.src}
+            <div class="detail-item">
 							<div class="detail-label">{t('common.value')}</div>
 							<div class="detail-value">{formatValue(transaction.in_message.value)}</div>
 						</div>
@@ -311,6 +316,7 @@
 							<div class="detail-label">Message Type</div>
 							<div class="detail-value">{transaction.in_message.msg_type_name}</div>
 						</div>
+            {/if}
 					</div>
 				</div>
 			</Card>

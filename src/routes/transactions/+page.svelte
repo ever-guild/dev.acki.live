@@ -74,10 +74,22 @@
 									</a>
 								</td>
 								<td class="table-td">
-									<span class="address-text">{formatAddress(tx.from)}</span>
+									<span class="address-text">
+                                      {#if tx.from}
+                                      <a href="/accounts/{tx.from}" class="hover:text-primary-600">
+                                        {formatAddress(tx.from)}
+                                      </a>
+                                      {:else}
+                                        {t('common.external')}
+                                      {/if}
+                                    </span>
 								</td>
 								<td class="table-td">
-									<span class="address-text">{formatAddress(tx.to)}</span>
+									<span class="address-text">
+                                      <a href="/accounts/{tx.to}" class="hover:text-primary-600">
+                                        {formatAddress(tx.to)}
+                                      </a>
+                                    </span>
 								</td>
 								<td class="table-td">
 									<span class="font-semibold text-primary">{tx.amount.toFixed(4)}</span>
