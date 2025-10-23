@@ -203,7 +203,7 @@ class GraphQLClient {
         type: msg.msg_type_name,
         data: msg.body,
         timestamp: new Date(msg.created_at * 1000),
-        value: msg.value / 1e9,
+        value: msg.value,
         msg_type_name: msg.msg_type_name,
       }));
     }
