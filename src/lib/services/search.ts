@@ -22,7 +22,7 @@ export async function globalSearch(query: string): Promise<SearchResponse> {
 		return { found: false, results: [] };
 	}
 
-	const trimmedQuery = query.trim();
+	const trimmedQuery = query.trim().toLowerCase();
 	const results: SearchResult[] = [];
 
 	try {

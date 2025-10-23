@@ -55,6 +55,7 @@
         const path = getSearchResultPath(result.results[0]);
         await goto(path);
         searchQuery = ''; // Clear search after navigation
+        mobileOpen = false; // Close mobile sidebar after successful search
       } else {
         alert(t('navbar.noResults') + ': ' + searchQuery);
       }
