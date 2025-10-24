@@ -129,6 +129,11 @@ const translations: Translations = {
     'common.success': 'Success',
     'common.failed': 'Failed',
     'common.pending': 'Pending',
+    'common.or': 'or',
+    'common.and': 'and',
+    'social.feedback': 'Feature request',
+    'social.security': 'security report',
+    'social.stayTuned': 'Stay tuned for updates',
 
     // Account page translations
     'account.title': 'Account',
@@ -277,6 +282,11 @@ const translations: Translations = {
     'common.success': 'Успешно',
     'common.failed': 'Неудачно',
     'common.pending': 'В ожидании',
+    'common.or': 'или',
+    'common.and': 'и',
+    'social.feedback': 'Запрос функции',
+    'social.security': 'отчет по безопасности',
+    'social.stayTuned': 'Следите за обновлениями',
 
     // Account page translations
     'account.title': 'Аккаунт',
