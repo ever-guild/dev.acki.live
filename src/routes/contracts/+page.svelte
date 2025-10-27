@@ -102,22 +102,22 @@
 			{#each systemContracts as contract}
 				<div class="mobile-table-card">
 					<div class="mobile-table">
-						<span class="font-semibold">{t('contracts.headers.name')}: </span>
+						<span class="font-semibold">{t('contracts.headers.name')}</span>
 						{contract.name}
 					</div>
 					<div class="mobile-table">
-						<span class="font-semibold">{t('contracts.headers.address')}: </span>
+						<span class="font-semibold">{t('contracts.headers.address')}</span>
 						<AccountLink address={contract.address} preferAlias={false} />
 						<button class="copy-btn" aria-label="Copy address">
 							<CopyIcon value={contract.address} size={20} />
 						</button>
-					</div>
+					</div> 
 					<div class="mobile-table">
-						<span class="font-semibold">{t('contracts.headers.description')}: </span>
+						<span class="font-semibold">{t('contracts.headers.description')}</span>
 						<span class="text-sm">{contract.description}</span>
 					</div>
 					<div>
-						<span class="font-semibold">{t('contracts.headers.type')}: </span>
+						<span class="font-semibold">{t('contracts.headers.type')}</span>
 						<Badge variant="warning">{t('contracts.type.system')}</Badge>
 					</div>
 				</div>
@@ -145,5 +145,10 @@
 		.mobile-table-wrapper {
 			display: none;
 		}
+	}
+
+	.font-semibold {
+		font-weight: 600;
+		@apply text-sm uppercase tracking-wide mb-1 block text-gray-500;
 	}
 </style>

@@ -176,16 +176,16 @@
     <!-- Account Overview -->
     <Card>
       <div class="p-4">
-        <div class="table-wrapper">
-          <table class="table">
+        <div class="table-wrapper overview-table-wrapper">
+          <table class="table overview-table">
             <tbody>
               <tr>
                 <td class="table-label">{t('common.address')}</td>
                 <td class="table-value">
-                  <div class="addr-row">
-                    <span class="font-mono addr-text" title={account.id}
-                      >{account.id}</span
-                    >
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono addr-text" title={account.id}>
+                      {account.id}
+                    </span>
                     <button class="copy-btn" aria-label="Copy address">
                       <CopyIcon value={account.id} size={20} />
                     </button>
@@ -257,7 +257,7 @@
 
     <!-- Recent Transactions (moved up) -->
     <Card>
-      <div class="p-6">
+      <div class="recent-transactions p-6">
         <h2 class="text-xl font-bold mb-2">
           {t('account.recentTransactions')}
         </h2>
@@ -302,12 +302,17 @@
                 {#each transactions as tx}
                   <tr class="table-row">
                     <td class="table-td">
-                      <a
-                        href="/transactions/{tx.id}"
-                        class="hash-text hover:text-primary-600 dark:hover:text-primary-400"
-                      >
-                        {formatHash(tx.id)}
-                      </a>
+                      <div class="addr-row">
+                        <a
+                          href="/transactions/{tx.id}"
+                          class="hash-text hover:text-primary-600 dark:hover:text-primary-400"
+                        >
+                          {formatHash(tx.id)}
+                        </a>
+                        <button class="copy-btn" aria-label="Copy address">
+                          <CopyIcon value={tx.id} size={20} />
+                        </button>
+                      </div>
                     </td>
                     <td class="table-td">
                       <Badge variant={getStatusVariant(tx.end_status_name)}>
@@ -326,9 +331,9 @@
                       </span>
                     </td>
                     <td class="table-td">
-                      <span class="text-gray-500 dark:text-gray-400"
-                        >{formatBalance(tx.total_fees)}</span
-                      >
+                      <span class="text-gray-500 dark:text-gray-400">
+                        {formatBalance(tx.total_fees)}
+                      </span>
                     </td>
                     <td class="table-td">
                       <LiveTimestamp timestamp={tx.now} className="time-text" />
@@ -337,6 +342,119 @@
                 {/each}
               </tbody>
             </table>
+          </div>
+        {/if}
+      </div>
+
+      <div class="mobile-recent-transactions">
+        <h2 class="text-xl font-bold p-6 pb-1">
+          {t('account.recentTransactions')}
+        </h2>
+
+        {#if transactionsLoading}
+          <SkeletonLoader>
+            <div class="mobile-table-wrapper">
+              {#each Array.from({ length: 3 }) as _}
+                <div class="mobile-table-card">
+                  <div class="flex flex-col gap-2">
+                    <div class="skeleton skeleton-text h-4 w-24"></div>
+                    <div class="skeleton skeleton-text h-4 w-40"></div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div class="skeleton skeleton-text h-4 w-24"></div>
+                    <div class="skeleton skeleton-text h-4 w-28"></div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div class="skeleton skeleton-text h-4 w-32"></div>
+                    <div class="skeleton skeleton-text h-4 w-20"></div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div class="skeleton skeleton-text h-4 w-20"></div>
+                    <div class="skeleton skeleton-text h-4 w-24"></div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div class="skeleton skeleton-text h-4 w-20"></div>
+                    <div class="skeleton skeleton-text h-4 w-32"></div>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          </SkeletonLoader>
+        {:else if transactions.length === 0}
+          <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+            <svg
+              class="w-16 h-16 mx-auto mb-4 opacity-50"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              ></path>
+            </svg>
+            <p>{t('account.noTransactions')}</p>
+          </div>
+        {:else}
+          <div class="mobile-table-wrapper">
+            {#each transactions as tx}
+              <tr class="mobile-table-card">
+                <td>
+                  <label class="detail-label" for="account-code-hash-preview">
+                    {t('account.codeHash')}
+                  </label>
+                  <div class="addr-row">
+                    <a
+                      href="/transactions/{tx.id}"
+                      class="hash-text hover:text-primary-600 dark:hover:text-primary-400"
+                    >
+                      {formatHash(tx.id)}
+                    </a>
+                    <button class="copy-btn" aria-label="Copy address">
+                      <CopyIcon value={tx.id} size={20} />
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <label class="detail-label" for="account-code-hash-preview">
+                    {t('common.status')}
+                  </label>
+                  <Badge variant={getStatusVariant(tx.end_status_name)}>
+                    {tx.aborted ? t('account.aborted') : tx.end_status_name}
+                  </Badge>
+                </td>
+                <td>
+                  <label class="detail-label" for="account-code-hash-preview">
+                    {t('account.balanceChange')}
+                  </label>
+                  <span
+                    class="font-semibold {parseFloat(tx.balance_delta) >= 0
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-red-600 dark:text-red-400'}"
+                  >
+                    {parseFloat(tx.balance_delta) >= 0
+                      ? '+'
+                      : ''}{formatBalance(tx.balance_delta)}
+                  </span>
+                </td>
+                <td>
+                  <label class="detail-label" for="account-code-hash-preview">
+                    {t('account.fees')}
+                  </label>
+                  <span class="text-gray-500 dark:text-gray-400">
+                    {formatBalance(tx.total_fees)}
+                  </span>
+                </td>
+                <td>
+                  <label class="detail-label" for="account-code-hash-preview">
+                    {t('common.time')}
+                  </label>
+                  <LiveTimestamp timestamp={tx.now} className="time-text" />
+                </td>
+              </tr>
+            {/each}
           </div>
         {/if}
       </div>
@@ -653,6 +771,9 @@
     width: 100%;
     overflow-x: auto;
   }
+  .overview-table-wrapper {
+    overflow-x: visible;
+  }
   .table {
     width: 100%;
     border-collapse: separate;
@@ -695,4 +816,92 @@
   :global(.dark) .table-value {
     color: #f3f4f6;
   }
+  	@media (max-width: 640px) {
+		.recent-transactions {
+			display: none;
+		}
+
+		.mobile-table-card {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			padding: 20px;
+			border-bottom: 1px solid var(--border-color);
+		}
+
+    .mobile-table-wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
+		.overview-table {
+			display: block;
+			width: 100%;
+		}
+
+		.overview-table tbody {
+			display: block;
+			width: 100%;
+		}
+
+		.overview-table tr {
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+			padding: 1rem;
+			border: 1px solid var(--border-color, #e2e8f0);
+			border-radius: 0.75rem;
+			background-color: #f9fafb;
+		}
+
+		.overview-table tr + tr {
+			margin-top: 0.75rem;
+		}
+
+		.overview-table td {
+			padding: 0;
+			border: none;
+			width: 100%;
+		}
+
+		.overview-table .table-label {
+			width: 100%;
+			white-space: normal;
+			font-size: 0.75rem;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+			color: #6b7280;
+		}
+
+		:global(.dark) .overview-table tr {
+			background-color: #1f2937;
+			border-color: #334155;
+		}
+
+		:global(.dark) .overview-table .table-label {
+			color: #9ca3af;
+		}
+
+		.overview-table .table-value {
+			width: 100%;
+			overflow-wrap: anywhere;
+		}
+
+		.overview-table .addr-text,
+		.overview-table .address-text {
+			white-space: normal;
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.overview-table .value-list-item {
+			align-items: flex-start;
+		}
+	}
+
+	@media (min-width: 641px) {
+		.mobile-recent-transactions {
+			display: none;
+		}
+	}
 </style>
