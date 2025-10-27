@@ -1,13 +1,27 @@
-import {getNameAddress} from "$lib/utils/addressBook";
+import { getNameAddress } from '$lib/utils/addressBook';
+
+interface FormatAddressOptions {
+  preferAlias?: boolean;
+}
 
 export function formatHash(hash: string): string {
   return `${hash.substring(0, 10)}...${hash.substring(hash.length - 8)}`;
 }
 
-export function formatAddress(address: string): string {
-  const name = getNameAddress(address);
-  if (name) return name;
-  return `${address.substring(0, 8)}...${address.substring(address.length - 6)}`;
+export function formatAddress(
+  address: string,
+  options: FormatAddressOptions = {}
+): string {
+  const { preferAlias = true } = options;
+
+  if (preferAlias) {
+    const name = getNameAddress(address);
+    if (name) return name;
+  }
+
+  return `${address.substring(0, 8)}...${address.substring(
+    address.length - 6
+  )}`;
 }
 
 export function formatBalance(balance?: string): string {

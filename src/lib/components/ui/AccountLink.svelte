@@ -6,11 +6,12 @@
   export let showFullAddress = false;
   export let className = 'hover:text-primary-600';
   export let title: string | undefined = undefined;
+  export let preferAlias = true;
 
   $: t = $translate;
   // Use provided title or fallback to full address
   $: title = title ?? address;
-  $: content = showFullAddress ? address : formatAddress(address);
+  $: content = showFullAddress ? address : formatAddress(address, { preferAlias });
 </script>
 
 {#if address.length === 66}

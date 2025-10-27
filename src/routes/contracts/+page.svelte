@@ -3,6 +3,7 @@
 	import Card from '$lib/components/ui/Card.svelte';
 	import Badge from '$lib/components/ui/Badge.svelte';
 	import AccountLink from '$lib/components/ui/AccountLink.svelte';
+	import CopyIcon from '$lib/components/ui/CopyIcon.svelte';
 
 	$: t = $translate;
 
@@ -50,10 +51,6 @@
 		}
 	];
 
-	function formatAddress(address: string): string {
-		return `${address.substring(0, 10)}...${address.substring(address.length - 8)}`;
-	}
-
 	function formatDate(date: Date): string {
 		return date.toLocaleDateString('en-US', {
 			year: 'numeric',
@@ -83,8 +80,11 @@
 							<td class="table-td">
 								<span class="font-semibold">{contract.name}</span>
 							</td>
-							<td class="table-td">
-								<AccountLink address={contract.address} showFullAddress={true} />
+							<td class="table-td flex gap-1">
+								<AccountLink address={contract.address} preferAlias={false} />
+								<button class="copy-btn" aria-label="Copy address">
+									<CopyIcon value={contract.address} size={20} />
+								</button>
 							</td>
 							<td class="table-td">
 								<span class="text-sm">{contract.description}</span>
@@ -97,5 +97,53 @@
 				</tbody>
 			</table>
 		</div>
+
+		<div class="mobile-table-wrapper">
+			{#each systemContracts as contract}
+				<div class="mobile-table-card">
+					<div class="mobile-table">
+						<span class="font-semibold">{t('contracts.headers.name')}: </span>
+						{contract.name}
+					</div>
+					<div class="mobile-table">
+						<span class="font-semibold">{t('contracts.headers.address')}: </span>
+						<AccountLink address={contract.address} preferAlias={false} />
+						<button class="copy-btn" aria-label="Copy address">
+							<CopyIcon value={contract.address} size={20} />
+						</button>
+					</div>
+					<div class="mobile-table">
+						<span class="font-semibold">{t('contracts.headers.description')}: </span>
+						<span class="text-sm">{contract.description}</span>
+					</div>
+					<div>
+						<span class="font-semibold">{t('contracts.headers.type')}: </span>
+						<Badge variant="warning">{t('contracts.type.system')}</Badge>
+					</div>
+				</div>
+			{/each}
+		</div>
 	</Card>
 </div>
+
+<style>
+	@media (max-width: 640px) {
+		.table-wrapper {
+			display: none;
+		}
+
+		.mobile-table-card {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			padding: 20px;
+			border-bottom: 1px solid var(--border-color);
+		}
+	}
+
+	@media (min-width: 641px) {
+		.mobile-table-wrapper {
+			display: none;
+		}
+	}
+</style>
