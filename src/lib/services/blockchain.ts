@@ -34,6 +34,7 @@ export async function getAccountDetails(addressOrName: string): Promise<AccountD
     throw new Error('Failed to parse account BOC');
   }
 
+  const lastPaidSeconds = Number(accountData.last_paid);
   var balancesOther =
     accountData.balance_other?.map((bo: any) => ({
       id: bo.currency,
@@ -60,7 +61,10 @@ export async function getAccountDetails(addressOrName: string): Promise<AccountD
     id: accountData.id,
     initCodeHash: accountData.init_code_hash,
     jsonVersion: accountData.json_version,
-    lastPaid: new Date(accountData.last_paid * 1000),
+    lastPaid:
+      Number.isFinite(lastPaidSeconds) && lastPaidSeconds > 0
+        ? new Date(lastPaidSeconds * 1000)
+        : null,
     lastTransLt: parseInt(accountData.last_trans_lt, 16),
     publicCells: parseInt(accountData.public_cells, 16),
     workchainId: accountData.workchain_id,
@@ -158,7 +162,7 @@ export class AccountDetails {
   id!: string;
   initCodeHash!: string;
   jsonVersion!: number;
-  lastPaid!: Date;
+  lastPaid!: Date | null;
   lastTransLt!: number;
   publicCells!: number;
   workchainId!: number;
