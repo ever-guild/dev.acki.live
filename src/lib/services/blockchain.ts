@@ -3,19 +3,19 @@ import tvmClient, { getIndexerAddressByName, popitGameCode } from './tvmClient';
 import indexerAbi from '/src/data/contracts/mvsystem/Indexer.abi.json?raw';
 import popitGameAbi from '/src/data/contracts/mvsystem/PopitGame.abi.json?raw';
 import MvMultifactorAbi from '/src/data/contracts/mvsystem/Mvmultifactor.abi.json?raw';
-import {decodeData, getCodeSchema} from "$lib/services/api";
-import {log} from "$lib/utils/log";
+import { decodeData, getCodeSchema } from '$lib/services/api';
+import { log } from '$lib/utils/log';
 
 export enum AccountType {
   Indexer = 'Indexer',
   MvMultifactor = 'Mobile Verifier Multifactor',
-  PopitGame = 'Popit Game'
+  PopitGame = 'Popit Game',
 }
 
 export const knownContracts = new Map<string, AccountType>([
   ['6cc8128da9cda444e4ad83fc7064ea51c6a0bbf0e2aa4777d0807e8ed7283cdb', AccountType.MvMultifactor],
   ['18e57fc187e8ac1cc2a9b1e8907e291cd925c840c1f93d2f30fe12747dd90126', AccountType.PopitGame],
-  ['f5580a523a708377e8fadc17265def99bed081988d9b9f37e153b938390e3245', AccountType.Indexer]
+  ['f5580a523a708377e8fadc17265def99bed081988d9b9f37e153b938390e3245', AccountType.Indexer],
 ]);
 
 export async function getAccountDetails(addressOrName: string): Promise<AccountDetails | null> {
@@ -27,30 +27,30 @@ export async function getAccountDetails(addressOrName: string): Promise<AccountD
 
   const accountBoc = await graphql.getAccountBoc(address);
   const { parsed: accountData } = await tvmClient.boc.parse_account({
-    boc: accountBoc
+    boc: accountBoc,
   });
 
   if (!accountData) {
     throw new Error('Failed to parse account BOC');
   }
 
-  var balancesOther = accountData.balance_other
-    ?.map((bo: any) => ({
+  const lastPaidSeconds = Number(accountData.last_paid);
+  var balancesOther =
+    accountData.balance_other?.map((bo: any) => ({
       id: bo.currency,
       name: bo.currency === 1 ? 'NACKL' : '',
       value: parseInt(bo.value, 16),
     })) || [];
-  var result = {
+  const accountDetailsPayload = {
     accType: accountData.acc_type,
     accTypeName: accountData.acc_type_name,
-    balances: balancesOther
-      .concat([
-        {
-          id: 0,
-          name: 'SHELL',
-          value: parseInt(accountData.balance, 16),
-        },
-      ]),
+    balances: balancesOther.concat([
+      {
+        id: 0,
+        name: 'SHELL',
+        value: parseInt(accountData.balance, 16),
+      },
+    ]),
     bits: parseInt(accountData.bits, 16),
     boc: accountBoc,
     cells: parseInt(accountData.cells, 16),
@@ -61,22 +61,25 @@ export async function getAccountDetails(addressOrName: string): Promise<AccountD
     id: accountData.id,
     initCodeHash: accountData.init_code_hash,
     jsonVersion: accountData.json_version,
-    lastPaid: new Date(accountData.last_paid * 1000),
+    lastPaid:
+      Number.isFinite(lastPaidSeconds) && lastPaidSeconds > 0
+        ? new Date(lastPaidSeconds * 1000)
+        : null,
     lastTransLt: parseInt(accountData.last_trans_lt, 16),
     publicCells: parseInt(accountData.public_cells, 16),
     workchainId: accountData.workchain_id,
-  };
+  } as AccountDetails;
   const codeSchema = await getCodeSchema(accountData.init_code_hash);
-  
+
   if (codeSchema && codeSchema.abi) {
     const dataParsed = await decodeData(accountData.data, codeSchema.abi);
     log('decodeData', { dataParsed, accountData, codeSchema });
     if (dataParsed) {
-      result['dataParsed'] = dataParsed;
-      result['contractName'] = codeSchema.name;
+      accountDetailsPayload.dataParsed = dataParsed;
+      accountDetailsPayload.contractName = codeSchema.name;
     }
   }
-  return new AccountDetails(result as any);
+  return new AccountDetails(accountDetailsPayload);
 }
 
 export async function getMvAddress(addressOrName: string): Promise<string> {
@@ -88,7 +91,7 @@ export async function getMvAddress(addressOrName: string): Promise<string> {
 
   const accountBoc = await graphql.getAccountBoc(address);
   const { parsed: account } = await tvmClient.boc.parse_account({
-    boc: accountBoc
+    boc: accountBoc,
   });
 
   return getMvFromIndexerData(account.data);
@@ -98,12 +101,12 @@ export async function getMvFromIndexerData(indexerData: string): Promise<string>
   const accountData = await tvmClient.abi.decode_account_data({
     abi: {
       type: 'Json',
-      value: indexerAbi
+      value: indexerAbi,
     },
-    data: indexerData
+    data: indexerData,
   });
 
-  return accountData.data._wallet
+  return accountData.data._wallet;
 }
 
 export async function getPopitGameAddress(addressOrName: string): Promise<string> {
@@ -116,18 +119,18 @@ export async function getPopitGameAddress(addressOrName: string): Promise<string
   const encodedMessage = await tvmClient.abi.encode_message({
     abi: {
       type: 'Json',
-      value: popitGameAbi
+      value: popitGameAbi,
     },
     deploy_set: {
       code: popitGameCode,
       initial_data: {
         _pubkey: '0x0',
-        _owner: address
-      }
+        _owner: address,
+      },
     },
     signer: {
       type: 'None',
-    }
+    },
   });
 
   return encodedMessage.address;
@@ -159,7 +162,7 @@ export class AccountDetails {
   id!: string;
   initCodeHash!: string;
   jsonVersion!: number;
-  lastPaid!: Date;
+  lastPaid!: Date | null;
   lastTransLt!: number;
   publicCells!: number;
   workchainId!: number;
@@ -175,9 +178,7 @@ export class AccountDetails {
   private _namePromise?: Promise<string | null>;
 
   public get type(): AccountType | null {
-    return knownContracts.has(this.codeHash)
-      ? knownContracts.get(this.codeHash) || null
-      : null;
+    return knownContracts.has(this.codeHash) ? knownContracts.get(this.codeHash) || null : null;
   }
 
   public async getName(): Promise<string | null> {
@@ -194,9 +195,9 @@ export class AccountDetails {
           const accountData = await tvmClient.abi.decode_account_data({
             abi: {
               type: 'Json',
-              value: MvMultifactorAbi
+              value: MvMultifactorAbi,
             },
-            data: this.data
+            data: this.data,
           });
 
           this._nameCache = accountData.data._name || null;
@@ -204,9 +205,9 @@ export class AccountDetails {
           const accountData = await tvmClient.abi.decode_account_data({
             abi: {
               type: 'Json',
-              value: indexerAbi
+              value: indexerAbi,
             },
-            data: this.data
+            data: this.data,
           });
 
           this._nameCache = accountData.data._name || null;
@@ -230,7 +231,7 @@ export class AccountDetails {
 
   public async getLinkedAccounts(): Promise<Map<AccountType, string>> {
     const result = new Map<AccountType, string>();
-    
+
     if (this.type === AccountType.MvMultifactor) {
       const name = await this.getName();
 
@@ -261,11 +262,11 @@ export class AccountDetails {
       const accountData = await tvmClient.abi.decode_account_data({
         abi: {
           type: 'Json',
-          value: popitGameAbi
+          value: popitGameAbi,
         },
-        data: this.data
+        data: this.data,
       });
-      
+
       const ownerMv = accountData.data._owner;
 
       if (ownerMv) {

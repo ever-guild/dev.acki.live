@@ -1,15 +1,15 @@
 import { environment } from '$lib/environment';
-import { getAccountDetails, getPopitGameAddress, getMvAddress, isHash } from './blockchain';
+import { getMvAddress, isAddress, isHash } from './blockchain';
 
 export interface SearchResult {
-	type: 'block' | 'transaction' | 'message' | 'account';
-	id: string;
-	relatedTransactionId?: string; // For messages
+  type: 'block' | 'transaction' | 'message' | 'account';
+  id: string;
+  relatedTransactionId?: string; // For messages
 }
 
 export interface SearchResponse {
-	found: boolean;
-	results: SearchResult[];
+  found: boolean;
+  results: SearchResult[];
 }
 
 /**
@@ -18,37 +18,51 @@ export interface SearchResponse {
  * @returns SearchResponse with found resources
  */
 export async function globalSearch(query: string): Promise<SearchResponse> {
-	if (!query || query.trim().length === 0) {
-		return { found: false, results: [] };
-	}
+  if (!query || query.trim().length === 0) {
+    return { found: false, results: [] };
+  }
 
-	const trimmedQuery = query.trim().toLowerCase();
-	const results: SearchResult[] = [];
+  const trimmedQuery = query.trim();
+  const normalizedQuery = trimmedQuery.toLowerCase();
+  const results: SearchResult[] = [];
 
-	try {
-		if (!isHash(trimmedQuery)) {
-			const account = await getMvAddress(trimmedQuery);
-      
+  try {
+    if (isAddress(trimmedQuery)) {
+      results.push({
+        type: 'account',
+        id: trimmedQuery,
+      });
+
+      return { found: true, results };
+    }
+
+    try {
+      const account = await getMvAddress(trimmedQuery);
       if (account) {
-				results.push({
-					type: 'account',
-					id: account
-				});
-			}
+        results.push({
+          type: 'account',
+          id: account,
+        });
 
-			// TODO: Return one result, not multiple
-			return {
-				found: results.length > 0,
-				results
-			};
-		}
-		
-		//universal search query
-		const response = await fetch(environment.graphqlEndpoint, {
-			method: 'POST',
-			headers: { 'Content-Type': 'text/plain' },
-			body: JSON.stringify({
-				query: `
+        return {
+          found: true,
+          results,
+        };
+      }
+    } catch (accountLookupError) {
+      console.error('Account lookup failed:', accountLookupError);
+    }
+
+    if (!isHash(normalizedQuery)) {
+      return { found: false, results: [] };
+    }
+
+    //universal search query
+    const response = await fetch(environment.graphqlEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        query: `
 					query SearchById($id: String!) {
 						transactions(filter: { id: { eq: $id } }, limit: 1) { id }
 						blocks(filter: { id: { eq: $id } }, limit: 1) { id }
@@ -59,51 +73,50 @@ export async function globalSearch(query: string): Promise<SearchResponse> {
 						}
 					}
 				`,
-				variables: { id: trimmedQuery }
-			})
-		});
+        variables: { id: normalizedQuery },
+      }),
+    });
 
-		const data = await response.json();
+    const data = await response.json();
+    if (data.errors) {
+      console.error('Search error:', data.errors);
+      return { found: false, results: [] };
+    }
 
-		if (data.errors) {
-			console.error('Search error:', data.errors);
-			return { found: false, results: [] };
-		}
+    // Check blocks
+    if (data.data?.blocks && data.data.blocks.length > 0) {
+      results.push({
+        type: 'block',
+        id: data.data.blocks[0].id,
+      });
+    }
 
-		// Check blocks
-		if (data.data?.blocks && data.data.blocks.length > 0) {
-			results.push({
-				type: 'block',
-				id: data.data.blocks[0].id
-			});
-		}
+    // Check transactions
+    if (data.data?.transactions && data.data.transactions.length > 0) {
+      results.push({
+        type: 'transaction',
+        id: data.data.transactions[0].id,
+      });
+    }
 
-		// Check transactions
-		if (data.data?.transactions && data.data.transactions.length > 0) {
-			results.push({
-				type: 'transaction',
-				id: data.data.transactions[0].id
-			});
-		}
+    // Check messages
+    if (data.data?.messages && data.data.messages.length > 0) {
+      const message = data.data.messages[0];
+      results.push({
+        type: 'message',
+        id: message.id,
+        relatedTransactionId: message.dst_transaction?.id || message.src_transaction?.id,
+      });
+    }
 
-		// Check messages
-		if (data.data?.messages && data.data.messages.length > 0) {
-			const message = data.data.messages[0];
-			results.push({
-				type: 'message',
-				id: message.id,
-				relatedTransactionId: message.dst_transaction?.id || message.src_transaction?.id
-			});
-		}
-
-		return {
-			found: results.length > 0,
-			results
-		};
-	} catch (error) {
-		console.error('Search failed:', error);
-		return { found: false, results: [] };
-	}
+    return {
+      found: results.length > 0,
+      results,
+    };
+  } catch (error) {
+    console.error('Search failed:', error);
+    return { found: false, results: [] };
+  }
 }
 
 /**
@@ -112,16 +125,16 @@ export async function globalSearch(query: string): Promise<SearchResponse> {
  * @returns Route path to navigate to
  */
 export function getSearchResultPath(result: SearchResult): string {
-	switch (result.type) {
-		case 'block':
-			return `/blocks/${result.id}`;
-		case 'transaction':
-			return `/transactions/${result.id}`;
-		case 'message':
-			return `/messages/${result.id}`;
-		case 'account':
-			return `/accounts/${result.id}`;
-		default:
-			return '/';
-	}
+  switch (result.type) {
+    case 'block':
+      return `/blocks/${result.id}`;
+    case 'transaction':
+      return `/transactions/${result.id}`;
+    case 'message':
+      return `/messages/${result.id}`;
+    case 'account':
+      return `/accounts/${result.id}`;
+    default:
+      return '/';
+  }
 }
