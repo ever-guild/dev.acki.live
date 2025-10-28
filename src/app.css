@@ -196,6 +196,7 @@ body.light {
 	border-radius: 0.5rem;
 	color: var(--text-secondary);
 	transition: background-color 0.2s;
+	cursor: pointer;
 }
 
 .nav-link:hover {
