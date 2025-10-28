@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { translate } from '$lib/stores/i18n';
 
 	// Redirect to blocks page
 	onMount(() => {
 		goto('/blocks', { replaceState: true });
 	});
+
+	$: t = $translate;
 </script>
 
 <div class="min-h-screen flex items-center justify-center">

@@ -16,5 +16,20 @@
 	"svelte.enable-ts-plugin": true,
 	"css.validate": false,
 	"scss.validate": false,
-	"stylelint.validate": ["css", "scss", "svelte"]
+	"stylelint.validate": ["css", "scss", "svelte"],
+	"[svelte]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[markdown]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	}
 }

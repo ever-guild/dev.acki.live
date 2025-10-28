@@ -5,7 +5,7 @@
   import { isDarkMode } from '$lib/stores/theme';
   import { globalSearch, getSearchResultPath } from '$lib/services/search';
   import { environment } from '$lib/environment';
-  
+
   $: currentPath = $page.url.pathname;
   $: t = $translate;
 
@@ -50,7 +50,8 @@
     isSearching = true;
     try {
       const result = await globalSearch(searchQuery);
-  if (result.found && result.results.length > 0) {
+      console.log('Search result:', result);
+      if (result.found && result.results.length > 0) {
         // Navigate to the first result
         const path = getSearchResultPath(result.results[0]);
         await goto(path);
@@ -75,17 +76,9 @@
       <div class="flex-shrink-0">
         <a href="/" class="flex items-center">
           {#if $isDarkMode}
-            <img
-              src="/AN Logo - horizontal white.svg"
-              alt="Acki Nacki"
-              class="h-8"
-            />
+            <img src="/AN Logo - horizontal white.svg" alt="Acki Nacki" class="h-8" />
           {:else}
-            <img
-              src="/AN Logo - horizontal black.svg"
-              alt="Acki Nacki"
-              class="h-8"
-            />
+            <img src="/AN Logo - horizontal black.svg" alt="Acki Nacki" class="h-8" />
           {/if}
         </a>
       </div>
@@ -120,10 +113,7 @@
           </svg>
           {#if isSearching}
             <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
-              <svg
-                class="animate-spin h-5 w-5 text-primary-600"
-                viewBox="0 0 24 24"
-              >
+              <svg class="animate-spin h-5 w-5 text-primary-600" viewBox="0 0 24 24">
                 <circle
                   class="opacity-25"
                   cx="12"
@@ -153,11 +143,21 @@
         >
           {#if mobileOpen}
             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           {:else}
             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           {/if}
         </button>
@@ -165,49 +165,25 @@
 
       <!-- Navigation Links -->
       <div class="hidden md:flex items-center space-x-1">
-        <a
-          href="/blocks"
-          class="nav-link"
-          class:active={currentPath === '/blocks'}
-        >
+        <a href="/blocks" class="nav-link" class:active={currentPath === '/blocks'}>
           {t('nav.blocks')}
         </a>
-        <a
-          href="/transactions"
-          class="nav-link"
-          class:active={currentPath === '/transactions'}
-        >
+        <a href="/transactions" class="nav-link" class:active={currentPath === '/transactions'}>
           {t('nav.transactions')}
         </a>
-        <a
-          href="/messages"
-          class="nav-link"
-          class:active={currentPath === '/messages'}
-        >
+        <a href="/messages" class="nav-link" class:active={currentPath === '/messages'}>
           {t('nav.messages')}
         </a>
-        <a
-          href="/contracts"
-          class="nav-link"
-          class:active={currentPath === '/contracts'}
-        >
+        <a href="/contracts" class="nav-link" class:active={currentPath === '/contracts'}>
           {t('nav.contracts')}
         </a>
         {#if environment.develop}
-          <a
-            href="/stats"
-            class="nav-link"
-            class:active={currentPath === '/stats'}
-          >
+          <a href="/stats" class="nav-link" class:active={currentPath === '/stats'}>
             {t('nav.stats')}
           </a>
         {/if}
         {#if environment.develop}
-          <a
-            href="/showcase"
-            class="nav-link"
-            class:active={currentPath === '/showcase'}
-          >
+          <a href="/showcase" class="nav-link" class:active={currentPath === '/showcase'}>
             {t('nav.showcase')}
           </a>
         {/if}
@@ -246,12 +222,7 @@
           aria-label={t('navbar.toggleTheme')}
         >
           {#if $isDarkMode}
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -260,12 +231,7 @@
               />
             </svg>
           {:else}
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -290,7 +256,9 @@
     on:keydown={(e) => e.key === 'Escape' && (mobileOpen = false)}
     aria-label={t('navbar.closeOverlay')}
   ></div>
-  <div class="lg:hidden fixed top-0 right-0 z-50 w-72 h-full bg-secondary shadow-lg p-4 overflow-auto">
+  <div
+    class="lg:hidden fixed top-0 right-0 z-50 w-72 h-full bg-secondary shadow-lg p-4 overflow-auto"
+  >
     <div class="flex items-center justify-between mb-4">
       <a href="/" class="flex items-center">
         {#if $isDarkMode}
@@ -301,12 +269,17 @@
       </a>
       <button on:click={() => (mobileOpen = false)} aria-label={t('navbar.closeMenu')} class="p-2">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       </button>
     </div>
 
-  <form on:submit|preventDefault={handleSearch} class="mb-4">
+    <form on:submit|preventDefault={handleSearch} class="mb-4">
       <div class="flex flex-col gap-2">
         <input
           type="search"
@@ -326,8 +299,20 @@
         >
           {#if isSearching}
             <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+                fill="none"
+              />
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
             </svg>
             <span>{t('navbar.search')}</span>
           {:else}
@@ -338,31 +323,83 @@
     </form>
 
     <nav class="space-y-2 mb-6">
-      <a href="/blocks" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/blocks'}>{t('nav.blocks')}</a>
-      <a href="/transactions" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/transactions'}>{t('nav.transactions')}</a>
-      <a href="/messages" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/messages'}>{t('nav.messages')}</a>
-      <a href="/contracts" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/contracts'}>{t('nav.contracts')}</a>
-  {#if environment.develop}
-        <a href="/stats" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/stats'}>{t('nav.stats')}</a>
+      <a
+        href="/blocks"
+        class="nav-link block"
+        on:click={() => (mobileOpen = false)}
+        class:active={currentPath === '/blocks'}>{t('nav.blocks')}</a
+      >
+      <a
+        href="/transactions"
+        class="nav-link block"
+        on:click={() => (mobileOpen = false)}
+        class:active={currentPath === '/transactions'}>{t('nav.transactions')}</a
+      >
+      <a
+        href="/messages"
+        class="nav-link block"
+        on:click={() => (mobileOpen = false)}
+        class:active={currentPath === '/messages'}>{t('nav.messages')}</a
+      >
+      <a
+        href="/contracts"
+        class="nav-link block"
+        on:click={() => (mobileOpen = false)}
+        class:active={currentPath === '/contracts'}>{t('nav.contracts')}</a
+      >
+      {#if environment.develop}
+        <a
+          href="/stats"
+          class="nav-link block"
+          on:click={() => (mobileOpen = false)}
+          class:active={currentPath === '/stats'}>{t('nav.stats')}</a
+        >
       {/if}
-  {#if environment.develop}
-        <a href="/showcase" class="nav-link block" on:click={() => (mobileOpen = false)} class:active={currentPath === '/showcase'}>{t('nav.showcase')}</a>
+      {#if environment.develop}
+        <a
+          href="/showcase"
+          class="nav-link block"
+          on:click={() => (mobileOpen = false)}
+          class:active={currentPath === '/showcase'}>{t('nav.showcase')}</a
+        >
       {/if}
     </nav>
 
     <div class="flex flex-col items-center mb-8">
       <div class="flex items-center space-x-2">
-        <button on:click={() => switchLanguage('en')} class="px-3 py-1 rounded text-sm" class:bg-primary-600={$currentLanguage === 'en'}>EN</button>
-        <button on:click={() => switchLanguage('ru')} class="px-3 py-1 rounded text-sm" class:bg-primary-600={$currentLanguage === 'ru'}>RU</button>
+        <button
+          on:click={() => switchLanguage('en')}
+          class="px-3 py-1 rounded text-sm"
+          class:bg-primary-600={$currentLanguage === 'en'}>EN</button
+        >
+        <button
+          on:click={() => switchLanguage('ru')}
+          class="px-3 py-1 rounded text-sm"
+          class:bg-primary-600={$currentLanguage === 'ru'}>RU</button
+        >
       </div>
     </div>
 
     <div class="flex flex-col items-center mb-4">
       <button on:click={toggleTheme} class="p-2 rounded-lg" aria-label="Toggle theme">
         {#if $isDarkMode}
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+            /></svg
+          >
         {:else}
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+            /></svg
+          >
         {/if}
       </button>
     </div>
