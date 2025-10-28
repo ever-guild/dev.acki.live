@@ -44,6 +44,7 @@
   let linkedAccounts: Map<AccountType, string> = new Map();
   let transactions: Transaction[] = [];
   let accountLoading = true;
+  let accountNotFound = false;
   let error: string | null = null;
   let transactionsLoading = false;
 
@@ -63,12 +64,13 @@
     const token = ++loadToken;
     accountLoading = true;
     error = null;
+    accountNotFound = false;
     account = null; // clear previous data while loading
 
     try {
       const accountDetails = await getAccountDetails(accountParam);
       if (!accountDetails) {
-        throw new Error('Account not found');
+        throw new Error('Account details not found');
       }
       // If a newer load started, bail out
       if (token !== loadToken) return;
@@ -99,7 +101,14 @@
       loadTransactions(account.id, token);
     } catch (err) {
       if (token !== loadToken) return;
-      error = err instanceof Error ? err.message : 'Failed to load account details';
+      const message = err instanceof Error ? err.message : 'Failed to load account details';
+      if (/account not found/i.test(message) || /failed to parse account boc/i.test(message)) {
+        accountNotFound = true;
+        transactions = [];
+        error = null;
+      } else {
+        error = message;
+      }
       console.error('Error loading account:', err);
     } finally {
       if (token === loadToken) accountLoading = false;
@@ -130,9 +139,29 @@
 </script>
 
 <div class="page-container">
+  {#if accountNotFound && !accountLoading}
+    <Card>
+      <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+        <svg
+          class="w-16 h-16 mx-auto mb-4 opacity-50"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+          ></path>
+        </svg>
+        <p>{t('account.notFound')}</p>
+      </div>
+    </Card>
+  {/if}
   <h1 class="page-title flex items-center gap-3">
-    {t('account.title')}
     {#if account}
+      {t('account.title')}
       {#if account.contractName}
         <Badge variant="success">
           {account.contractName}
@@ -419,17 +448,17 @@
                 </td>
                 <td>
                   <label class="detail-label" for="account-code-hash-preview">
-                    {t('common.time')}
-                  </label>
-                  <LiveTimestamp timestamp={tx.now} className="time-text" />
-                </td>
-                <td>
-                  <label class="detail-label" for="account-code-hash-preview">
                     {t('common.status')}
                   </label>
                   <Badge variant={getStatusVariant(tx.end_status_name)}>
                     {tx.aborted ? t('account.aborted') : tx.end_status_name}
                   </Badge>
+                </td>
+                <td>
+                  <label class="detail-label" for="account-code-hash-preview">
+                    {t('common.time')}
+                  </label>
+                  <LiveTimestamp timestamp={tx.now} className="time-text" />
                 </td>
               </tr>
             {/each}
