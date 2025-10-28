@@ -1,5 +1,5 @@
 import { environment } from '$lib/environment';
-import { getAccountDetails, getPopitGameAddress, getMvAddress, isHash } from './blockchain';
+import { getMvAddress, isAddress, isHash } from './blockchain';
 
 export interface SearchResult {
   type: 'block' | 'transaction' | 'message' | 'account';
@@ -22,24 +22,39 @@ export async function globalSearch(query: string): Promise<SearchResponse> {
     return { found: false, results: [] };
   }
 
-  const trimmedQuery = query.trim().toLowerCase();
+  const trimmedQuery = query.trim();
+  const normalizedQuery = trimmedQuery.toLowerCase();
   const results: SearchResult[] = [];
 
   try {
-    if (!isHash(trimmedQuery)) {
-      const account = await getMvAddress(trimmedQuery);
+    if (isAddress(trimmedQuery)) {
+      results.push({
+        type: 'account',
+        id: trimmedQuery,
+      });
 
+      return { found: true, results };
+    }
+
+    try {
+      const account = await getMvAddress(trimmedQuery);
       if (account) {
         results.push({
           type: 'account',
           id: account,
         });
-      }
 
-      return {
-        found: results.length > 0,
-        results,
-      };
+        return {
+          found: true,
+          results,
+        };
+      }
+    } catch (accountLookupError) {
+      console.error('Account lookup failed:', accountLookupError);
+    }
+
+    if (!isHash(normalizedQuery)) {
+      return { found: false, results: [] };
     }
 
     //universal search query
@@ -58,7 +73,7 @@ export async function globalSearch(query: string): Promise<SearchResponse> {
 						}
 					}
 				`,
-        variables: { id: trimmedQuery },
+        variables: { id: normalizedQuery },
       }),
     });
 

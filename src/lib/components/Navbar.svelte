@@ -50,7 +50,6 @@
     isSearching = true;
     try {
       const result = await globalSearch(searchQuery);
-      console.log('Search result:', result);
       if (result.found && result.results.length > 0) {
         // Navigate to the first result
         const path = getSearchResultPath(result.results[0]);
