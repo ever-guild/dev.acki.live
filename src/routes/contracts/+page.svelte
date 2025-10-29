@@ -48,7 +48,12 @@
 			name: 'Dapp Root Config',
 			address: '0:9999999999999999999999999999999999999999999999999999999999999999',
 			description: 'Root configuration for decentralized applications'
-		}
+		},
+		{
+			name: 'USDC Root',
+			address: '0:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+			description: 'USDC Root'
+		},
 	];
 
 	function formatDate(date: Date): string {

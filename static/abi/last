@@ -1,5 +1,13 @@
 [
   [
+    "USDCRoot",
+    "eb7a346704904a164482466f768ce32a92439cd7488495639a98023901f2800f"
+  ],
+  [
+    "USDCWallet",
+    "4b52c649e24caba4ede633fa629f63dde4b5cfaebefff5c801b52486fe22cdbf"
+  ],
+  [
     "AckiNackiBlockKeeperNodeWallet",
     "397da72d4cf3308ce98e56c1532904856946c1dfa4dfc55ba17a199f8d7cb8f0"
   ],

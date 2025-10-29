@@ -1,5 +1,5 @@
 {
-  "name": "USDCRoot",
+  "name": "USDCWallet",
   "compiler": "sol 0.79.0",
   "abi": {
     "ABI version": 2,
@@ -14,15 +14,7 @@
         "name": "constructor",
         "inputs": [
           {
-            "name": "initialSupplyToOwner",
-            "type": "address"
-          },
-          {
-            "name": "initialSupply",
-            "type": "uint128"
-          },
-          {
-            "name": "mintDisabled",
+            "name": "isRoot",
             "type": "bool"
           },
           {
@@ -34,60 +26,8 @@
             "type": "cell"
           },
           {
-            "name": "pubkey",
-            "type": "uint256"
-          }
-        ],
-        "outputs": []
-      },
-      {
-        "name": "setDisableMint",
-        "inputs": [],
-        "outputs": []
-      },
-      {
-        "name": "clearData",
-        "inputs": [],
-        "outputs": []
-      },
-      {
-        "name": "setPubkey",
-        "inputs": [
-          {
-            "name": "pubkey",
-            "type": "uint256"
-          }
-        ],
-        "outputs": []
-      },
-      {
-        "name": "burn",
-        "inputs": [
-          {
-            "name": "value",
-            "type": "uint128"
-          },
-          {
-            "name": "walletOwner",
-            "type": "address"
-          }
-        ],
-        "outputs": []
-      },
-      {
-        "name": "processWithdraw",
-        "inputs": [
-          {
-            "name": "value",
-            "type": "uint128"
-          },
-          {
-            "name": "to",
-            "type": "uint256"
-          },
-          {
-            "name": "owner",
-            "type": "address"
+            "name": "senderOwner",
+            "type": "optional(address)"
           }
         ],
         "outputs": []
@@ -98,6 +38,38 @@
           {
             "name": "value",
             "type": "uint128"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "deployTransaction",
+        "inputs": [
+          {
+            "name": "transactionType",
+            "type": "uint8"
+          },
+          {
+            "name": "value",
+            "type": "optional(uint128)"
+          },
+          {
+            "name": "destinationOwner",
+            "type": "optional(address)"
+          },
+          {
+            "name": "toWithdraw",
+            "type": "optional(uint256)"
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "name": "acceptTransfer",
+        "inputs": [
+          {
+            "name": "value",
+            "type": "uint128"
           },
           {
             "name": "walletOwner",
@@ -107,62 +79,18 @@
         "outputs": []
       },
       {
-        "name": "deployWallet",
+        "name": "acceptTransaction",
         "inputs": [
           {
-            "name": "owner",
-            "type": "address"
-          }
-        ],
-        "outputs": []
-      },
-      {
-        "name": "updateCode",
-        "inputs": [
-          {
-            "name": "newcode",
-            "type": "cell"
+            "name": "transactionType",
+            "type": "uint8"
           },
           {
-            "name": "cell",
+            "name": "data",
             "type": "cell"
           }
         ],
         "outputs": []
-      },
-      {
-        "name": "getDetails",
-        "inputs": [],
-        "outputs": [
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "decimals",
-            "type": "uint128"
-          },
-          {
-            "name": "deployer",
-            "type": "address"
-          },
-          {
-            "name": "minted",
-            "type": "uint128"
-          },
-          {
-            "name": "burned",
-            "type": "uint128"
-          },
-          {
-            "name": "mintDisabled",
-            "type": "bool"
-          },
-          {
-            "name": "ownerPubkey",
-            "type": "uint256"
-          }
-        ]
       },
       {
         "name": "getWalletAddress",
@@ -176,6 +104,51 @@
           {
             "name": "walletAddress",
             "type": "address"
+          }
+        ]
+      },
+      {
+        "name": "getTransactionAddress",
+        "inputs": [
+          {
+            "name": "transactionType",
+            "type": "uint8"
+          },
+          {
+            "name": "value",
+            "type": "optional(uint128)"
+          },
+          {
+            "name": "destinationOwner",
+            "type": "optional(address)"
+          },
+          {
+            "name": "toWithdraw",
+            "type": "optional(uint256)"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "transactionAddress",
+            "type": "address"
+          }
+        ]
+      },
+      {
+        "name": "getDetails",
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "root",
+            "type": "address"
+          },
+          {
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "name": "balance",
+            "type": "uint128"
           }
         ]
       },
@@ -212,19 +185,14 @@
         "type": "bool"
       },
       {
-        "init": true,
-        "name": "_deployer",
+        "init": false,
+        "name": "_root",
         "type": "address"
       },
       {
         "init": true,
-        "name": "_name",
-        "type": "string"
-      },
-      {
-        "init": true,
-        "name": "_decimals",
-        "type": "uint128"
+        "name": "_owner",
+        "type": "address"
       },
       {
         "init": false,
@@ -238,23 +206,8 @@
       },
       {
         "init": false,
-        "name": "_minted",
+        "name": "_balance",
         "type": "uint128"
-      },
-      {
-        "init": false,
-        "name": "_burned",
-        "type": "uint128"
-      },
-      {
-        "init": false,
-        "name": "_mintDisabled",
-        "type": "bool"
-      },
-      {
-        "init": false,
-        "name": "_ownerPubkey",
-        "type": "uint256"
       }
     ]
   }
